@@ -1,0 +1,55 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/*
+  Custom DaisyUI theme for Multitec Maldives Pvt. Ltd.
+  Brand palette:
+    Primary red  — #E31E24 → oklch(58.5% 0.226 26.6)
+    Neutral dark — #111111 → oklch(13% 0 0)
+    Base white   — #ffffff → oklch(100% 0 0)
+*/
+@plugin "daisyui/theme" {
+  name: "multitec";
+  default: true;
+  color-scheme: light;
+
+  /* ── Primary: brand red ───────────────────────────── */
+  --color-primary:         oklch(58.5% 0.226 26.6);
+  --color-primary-content: oklch(100% 0 0);
+
+  /* ── Secondary: near-black (dark sections) ─────────── */
+  --color-secondary:         oklch(13% 0 0);
+  --color-secondary-content: oklch(100% 0 0);
+
+  /* ── Accent: red (same as primary for this brand) ─── */
+  --color-accent:         oklch(58.5% 0.226 26.6);
+  --color-accent-content: oklch(100% 0 0);
+
+  /* ── Neutral: true black (hero / footer backgrounds) ─ */
+  --color-neutral:         oklch(9% 0 0);
+  --color-neutral-content: oklch(94% 0 0);
+
+  /* ── Base: white surface ─────────────────────────── */
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(96% 0 0);
+  --color-base-300: oklch(91% 0 0);
+  --color-base-content: oklch(13% 0 0);
+
+  /* ── Semantic ─────────────────────────────────────── */
+  --color-info:            oklch(70% 0.13 232);
+  --color-info-content:    oklch(100% 0 0);
+  --color-success:         oklch(65% 0.18 145);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning:         oklch(80% 0.18 70);
+  --color-warning-content: oklch(13% 0 0);
+  --color-error:           oklch(50% 0.22 26.6);
+  --color-error-content:   oklch(100% 0 0);
+
+  /* ── Shape tokens ────────────────────────────────── */
+  --radius-selector: 0.25rem;
+  --radius-field:    0.25rem;
+  --radius-box:      0.5rem;
+  --border:          1px;
+  --depth:           1;
+  --noise:           0;
+}
