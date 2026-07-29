@@ -1,88 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import type { Service } from '../types';
-
-const services: Service[] = [
-  {
-    title: 'Electrical Installations',
-    description:
-      'Complete LV/MV electrical installations for residential, commercial, hospitality, and industrial projects. Includes main switchboards, sub-distribution boards, final circuits, containment, and terminations to IEC 60364 standards.',
-  },
-  {
-    title: 'Power Systems Design',
-    description:
-      'Engineering design services including load calculations, single-line diagrams, protection coordination studies, cable sizing, earthing design, and full as-built documentation packages.',
-  },
-  {
-    title: 'Solar PV & Renewable Energy',
-    description:
-      'Design, supply, and installation of grid-tied and off-grid solar photovoltaic systems. Covers system sizing, structural assessment, DC/AC wiring, inverter selection, monitoring, and MEA approval submissions.',
-  },
-  {
-    title: 'Emergency Power Systems',
-    description:
-      'Generator installations, automatic transfer switch (ATS) panels, UPS systems, and battery energy storage. We handle sizing, supply, installation, load testing, and full commissioning documentation.',
-  },
-  {
-    title: 'Testing & Commissioning',
-    description:
-      'Insulation resistance testing, earth continuity, polarity checks, RCD testing, thermographic surveys, and power quality analysis. Full IET-format test reports provided on completion.',
-  },
-  {
-    title: 'Planned Preventive Maintenance',
-    description:
-      'Scheduled PPM contracts for switchgear, distribution boards, generators, UPS systems, and lighting. Emergency call-out cover available 24/7 with rapid response times across the atolls.',
-  },
-  {
-    title: 'Lighting Design & Installation',
-    description:
-      'Interior and exterior lighting layouts, DIALux calculations, LED retrofits, and emergency/escape lighting systems compliant with BS 5266 and local fire authority requirements.',
-  },
-  {
-    title: 'EV Charging Infrastructure',
-    description:
-      'Supply and installation of AC and DC electric vehicle charging points for commercial car parks, resort jetties, and ferry terminals — future-proofed for network management systems.',
-  },
-];
+import CtaBanner from '../components/CtaBanner.astro';
 ---
 
 <BaseLayout
   title="Services"
-  description="Multitec Maldives offers a full range of electrical engineering services: installations, power systems design, solar PV, testing, maintenance, and more."
+  description="Multitec Maldives offers a full range of electrical engineering services: installations, power systems design, solar PV, testing, commissioning, and planned maintenance."
 >
-  <!-- Page header -->
-  <section class="bg-neutral py-20 text-neutral-content">
-    <div class="container mx-auto max-w-3xl px-4 text-center">
-      <h1 class="mb-4 text-4xl font-bold md:text-5xl">Our Services</h1>
-      <p class="mx-auto max-w-xl text-lg text-neutral-content/70">
-        End-to-end electrical engineering — from concept design through commissioning and beyond.
-      </p>
+  <section class="flex min-h-[70vh] items-center justify-center px-4">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-[#1a1a1a] md:text-5xl">Our Services</h1>
+      <p class="mt-6 text-lg text-[#4a4a4a]">Services page — full design coming soon.</p>
     </div>
   </section>
 
-  <!-- Services grid -->
-  <section class="py-16" aria-labelledby="services-list-heading">
-    <h2 id="services-list-heading" class="sr-only">Services list</h2>
-    <div class="container mx-auto max-w-5xl px-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
-      {services.map(({ title, description }) => (
-        <div class="card border border-base-300 bg-base-100 shadow-sm">
-          <div class="card-body">
-            <h3 class="card-title text-lg text-primary">{title}</h3>
-            <p class="text-sm leading-relaxed text-base-content/70">{description}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="bg-base-200 py-16" aria-labelledby="services-cta-heading">
-    <div class="container mx-auto max-w-xl px-4 text-center">
-      <h2 id="services-cta-heading" class="mb-4 text-2xl font-bold">Need a Quotation?</h2>
-      <p class="mb-6 text-base-content/70">
-        Send us your project details and we'll respond within one business day.
-      </p>
-      <a href="/contact" class="btn btn-primary btn-lg">Contact Us</a>
-    </div>
-  </section>
+  <CtaBanner
+    heading="Need a Quotation?"
+    subtext="Send us your project details and we'll respond within one business day."
+    buttonText="Contact Us"
+    buttonLink="/contact"
+  />
 </BaseLayout>

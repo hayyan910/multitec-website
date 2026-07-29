@@ -1,135 +1,26 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { projects } from '../data/projects';
-
-const featuredProjects = projects.filter((p) => p.featured);
+import CtaBanner from '../components/CtaBanner.astro';
 ---
 
 <BaseLayout
   title="Home"
-  description="Multitec Maldives Pvt. Ltd. — professional electrical engineering services in Malé, Maldives."
+  description="Multitec Maldives Pvt. Ltd. — professional electrical engineering services across the Maldives. Installations, design, solar PV, maintenance and more."
 >
-  <!-- Hero -->
-  <section class="bg-neutral py-24 text-neutral-content">
-    <div class="container mx-auto max-w-3xl px-4 text-center">
-      <h1 class="mb-6 text-4xl font-bold leading-tight md:text-6xl">
-        Electrical Engineering
-        <span class="text-primary">Excellence</span><br />
-        in the Maldives
+  <section class="flex min-h-[70vh] items-center justify-center px-4">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-[#1a1a1a] md:text-6xl">
+        Electrical Engineering<br />
+        <span class="text-[#E31E24]">Excellence</span>
       </h1>
-      <p class="mx-auto mb-8 max-w-xl text-lg text-neutral-content/70 md:text-xl">
-        Multitec Maldives delivers safe, efficient, and sustainable electrical solutions for
-        commercial, hospitality, and infrastructure projects across the Maldives.
-      </p>
-      <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-        <a href="/services" class="btn btn-primary btn-lg">Our Services</a>
-        <a
-          href="/projects"
-          class="btn btn-lg border-neutral-content text-neutral-content outline outline-1 outline-neutral-content hover:bg-neutral-content hover:text-neutral"
-        >
-          View Projects
-        </a>
-      </div>
+      <p class="mt-6 text-lg text-[#4a4a4a]">Home page — full design coming soon.</p>
     </div>
   </section>
 
-  <!-- Services snapshot -->
-  <section class="bg-base-200 py-20" aria-labelledby="services-snapshot-heading">
-    <div class="container mx-auto max-w-5xl px-4">
-      <h2 id="services-snapshot-heading" class="mb-12 text-center text-3xl font-bold">
-        What We Do
-      </h2>
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {[
-          {
-            title: 'Electrical Installations',
-            desc: 'LV panels to complete building fitouts, built to IEC and local authority standards.',
-          },
-          {
-            title: 'Power Systems Design',
-            desc: 'HV/LV design, load analysis, and single-line diagrams for any project scale.',
-          },
-          {
-            title: 'Solar PV & Renewables',
-            desc: 'Grid-tied and off-grid solar solutions for resorts, commercial, and government projects.',
-          },
-          {
-            title: 'Testing & Commissioning',
-            desc: 'Insulation, earth continuity, RCD testing, thermographic surveys, and full reports.',
-          },
-          {
-            title: 'Emergency Power',
-            desc: 'Genset and UPS installations with automatic transfer switching and load testing.',
-          },
-          {
-            title: 'Planned Maintenance',
-            desc: 'Scheduled PPM contracts and 24/7 emergency call-out cover.',
-          },
-        ].map(({ title, desc }) => (
-          <div class="card border border-base-300 bg-base-100 shadow-sm">
-            <div class="card-body">
-              <h3 class="card-title text-lg">{title}</h3>
-              <p class="text-sm text-base-content/70">{desc}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div class="mt-10 text-center">
-        <a href="/services" class="btn btn-primary">All Services</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Featured projects -->
-  {
-    featuredProjects.length > 0 && (
-      <section class="py-20" aria-labelledby="featured-projects-heading">
-        <div class="container mx-auto max-w-5xl px-4">
-          <h2 id="featured-projects-heading" class="mb-12 text-center text-3xl font-bold">
-            Featured Projects
-          </h2>
-          <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-            {featuredProjects.map((project) => (
-              <a
-                href={`/projects/${project.slug}`}
-                class="card group border border-base-300 bg-base-100 transition-shadow hover:shadow-lg"
-              >
-                <div class="card-body">
-                  <span class="badge badge-primary mb-2">{project.category}</span>
-                  <h3 class="card-title transition-colors group-hover:text-primary">
-                    {project.title}
-                  </h3>
-                  <p class="text-sm text-base-content/70">{project.description}</p>
-                  <p class="mt-2 text-xs text-base-content/50">{project.year}</p>
-                </div>
-              </a>
-            ))}
-          </div>
-          <div class="mt-10 text-center">
-            <a href="/projects" class="btn btn-outline btn-primary">
-              All Projects
-            </a>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  <!-- CTA -->
-  <section class="bg-primary py-20 text-primary-content" aria-labelledby="cta-heading">
-    <div class="container mx-auto max-w-2xl px-4 text-center">
-      <h2 id="cta-heading" class="mb-4 text-3xl font-bold">
-        Ready to Start Your Project?
-      </h2>
-      <p class="mb-8 text-primary-content/80">
-        Get in touch with our team for a no-obligation consultation.
-      </p>
-      <a
-        href="/contact"
-        class="btn border-none bg-white text-primary hover:bg-white/90 btn-lg"
-      >
-        Contact Us
-      </a>
-    </div>
-  </section>
+  <CtaBanner
+    heading="Ready to Start Your Project?"
+    subtext="Get in touch with our team for a no-obligation consultation."
+    buttonText="Contact Us"
+    buttonLink="/contact"
+  />
 </BaseLayout>

@@ -1,65 +1,15 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { projects } from '../../data/projects';
-
-const categories = [...new Set(projects.map((p) => p.category))].sort();
 ---
 
 <BaseLayout
   title="Projects"
-  description="Browse completed electrical engineering projects by Multitec Maldives across healthcare, hospitality, commercial, and renewable energy sectors."
+  description="Browse completed electrical engineering projects by Multitec Maldives — healthcare, hospitality, commercial, and renewable energy sectors across the Maldives."
 >
-  <!-- Page header -->
-  <section class="bg-neutral py-20 text-neutral-content">
-    <div class="container mx-auto max-w-3xl px-4 text-center">
-      <h1 class="mb-4 text-4xl font-bold md:text-5xl">Our Projects</h1>
-      <p class="text-lg text-neutral-content/70">
-        A selection of completed work delivered across the Maldives.
-      </p>
-    </div>
-  </section>
-
-  <!-- Projects grouped by category -->
-  <section class="py-16" aria-labelledby="projects-list-heading">
-    <div class="container mx-auto max-w-5xl px-4">
-      <h2 id="projects-list-heading" class="sr-only">Projects list</h2>
-
-      {
-        projects.length === 0 ? (
-          <p class="py-20 text-center text-base-content/50">Projects coming soon.</p>
-        ) : (
-          categories.map((category) => (
-            <div class="mb-14">
-              <h3 class="mb-6 border-b border-base-300 pb-2 text-xl font-semibold text-primary">
-                {category}
-              </h3>
-              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {projects
-                  .filter((p) => p.category === category)
-                  .map((project) => (
-                    <a
-                      href={`/projects/${project.slug}`}
-                      class="card group border border-base-300 bg-base-100 transition-all hover:border-primary hover:shadow-md"
-                    >
-                      <div class="card-body">
-                        <h4 class="card-title text-base transition-colors group-hover:text-primary">
-                          {project.title}
-                        </h4>
-                        <p class="text-sm text-base-content/70">{project.description}</p>
-                        <div class="card-actions mt-2 items-center justify-between">
-                          {project.client && (
-                            <span class="text-xs text-base-content/50">{project.client}</span>
-                          )}
-                          <span class="ml-auto text-xs text-base-content/50">{project.year}</span>
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-              </div>
-            </div>
-          ))
-        )
-      }
+  <section class="flex min-h-[70vh] items-center justify-center px-4">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-[#1a1a1a] md:text-5xl">Our Projects</h1>
+      <p class="mt-6 text-lg text-[#4a4a4a]">Projects listing — full design coming soon.</p>
     </div>
   </section>
 </BaseLayout>

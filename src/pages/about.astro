@@ -1,73 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CtaBanner from '../components/CtaBanner.astro';
 ---
 
 <BaseLayout
   title="About"
-  description="Learn about Multitec Maldives Pvt. Ltd. — our story, team, and engineering values."
+  description="Learn about Multitec Maldives Pvt. Ltd. — our story, values, and the team behind our electrical engineering expertise."
 >
-  <!-- Page header -->
-  <section class="bg-neutral py-20 text-neutral-content">
-    <div class="container mx-auto max-w-3xl px-4 text-center">
-      <h1 class="mb-4 text-4xl font-bold md:text-5xl">About Multitec</h1>
-      <p class="text-lg text-neutral-content/70">Engineering integrity since day one.</p>
+  <section class="flex min-h-[70vh] items-center justify-center px-4">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-[#1a1a1a] md:text-5xl">About Multitec</h1>
+      <p class="mt-6 text-lg text-[#4a4a4a]">About page — full design coming soon.</p>
     </div>
   </section>
 
-  <!-- Story -->
-  <section class="py-16" aria-labelledby="story-heading">
-    <div class="container mx-auto max-w-3xl px-4 prose prose-base">
-      <h2 id="story-heading">Our Story</h2>
-      <p>
-        Multitec Maldives Pvt. Ltd. is a leading electrical engineering company headquartered in
-        Malé, Republic of Maldives. Founded with a commitment to quality and safety, we serve the
-        full spectrum of the Maldivian construction and infrastructure sector — from boutique island
-        resorts to large-scale government buildings.
-      </p>
-      <p>
-        Our team of licensed engineers and certified technicians has accumulated decades of combined
-        experience working in the unique environment of the Maldives, where salt-air corrosion,
-        logistics constraints, and stringent international standards demand solutions that are both
-        robust and pragmatic.
-      </p>
-
-      <h2>Our Values</h2>
-      <ul>
-        <li>
-          <strong>Safety first —</strong> every installation meets or exceeds IEC 60364 and local
-          authority requirements.
-        </li>
-        <li>
-          <strong>Quality workmanship —</strong> we don't cut corners; our work is built to outlast
-          the project timeline.
-        </li>
-        <li>
-          <strong>Client partnership —</strong> transparent communication from tender submission to
-          handover documentation.
-        </li>
-        <li>
-          <strong>Sustainability —</strong> we champion energy-efficient design and renewable
-          integration on every project we can.
-        </li>
-      </ul>
-
-      <h2>Certifications &amp; Standards</h2>
-      <p>
-        Multitec Maldives operates in accordance with IEC 60364, BS 7671 (18th Edition), and all
-        applicable regulations set by the Maldives Energy Authority (MEA). Our engineers hold
-        current professional registrations and attend regular CPD to stay ahead of evolving codes.
-      </p>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="bg-base-200 py-16" aria-labelledby="about-cta-heading">
-    <div class="container mx-auto max-w-xl px-4 text-center">
-      <h2 id="about-cta-heading" class="mb-4 text-2xl font-bold">Work With Us</h2>
-      <p class="mb-6 text-base-content/70">
-        Bring us onto your next project and experience the Multitec difference.
-      </p>
-      <a href="/contact" class="btn btn-primary btn-lg">Get in Touch</a>
-    </div>
-  </section>
+  <CtaBanner
+    heading="Work With Us"
+    subtext="Bring us onto your next project and experience the Multitec difference."
+    buttonText="Get in Touch"
+    buttonLink="/contact"
+  />
 </BaseLayout>

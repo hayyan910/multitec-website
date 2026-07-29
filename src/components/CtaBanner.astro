@@ -1,0 +1,27 @@
+---
+interface Props {
+  heading: string;
+  subtext: string;
+  buttonText: string;
+  buttonLink: string;
+}
+
+const { heading, subtext, buttonText, buttonLink } = Astro.props;
+---
+
+<section class="bg-[#E31E24] py-20" aria-labelledby="cta-heading">
+  <div class="container mx-auto max-w-2xl px-4 text-center">
+    <h2 id="cta-heading" class="mb-4 text-3xl font-bold text-white md:text-4xl">
+      {heading}
+    </h2>
+    <p class="mb-8 text-white/85 text-lg">
+      {subtext}
+    </p>
+    <a
+      href={buttonLink}
+      class="inline-block rounded border-2 border-white px-8 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-white hover:text-[#E31E24] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+    >
+      {buttonText}
+    </a>
+  </div>
+</section>

@@ -1,101 +1,73 @@
 ---
-import type { NavLink } from '../types';
+const { pathname } = Astro.url;
 
-const navLinks: NavLink[] = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
+const navLinks = [
+  { href: '/',         label: 'Home' },
+  { href: '/about',    label: 'About' },
   { href: '/services', label: 'Services' },
   { href: '/projects', label: 'Projects' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/contact',  label: 'Contact' },
 ];
-
-const { pathname } = Astro.url;
 ---
 
-<header class="bg-neutral text-neutral-content sticky top-0 z-50 shadow-md">
-  <nav
-    class="container mx-auto flex items-center justify-between px-4 py-3"
-    aria-label="Main navigation"
-  >
-    <a href="/" class="flex items-center gap-1 text-xl font-bold" aria-label="Multitec Maldives — home">
-      <span class="text-primary">Multitec</span>
-      <span>Maldives</span>
+<header class="sticky top-0 z-50 w-full bg-[#1a1a1a]" role="banner">
+  <div class="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+
+    <!-- Logo -->
+    <a href="/" aria-label="Multitec Maldives — go to homepage" class="flex-shrink-0">
+      <img
+        src="/images/company/multitec_logo_white.svg"
+        alt="Multitec Maldives"
+        width="160"
+        height="48"
+        class="h-12 w-auto"
+      />
     </a>
 
-    <!-- Desktop links -->
-    <ul class="hidden md:flex items-center gap-6 list-none" role="list">
-      {navLinks.map(({ href, label }) => (
-        <li>
-          <a
-            href={href}
-            class={[
-              'font-medium transition-colors duration-200 hover:text-primary',
-              pathname === href ? 'text-primary' : '',
-            ].join(' ')}
-            aria-current={pathname === href ? 'page' : undefined}
-          >
-            {label}
-          </a>
-        </li>
-      ))}
-    </ul>
+    <!-- Desktop navigation -->
+    <nav class="hidden items-center gap-8 md:flex" aria-label="Main navigation">
+      <ul class="flex items-center gap-8 list-none" role="list">
+        {navLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class={[
+                'text-sm font-medium transition-colors duration-200',
+                'underline-offset-4 decoration-2 decoration-[#E31E24]',
+                pathname === href
+                  ? 'text-[#E31E24] underline'
+                  : 'text-white/70 hover:text-white hover:underline',
+              ].join(' ')}
+              aria-current={pathname === href ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
 
-    <a href="/contact" class="btn btn-primary btn-sm hidden md:inline-flex">
-      Get in Touch
-    </a>
+      <a href="/contact" class="btn btn-primary btn-sm ml-2 shrink-0">
+        Get in Touch
+      </a>
+    </nav>
 
-    <!-- Mobile toggle -->
-    <button
-      id="mobile-menu-toggle"
-      type="button"
-      class="btn btn-ghost btn-sm md:hidden"
-      aria-controls="mobile-menu"
-      aria-expanded="false"
+    <!-- Mobile hamburger — toggles the DaisyUI drawer defined in BaseLayout -->
+    <label
+      for="mobile-nav-drawer"
+      class="btn btn-ghost btn-sm text-white md:hidden"
       aria-label="Open navigation menu"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
-    </button>
-  </nav>
-
-  <!-- Mobile menu -->
-  <div
-    id="mobile-menu"
-    class="hidden md:hidden border-t border-neutral-content/10"
-    role="navigation"
-    aria-label="Mobile navigation"
-  >
-    <ul class="container mx-auto flex flex-col px-4 py-2 list-none" role="list">
-      {navLinks.map(({ href, label }) => (
-        <li>
-          <a
-            href={href}
-            class={[
-              'block py-3 border-b border-neutral-content/10 font-medium transition-colors hover:text-primary',
-              pathname === href ? 'text-primary' : '',
-            ].join(' ')}
-            aria-current={pathname === href ? 'page' : undefined}
-          >
-            {label}
-          </a>
-        </li>
-      ))}
-      <li class="py-3">
-        <a href="/contact" class="btn btn-primary btn-sm w-full">Get in Touch</a>
-      </li>
-    </ul>
+    </label>
   </div>
 </header>
-
-<script>
-  const toggle = document.getElementById('mobile-menu-toggle');
-  const menu = document.getElementById('mobile-menu');
-
-  toggle?.addEventListener('click', () => {
-    const isOpen = !menu?.classList.contains('hidden');
-    menu?.classList.toggle('hidden', isOpen);
-    toggle.setAttribute('aria-expanded', String(!isOpen));
-    toggle.setAttribute('aria-label', isOpen ? 'Open navigation menu' : 'Close navigation menu');
-  });
-</script>
