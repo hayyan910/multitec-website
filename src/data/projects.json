@@ -1,0 +1,72 @@
+[
+  {
+    "slug": "hulhumale-phase2-residential-fitout",
+    "title": "Hulhumalé Phase II Residential Tower Fitout",
+    "description": "Full electrical installation for a 12-storey residential tower in Hulhumalé Phase II, including main LV distribution panel, apartment sub-boards, common area lighting, and earthing systems.",
+    "category": "Panel Board Supply & Installation",
+    "client": "Housing Development Corporation",
+    "location": "Hulhumalé, North Malé Atoll",
+    "year": 2024,
+    "completionDate": "2024-03",
+    "coverImage": "/images/projects/hulhumale-residential.jpg",
+    "featured": true
+  },
+  {
+    "slug": "resort-lightning-surge-protection",
+    "title": "Island Resort Lightning & Surge Protection",
+    "description": "Design and installation of a comprehensive lightning protection and surge suppression system across all water villas, main reception, and back-of-house facilities for a luxury island resort.",
+    "category": "Lightning & Surge Protection",
+    "client": "Confidential — Luxury Resort",
+    "location": "North Malé Atoll, Republic of Maldives",
+    "year": 2023,
+    "completionDate": "2023-11",
+    "coverImage": "/images/projects/resort-lightning-protection.jpg",
+    "featured": true
+  },
+  {
+    "slug": "male-commercial-cctv-access-control",
+    "title": "Malé Commercial Complex CCTV & Access Control",
+    "description": "Supply and installation of a 64-camera IP CCTV surveillance system and biometric access control for a multi-storey commercial office complex in central Malé.",
+    "category": "CCTV & Surveillance Systems",
+    "client": "Confidential — Commercial Client",
+    "location": "Malé, Republic of Maldives",
+    "year": 2024,
+    "completionDate": "2024-06",
+    "coverImage": "/images/projects/male-commercial-cctv.jpg",
+    "featured": true
+  },
+  {
+    "slug": "lhdh-hospital-electrical-upgrade",
+    "title": "LHDH Hospital Electrical Systems Upgrade",
+    "description": "Complete overhaul of main distribution boards, emergency power systems, and lighting for Laamu Atoll Regional Hospital.",
+    "category": "Panel Board Supply & Installation",
+    "client": "Ministry of Health",
+    "location": "Fonadhoo, Laamu Atoll",
+    "year": 2023,
+    "completionDate": "2023-08",
+    "coverImage": "/images/projects/lhdh-hospital.jpg",
+    "featured": false
+  },
+  {
+    "slug": "male-commercial-complex-fitout",
+    "title": "Malé Commercial Complex Electrical Fitout",
+    "description": "Full MEP electrical fitout for a 12-storey mixed-use commercial building in central Malé.",
+    "category": "Electrical Wiring & Installation",
+    "location": "Malé, Republic of Maldives",
+    "year": 2022,
+    "completionDate": "2022-05",
+    "coverImage": "/images/projects/male-commercial.jpg",
+    "featured": false
+  },
+  {
+    "slug": "resort-solar-pv-integration",
+    "title": "Resort Solar PV Integration",
+    "description": "Design and installation of a 500 kWp grid-tied solar photovoltaic system at a luxury island resort.",
+    "category": "Electrical Wiring & Installation",
+    "location": "South Malé Atoll, Republic of Maldives",
+    "year": 2023,
+    "completionDate": "2023-04",
+    "coverImage": "/images/projects/resort-solar.jpg",
+    "featured": false
+  }
+]

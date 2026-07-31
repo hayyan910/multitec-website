@@ -1,0 +1,38 @@
+[
+  {
+    "id": "panel-board-supply-installation",
+    "title": "Panel Board Supply & Installation",
+    "shortDescription": "Supply, fabrication, and installation of low voltage distribution panels, MCCBs, and switchgear for commercial and industrial projects.",
+    "icon": "bolt"
+  },
+  {
+    "id": "lightning-surge-protection",
+    "title": "Lightning & Surge Protection",
+    "shortDescription": "Design and installation of lightning protection and surge suppression systems to safeguard structures and equipment.",
+    "icon": "cloud-storm"
+  },
+  {
+    "id": "cctv-surveillance",
+    "title": "CCTV & Surveillance Systems",
+    "shortDescription": "Supply and installation of IP and analogue CCTV surveillance systems for resorts, commercial buildings, and residences.",
+    "icon": "camera"
+  },
+  {
+    "id": "access-control",
+    "title": "Access Control Systems",
+    "shortDescription": "Installation of biometric, card-based, and smart access control solutions for secure entry management.",
+    "icon": "shield-lock"
+  },
+  {
+    "id": "electrical-wiring",
+    "title": "Electrical Wiring & Installation",
+    "shortDescription": "Complete electrical wiring for new builds, fit-outs, and renovations — residential, commercial, and resort projects.",
+    "icon": "plug"
+  },
+  {
+    "id": "electrical-maintenance",
+    "title": "Electrical Maintenance & Support",
+    "shortDescription": "Scheduled and emergency maintenance services to keep your electrical systems operating safely and efficiently.",
+    "icon": "tool"
+  }
+]

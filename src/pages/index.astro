@@ -1,26 +1,258 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CtaBanner from '../components/CtaBanner.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import type { Service, Project } from '../types';
+import servicesData from '../data/services.json';
+import projectsData from '../data/projects.json';
+
+const services = servicesData as Service[];
+const allProjects = projectsData as unknown as Project[];
+const featuredProjects = allProjects.filter((p) => p.featured);
+
+const stats = [
+  { number: '23+', label: 'Years of Experience' },
+  { number: '100+', label: 'Panels Supplied & Installed' },
+  { number: '200+', label: 'Projects Completed' },
+  { number: '50+', label: 'Clients Served' },
+];
+
+const whyUs = [
+  {
+    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/>`,
+    title: '23 Years of Field-Proven Expertise',
+    description:
+      'Operating since 2003, our engineers bring decades of hands-on experience across the full spectrum of electrical systems in the Maldives.',
+  },
+  {
+    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/>`,
+    title: 'Island-Wide Coverage',
+    description:
+      'From Malé to remote atolls, we mobilise to every corner of the Republic — resorts, hospitals, commercial buildings, and residential projects.',
+  },
+  {
+    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 13l4 4l10 -10"/>`,
+    title: 'End-to-End Project Delivery',
+    description:
+      'We handle design, supply, installation, testing, and ongoing maintenance — a single point of accountability from kickoff to commissioning.',
+  },
+  {
+    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/><circle cx="12" cy="11" r="1" fill="currentColor" stroke="none"/><path d="M12 12l0 2.5"/>`,
+    title: 'Licensed & Safety-Certified',
+    description:
+      'All works comply with Maldivian electrical regulations and IEC standards, with full documentation and handover packages for every project.',
+  },
+];
 ---
 
 <BaseLayout
   title="Home"
-  description="Multitec Maldives Pvt. Ltd. — professional electrical engineering services across the Maldives. Installations, design, solar PV, maintenance and more."
+  description="Multitec Maldives Pvt. Ltd. — trusted electrical engineering experts since 2003. Panel boards, lightning protection, CCTV, access control, wiring, and maintenance across the Maldives."
 >
-  <section class="flex min-h-[70vh] items-center justify-center px-4">
-    <div class="text-center">
-      <h1 class="text-4xl font-bold text-[#1a1a1a] md:text-6xl">
-        Electrical Engineering<br />
-        <span class="text-[#E31E24]">Excellence</span>
+
+  <!-- ── SECTION 1: HERO ── -->
+  <section class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1a1a1a]">
+    <!-- Background image (shows when hero-bg.jpg is added to public/images/company/) -->
+    <Image
+      src="/images/company/hero-bg.jpg"
+      alt=""
+      width={1920}
+      height={1080}
+      class="absolute inset-0 h-full w-full object-cover"
+      loading="eager"
+    />
+    <!-- Dark overlay -->
+    <div class="absolute inset-0 bg-black/65"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 mx-auto max-w-4xl px-6 py-32 text-center">
+      <span
+        class="mb-5 inline-block rounded-full border border-[#E31E24]/40 bg-[#E31E24]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#E31E24]"
+      >
+        Trusted Electrical Engineering — Since 2003
+      </span>
+
+      <h1 class="mb-6 text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl">
+        Powering the Maldives with<br class="hidden sm:block" />
+        <span class="text-[#E31E24]"> Precision &amp; Expertise</span>
       </h1>
-      <p class="mt-6 text-lg text-[#4a4a4a]">Home page — full design coming soon.</p>
+
+      <p class="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/75 md:text-xl">
+        From panel board supply to island-wide CCTV and lightning protection — Multitec
+        delivers end-to-end electrical solutions that keep homes, resorts, and infrastructure
+        running safely.
+      </p>
+
+      <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a href="/projects" class="btn btn-primary btn-lg min-w-44 shadow-lg">
+          View Our Projects
+        </a>
+        <a
+          href="/contact"
+          class="btn btn-outline btn-lg min-w-44 border-white text-white hover:border-white hover:bg-white hover:text-[#1a1a1a]"
+        >
+          Get in Touch
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1.5" aria-hidden="true">
+      <span class="text-[10px] font-medium uppercase tracking-[0.2em] text-white/35">Scroll</span>
+      <div class="scroll-bounce text-white/35">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M6 9l6 6l6 -6" />
+        </svg>
+      </div>
     </div>
   </section>
 
+  <!-- ── SECTION 2: STATS BAR ── -->
+  <section class="bg-[#1a1a1a] py-14" aria-label="Company statistics">
+    <div class="mx-auto max-w-5xl px-6">
+      <dl class="grid grid-cols-2 gap-y-10 md:grid-cols-4">
+        {stats.map((stat, i) => (
+          <div
+            class={[
+              'flex flex-col items-center text-center',
+              i < stats.length - 1 ? 'md:border-r md:border-white/10' : '',
+            ].join(' ')}
+          >
+            <dt class="text-4xl font-bold tracking-tight text-[#E31E24] md:text-5xl">
+              {stat.number}
+            </dt>
+            <dd class="mt-2 text-sm font-medium text-white/60">{stat.label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- ── SECTION 3: SERVICES ── -->
+  <section class="bg-white py-20 md:py-28" aria-labelledby="services-heading">
+    <div class="mx-auto max-w-6xl px-6">
+      <header class="mb-14 text-center" data-animate>
+        <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-[#E31E24]">
+          What We Do
+        </p>
+        <h2 id="services-heading" class="text-3xl font-bold text-[#1a1a1a] md:text-4xl">
+          Our Services
+        </h2>
+        <p class="mx-auto mt-4 max-w-xl text-base text-[#4a4a4a]">
+          Comprehensive electrical engineering solutions — delivered with the precision and
+          reliability the Maldives demands.
+        </p>
+      </header>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {services.map((service) => (
+          <ServiceCard service={service} />
+        ))}
+      </div>
+
+      <div class="mt-12 text-center" data-animate>
+        <a
+          href="/services"
+          class="btn btn-outline border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
+        >
+          View All Services
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION 4: FEATURED PROJECTS ── -->
+  <section class="bg-[#FAFAFA] py-20 md:py-28" aria-labelledby="projects-heading">
+    <div class="mx-auto max-w-6xl px-6">
+      <header class="mb-14 text-center" data-animate>
+        <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-[#E31E24]">
+          Our Work
+        </p>
+        <h2 id="projects-heading" class="text-3xl font-bold text-[#1a1a1a] md:text-4xl">
+          Featured Projects
+        </h2>
+        <p class="mx-auto mt-4 max-w-xl text-base text-[#4a4a4a]">
+          A selection of projects that demonstrate our capability across the Maldives.
+        </p>
+      </header>
+
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {featuredProjects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
+
+      <div class="mt-12 text-center" data-animate>
+        <a
+          href="/projects"
+          class="btn btn-outline border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
+        >
+          View All Projects
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION 5: WHY CHOOSE US ── -->
+  <section class="bg-[#F5F5F5] py-20 md:py-28" aria-labelledby="why-heading">
+    <div class="mx-auto max-w-6xl px-6">
+      <header class="mb-14 text-center" data-animate>
+        <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-[#E31E24]">
+          Why Multitec
+        </p>
+        <h2 id="why-heading" class="text-3xl font-bold text-[#1a1a1a] md:text-4xl">
+          Why Choose Us?
+        </h2>
+        <p class="mx-auto mt-4 max-w-xl text-base text-[#4a4a4a]">
+          We've built our reputation on technical excellence, reliability, and a deep
+          understanding of what it takes to deliver in island conditions.
+        </p>
+      </header>
+
+      <div class="grid gap-8 sm:grid-cols-2">
+        {whyUs.map((point) => (
+          <div class="flex gap-5" data-animate>
+            <div class="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E31E24] text-white shadow-sm">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                set:html={point.icon}
+              />
+            </div>
+            <div>
+              <h3 class="text-base font-semibold text-[#1a1a1a]">{point.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-[#4a4a4a]">{point.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION 6: CTA BANNER ── -->
   <CtaBanner
     heading="Ready to Start Your Project?"
-    subtext="Get in touch with our team for a no-obligation consultation."
-    buttonText="Contact Us"
+    subtext="Talk to our engineers about your electrical requirements — whether it's a single installation or a large-scale fitout."
+    buttonText="Get in Touch"
     buttonLink="/contact"
   />
+
 </BaseLayout>

@@ -4,15 +4,19 @@ export interface Project {
   description: string;
   category: string;
   client?: string;
+  location?: string;
   year: number;
+  completionDate?: string;
   coverImage?: string;
   featured: boolean;
   body?: string;
 }
 
 export interface Service {
+  id: string;
   title: string;
-  description: string;
+  shortDescription: string;
+  icon: string;
 }
 
 export interface NavLink {

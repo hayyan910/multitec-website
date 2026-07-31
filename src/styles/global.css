@@ -57,3 +57,38 @@
   --depth:           1;
   --noise:           0;
 }
+
+/* ── Scroll-driven fade-in animations ── */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    translate: 0 1.75rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-animate] {
+      opacity: 0;
+      animation: fade-in-up 0.55s ease-out forwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 28%;
+    }
+  }
+}
+
+/* ── Hero scroll indicator bounce ── */
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0);    }
+  50%       { transform: translateY(8px); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-bounce {
+    animation: scroll-bounce 1.6s ease-in-out infinite;
+  }
+}
