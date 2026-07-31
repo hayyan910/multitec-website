@@ -58,26 +58,17 @@
   --noise:           0;
 }
 
-/* ── Scroll-driven fade-in animations ── */
-@keyframes fade-in-up {
-  from {
+/* ── Scroll fade-in — .in-view class added by IntersectionObserver in BaseLayout ── */
+@media (prefers-reduced-motion: no-preference) {
+  [data-animate] {
     opacity: 0;
-    translate: 0 1.75rem;
+    translate: 0 1.5rem;
+    transition: opacity 0.55s ease-out, translate 0.55s ease-out;
   }
-  to {
+
+  [data-animate].in-view {
     opacity: 1;
     translate: 0 0;
-  }
-}
-
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    [data-animate] {
-      opacity: 0;
-      animation: fade-in-up 0.55s ease-out forwards;
-      animation-timeline: view();
-      animation-range: entry 0% entry 28%;
-    }
   }
 }
 

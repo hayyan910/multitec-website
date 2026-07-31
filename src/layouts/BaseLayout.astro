@@ -149,5 +149,28 @@ const navLinks = [
         </nav>
       </div>
     </div>
+    <script>
+      function observeAnimations() {
+        const els = document.querySelectorAll<HTMLElement>('[data-animate]:not(.in-view)');
+        if (!els.length) return;
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+        );
+
+        els.forEach((el) => observer.observe(el));
+      }
+
+      observeAnimations();
+      document.addEventListener('astro:page-load', observeAnimations);
+    </script>
   </body>
 </html>
