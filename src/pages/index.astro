@@ -4,6 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CtaBanner from '../components/CtaBanner.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import StatsBar from '../components/StatsBar.astro';
 import type { Service, Project } from '../types';
 import servicesData from '../data/services.json';
 import projectsData from '../data/projects.json';
@@ -11,13 +12,6 @@ import projectsData from '../data/projects.json';
 const services = servicesData as Service[];
 const allProjects = projectsData as unknown as Project[];
 const featuredProjects = allProjects.filter((p) => p.featured);
-
-const stats = [
-  { number: '23+', label: 'Years of Experience' },
-  { number: '100+', label: 'Panels Supplied & Installed' },
-  { number: '200+', label: 'Projects Completed' },
-  { number: '50+', label: 'Clients Served' },
-];
 
 const whyUs = [
   {
@@ -119,25 +113,7 @@ const whyUs = [
   </section>
 
   <!-- ── SECTION 2: STATS BAR ── -->
-  <section class="bg-[#1a1a1a] py-14" aria-label="Company statistics">
-    <div class="mx-auto max-w-5xl px-6">
-      <dl class="grid grid-cols-2 gap-y-10 md:grid-cols-4">
-        {stats.map((stat, i) => (
-          <div
-            class={[
-              'flex flex-col items-center text-center',
-              i < stats.length - 1 ? 'md:border-r md:border-white/10' : '',
-            ].join(' ')}
-          >
-            <dt class="text-4xl font-bold tracking-tight text-[#E31E24] md:text-5xl">
-              {stat.number}
-            </dt>
-            <dd class="mt-2 text-sm font-medium text-white/60">{stat.label}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
-  </section>
+  <StatsBar />
 
   <!-- ── SECTION 3: SERVICES ── -->
   <section class="bg-white py-20 md:py-28" aria-labelledby="services-heading">

@@ -3,36 +3,42 @@
     "id": "panel-board-supply-installation",
     "title": "Panel Board Supply & Installation",
     "shortDescription": "Supply, fabrication, and installation of low voltage distribution panels, MCCBs, and switchgear for commercial and industrial projects.",
+    "fullDescription": "We handle the full lifecycle of low voltage distribution systems — from design and fabrication to installation, testing, and URA approval documentation. Our panel boards are built to specification and comply with IEC 61439 standards. We have supplied and installed panels for residential towers, resort power rooms, commercial buildings, and government facilities across the Maldives.",
     "icon": "bolt"
   },
   {
     "id": "lightning-surge-protection",
     "title": "Lightning & Surge Protection",
     "shortDescription": "Design and installation of lightning protection and surge suppression systems to safeguard structures and equipment.",
+    "fullDescription": "Our lightning and surge protection systems are designed in accordance with IEC 62305 standards. We conduct site surveys, prepare engineering drawings for URA approval, install earth electrodes and air termination systems, and carry out continuity testing and commissioning. Suitable for resorts, high-rise buildings, and critical infrastructure.",
     "icon": "cloud-storm"
   },
   {
     "id": "cctv-surveillance",
     "title": "CCTV & Surveillance Systems",
     "shortDescription": "Supply and installation of IP and analogue CCTV surveillance systems for resorts, commercial buildings, and residences.",
+    "fullDescription": "We supply and install IP-based and analogue CCTV surveillance systems tailored to the client's security requirements. Systems include camera placement planning, cable routing, NVR/DVR setup, remote viewing configuration, and user training. Brands supplied include industry-leading manufacturers with full warranty support.",
     "icon": "camera"
   },
   {
     "id": "access-control",
     "title": "Access Control Systems",
     "shortDescription": "Installation of biometric, card-based, and smart access control solutions for secure entry management.",
+    "fullDescription": "Our access control installations include biometric readers, proximity card systems, electric locks, and integrated intercom solutions. We design the system layout, handle all cabling and hardware installation, configure the software, and provide staff training and ongoing support.",
     "icon": "shield-lock"
   },
   {
     "id": "electrical-wiring",
     "title": "Electrical Wiring & Installation",
     "shortDescription": "Complete electrical wiring for new builds, fit-outs, and renovations — residential, commercial, and resort projects.",
+    "fullDescription": "From conduit layout planning to final circuit testing, we handle complete electrical wiring installations for new builds, renovations, and fit-outs. All wiring work is carried out by qualified electricians and inspected before handover. Suitable for villas, apartments, offices, resorts, and commercial spaces.",
     "icon": "plug"
   },
   {
     "id": "electrical-maintenance",
     "title": "Electrical Maintenance & Support",
     "shortDescription": "Scheduled and emergency maintenance services to keep your electrical systems operating safely and efficiently.",
+    "fullDescription": "We offer both scheduled preventive maintenance contracts and emergency call-out services. Our maintenance programmes cover inspection of distribution boards, testing of RCDs and circuit breakers, thermographic scanning, cable integrity checks, and full compliance reporting.",
     "icon": "tool"
   }
 ]
