@@ -2,10 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import CtaBanner from '../components/CtaBanner.astro';
-import type { Service } from '../types';
-import servicesData from '../data/services.json';
+import { getServices } from '../utils/sanity';
 
-const services = servicesData as Service[];
+const services = await getServices();
 
 const icons: Record<string, string> = {
   bolt: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 3l-4 9h6l-4 9" />`,

@@ -2,7 +2,7 @@ export interface Project {
   slug: string;
   title: string;
   description: string;
-  category: string;
+  category: string[];
   client?: string;
   location?: string;
   year: number;

@@ -1,83 +1,120 @@
 ---
-import type { GetStaticPaths } from 'astro';
+import { sanityClient } from 'sanity:client';
+import { defineQuery } from 'groq';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { projects } from '../../data/projects';
 import type { Project } from '../../types';
 
-export const getStaticPaths = (async () => {
-  return projects.map((project) => ({
-    params: { slug: project.slug },
-    props: { project },
-  }));
-}) satisfies GetStaticPaths;
+const PROJECT_QUERY = defineQuery(
+  `*[_type == "project" && slug.current == $slug][0] {
+    _id, title, "slug": slug.current, description, category,
+    client, location, year, completionDate,
+    "coverImage": coverImage.asset->url, featured, body
+  }`
+);
 
-interface Props {
-  project: Project;
+export async function getStaticPaths() {
+  const SLUGS_QUERY = defineQuery(
+    `*[_type == "project" && defined(slug.current)] { "params": { "slug": slug.current } }`
+  );
+  return await sanityClient.fetch(SLUGS_QUERY);
 }
 
-const { project } = Astro.props;
+const { slug } = Astro.params;
+const project = await sanityClient.fetch(PROJECT_QUERY, { slug }) as Project | null;
+const categories = Array.isArray(project?.category)
+  ? project.category
+  : project?.category
+    ? [project.category]
+    : [];
 ---
 
-<BaseLayout title={project.title} description={project.description}>
-  <article>
-    <!-- Project header -->
-    <header class="bg-neutral py-20 text-neutral-content">
-      <div class="container mx-auto max-w-3xl px-4">
-        <a
-          href="/projects"
-          class="mb-6 inline-block text-sm text-neutral-content/50 transition-colors hover:text-primary"
-        >
-          &larr; All Projects
-        </a>
-        <span class="badge badge-primary mb-4 block w-fit">{project.category}</span>
-        <h1 class="mb-4 text-3xl font-bold md:text-4xl">{project.title}</h1>
-        <p class="text-lg text-neutral-content/70">{project.description}</p>
+<BaseLayout title={project?.title ?? 'Project'} description={project?.description ?? ''}>
+  {project ? (
+    <article>
+      <!-- Project header -->
+      <header class="bg-[#1a1a1a] py-20 text-white">
+        <div class="mx-auto max-w-3xl px-6">
+          <a
+            href="/projects"
+            class="mb-6 inline-block text-sm text-white/50 transition-colors hover:text-[#E31E24]"
+          >
+            &larr; All Projects
+          </a>
+          <div class="mb-4 flex flex-wrap gap-2">
+            {categories.map((cat) => (
+              <span class="rounded-full bg-[#E31E24]/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#E31E24]">
+                {cat}
+              </span>
+            ))}
+          </div>
+          <h1 class="mb-4 text-3xl font-bold md:text-4xl">{project.title}</h1>
+          <p class="text-lg text-white/70">{project.description}</p>
 
-        <dl class="mt-8 flex flex-wrap gap-8">
-          {
-            project.client && (
+          <dl class="mt-8 flex flex-wrap gap-8">
+            {project.client && (
               <div>
-                <dt class="mb-1 text-xs uppercase tracking-wider text-neutral-content/50">
-                  Client
-                </dt>
+                <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Client</dt>
                 <dd class="font-medium">{project.client}</dd>
               </div>
-            )
-          }
-          <div>
-            <dt class="mb-1 text-xs uppercase tracking-wider text-neutral-content/50">Year</dt>
-            <dd class="font-medium">{project.year}</dd>
-          </div>
-          <div>
-            <dt class="mb-1 text-xs uppercase tracking-wider text-neutral-content/50">Sector</dt>
-            <dd class="font-medium">{project.category}</dd>
-          </div>
-        </dl>
-      </div>
-    </header>
+            )}
+            {project.year && (
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Year</dt>
+                <dd class="font-medium">{project.year}</dd>
+              </div>
+            )}
+            {project.location && (
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Location</dt>
+                <dd class="font-medium">{project.location}</dd>
+              </div>
+            )}
+            {categories.length > 0 && (
+              <div>
+                <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Sector</dt>
+                <dd class="font-medium">{categories.join(' · ')}</dd>
+              </div>
+            )}
+          </dl>
+        </div>
+      </header>
 
-    <!-- Project body -->
-    <section class="py-16" aria-labelledby="project-detail-heading">
-      <div class="container mx-auto max-w-3xl px-4">
-        <h2 id="project-detail-heading" class="sr-only">Project details</h2>
-        {
-          project.body ? (
+      <!-- Cover image -->
+      {project.coverImage && (
+        <div
+          class="h-72 w-full bg-cover bg-center md:h-96"
+          style={`background-image: url('${project.coverImage}')`}
+          role="img"
+          aria-label={`${project.title} project photo`}
+        />
+      )}
+
+      <!-- Project body -->
+      <section class="py-16" aria-labelledby="project-detail-heading">
+        <div class="mx-auto max-w-3xl px-6">
+          <h2 id="project-detail-heading" class="sr-only">Project details</h2>
+          {project.body ? (
             <div class="prose prose-base" set:html={project.body} />
           ) : (
-            <p class="py-10 text-center text-base-content/50">
-              Full project details coming soon.
-            </p>
-          )
-        }
+            <p class="py-10 text-center text-[#4a4a4a]/50">Full project details coming soon.</p>
+          )}
+        </div>
+      </section>
+
+      <!-- Navigation -->
+      <nav class="border-t border-base-200 py-10" aria-label="Project navigation">
+        <div class="mx-auto max-w-3xl px-6 flex justify-between">
+          <a href="/projects" class="btn btn-outline btn-sm">&larr; All Projects</a>
+          <a href="/contact" class="btn btn-primary btn-sm">Discuss a Similar Project</a>
+        </div>
+      </nav>
+    </article>
+  ) : (
+    <section class="flex min-h-[70vh] items-center justify-center px-4">
+      <div class="text-center">
+        <h1 class="text-4xl font-bold text-[#1a1a1a]">Project Not Found</h1>
+        <p class="mt-4 text-[#4a4a4a]"><a href="/projects" class="text-[#E31E24] hover:underline">Back to all projects</a></p>
       </div>
     </section>
-
-    <!-- Back / next actions -->
-    <nav class="border-t border-base-300 py-10" aria-label="Project navigation">
-      <div class="container mx-auto max-w-3xl px-4 flex justify-between">
-        <a href="/projects" class="btn btn-outline btn-primary btn-sm">&larr; All Projects</a>
-        <a href="/contact" class="btn btn-primary btn-sm">Discuss a Similar Project</a>
-      </div>
-    </nav>
-  </article>
+  )}
 </BaseLayout>

@@ -5,13 +5,10 @@ import CtaBanner from '../components/CtaBanner.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import StatsBar from '../components/StatsBar.astro';
-import type { Service, Project } from '../types';
-import servicesData from '../data/services.json';
-import projectsData from '../data/projects.json';
+import { getFeaturedProjects, getServices } from '../utils/sanity';
 
-const services = servicesData as Service[];
-const allProjects = projectsData as unknown as Project[];
-const featuredProjects = allProjects.filter((p) => p.featured);
+const services = await getServices();
+const featuredProjects = await getFeaturedProjects();
 
 const whyUs = [
   {
@@ -156,10 +153,10 @@ const whyUs = [
           Our Work
         </p>
         <h2 id="projects-heading" class="text-3xl font-bold text-[#1a1a1a] md:text-4xl">
-          Featured Projects
+          Project Highlights
         </h2>
         <p class="mx-auto mt-4 max-w-xl text-base text-[#4a4a4a]">
-          A selection of projects that demonstrate our capability across the Maldives.
+          A snapshot of our work across the Maldives.
         </p>
       </header>
 

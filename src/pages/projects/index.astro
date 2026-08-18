@@ -1,15 +1,46 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import CtaBanner from '../../components/CtaBanner.astro';
+import { getProjects } from '../../utils/sanity';
+
+const projects = await getProjects();
 ---
 
 <BaseLayout
   title="Projects"
-  description="Browse completed electrical engineering projects by Multitec Maldives — healthcare, hospitality, commercial, and renewable energy sectors across the Maldives."
+  description="Browse completed electrical engineering projects by Multitec Maldives — panel boards, lightning protection, CCTV, access control, and electrical fitouts across the Maldives."
 >
-  <section class="flex min-h-[70vh] items-center justify-center px-4">
-    <div class="text-center">
-      <h1 class="text-4xl font-bold text-[#1a1a1a] md:text-5xl">Our Projects</h1>
-      <p class="mt-6 text-lg text-[#4a4a4a]">Projects listing — full design coming soon.</p>
+
+  <!-- ── PAGE HERO ── -->
+  <PageHero
+    title="Project Highlights"
+    subtitle="A selection from our extensive portfolio of completed projects across the Republic of Maldives"
+    breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Projects' }]}
+  />
+
+  <!-- ── PROJECTS GRID ── -->
+  <section class="bg-white py-16 md:py-20" aria-label="Projects grid">
+    <div class="mx-auto max-w-6xl px-6">
+      {projects.length > 0 ? (
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project) => (
+            <ProjectCard project={project} />
+          ))}
+        </div>
+      ) : (
+        <p class="py-20 text-center text-[#4a4a4a]/50">Projects coming soon.</p>
+      )}
     </div>
   </section>
+
+  <!-- ── CTA BANNER ── -->
+  <CtaBanner
+    heading="Have a Project in Mind?"
+    subtext="Tell us about your requirements and we'll put together a tailored solution for you."
+    buttonText="Request a Quote"
+    buttonLink="/contact"
+  />
+
 </BaseLayout>
