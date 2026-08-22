@@ -58,8 +58,10 @@ const navLinks = [
     <meta name="twitter:image"       content={new URL(ogImage, Astro.site ?? Astro.url)} />
 
     <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
     <!-- Inter from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -115,7 +117,7 @@ const navLinks = [
           <!-- Logo -->
           <a href="/" class="mb-10 block">
             <img
-              src="/images/company/multitec_logo_white.svg"
+              src="/images/company/multitec-logo-white.svg"
               alt="Multitec Maldives"
               width="160"
               height="48"
