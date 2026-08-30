@@ -11,7 +11,7 @@ const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET } = loadEnv(
 );
 
 export default defineConfig({
-  site: 'https://multitec-website.pages.dev',
+  site: 'https://multitec.com.mv',
   integrations: [
     sanity({
       projectId: PUBLIC_SANITY_PROJECT_ID,
