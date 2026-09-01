@@ -8,7 +8,9 @@ const PROJECT_QUERY = defineQuery(
   `*[_type == "project" && slug.current == $slug][0] {
     _id, title, "slug": slug.current, description, category,
     client, location, year, completionDate,
-    "coverImage": coverImage.asset->url, featured, body
+    "coverImage": coverImage.asset->url,
+    "images": images[].asset->url,
+    featured, body
   }`
 );
 
@@ -31,62 +33,83 @@ const categories = Array.isArray(project?.category)
 <BaseLayout title={project?.title ?? 'Project'} description={project?.description ?? ''}>
   {project ? (
     <article>
-      <!-- Project header -->
-      <header class="bg-[#1a1a1a] py-20 text-white">
-        <div class="mx-auto max-w-3xl px-6">
-          <a
-            href="/projects"
-            class="mb-6 inline-block text-sm text-white/50 transition-colors hover:text-[#E31E24]"
-          >
-            &larr; All Projects
-          </a>
-          <div class="mb-4 flex flex-wrap gap-2">
-            {categories.map((cat) => (
-              <span class="rounded-full bg-[#E31E24]/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#E31E24]">
-                {cat}
-              </span>
-            ))}
-          </div>
-          <h1 class="mb-4 text-3xl font-bold md:text-4xl">{project.title}</h1>
-          <p class="text-lg text-white/70">{project.description}</p>
+      <!-- Project header — two column on large screens -->
+      <header class="bg-[#1a1a1a] text-white">
+        <div class="mx-auto max-w-6xl px-6 py-16 lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
+          <!-- Left: details -->
+          <div class="py-4">
+            <a
+              href="/projects"
+              class="mb-6 inline-block text-sm text-white/50 transition-colors hover:text-[#E31E24]"
+            >
+              &larr; All Projects
+            </a>
+            <div class="mb-4 flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <span class="rounded-full bg-[#E31E24]/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#E31E24]">
+                  {cat}
+                </span>
+              ))}
+            </div>
+            <h1 class="mb-4 text-3xl font-bold md:text-4xl">{project.title}</h1>
+            <p class="text-lg text-white/70">{project.description}</p>
 
-          <dl class="mt-8 flex flex-wrap gap-8">
-            {project.client && (
-              <div>
-                <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Client</dt>
-                <dd class="font-medium">{project.client}</dd>
-              </div>
-            )}
-            {project.year && (
-              <div>
-                <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Year</dt>
-                <dd class="font-medium">{project.year}</dd>
-              </div>
-            )}
-            {project.location && (
-              <div>
-                <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Location</dt>
-                <dd class="font-medium">{project.location}</dd>
-              </div>
-            )}
-            {categories.length > 0 && (
-              <div>
-                <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Sector</dt>
-                <dd class="font-medium">{categories.join(' · ')}</dd>
-              </div>
-            )}
-          </dl>
+            <dl class="mt-8 flex flex-wrap gap-8">
+              {project.client && (
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Client</dt>
+                  <dd class="font-medium">{project.client}</dd>
+                </div>
+              )}
+              {project.year && (
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Year</dt>
+                  <dd class="font-medium">{project.year}</dd>
+                </div>
+              )}
+              {project.location && (
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Location</dt>
+                  <dd class="font-medium">{project.location}</dd>
+                </div>
+              )}
+              {categories.length > 0 && (
+                <div>
+                  <dt class="mb-1 text-xs uppercase tracking-wider text-white/50">Sector</dt>
+                  <dd class="font-medium">{categories.join(' · ')}</dd>
+                </div>
+              )}
+            </dl>
+          </div>
+
+          <!-- Right: cover image -->
+          {project.coverImage && (
+            <div class="mt-10 lg:mt-0">
+              <img
+                src={project.coverImage}
+                alt={`${project.title} project photo`}
+                class="w-full rounded-xl object-cover shadow-lg aspect-[4/3]"
+              />
+            </div>
+          )}
         </div>
       </header>
 
-      <!-- Cover image -->
-      {project.coverImage && (
-        <div
-          class="h-72 w-full bg-cover bg-center md:h-96"
-          style={`background-image: url('${project.coverImage}')`}
-          role="img"
-          aria-label={`${project.title} project photo`}
-        />
+      <!-- Gallery -->
+      {project.images && project.images.length > 0 && (
+        <section class="bg-[#F5F5F5] py-14" aria-label="Project gallery">
+          <div class="mx-auto max-w-6xl px-6">
+            <div class={`grid gap-4 ${project.images.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : project.images.length === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-3'}`}>
+              {project.images.map((img) => (
+                <img
+                  src={img}
+                  alt={`${project.title} photo`}
+                  class="w-full rounded-lg object-cover aspect-[4/3] shadow-sm"
+                />
+              ))}
+            </div>
+          </div>
+        </section>
       )}
 
       <!-- Project body -->
@@ -103,7 +126,7 @@ const categories = Array.isArray(project?.category)
 
       <!-- Navigation -->
       <nav class="border-t border-base-200 py-10" aria-label="Project navigation">
-        <div class="mx-auto max-w-3xl px-6 flex justify-between">
+        <div class="mx-auto max-w-6xl px-6 flex justify-between">
           <a href="/projects" class="btn btn-outline btn-sm">&larr; All Projects</a>
           <a href="/contact" class="btn btn-primary btn-sm">Discuss a Similar Project</a>
         </div>

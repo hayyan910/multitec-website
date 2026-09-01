@@ -8,6 +8,7 @@ export interface Project {
   year: number;
   completionDate?: string;
   coverImage?: string;
+  images?: { url: string; alt?: string }[];
   featured: boolean;
   body?: string;
 }
