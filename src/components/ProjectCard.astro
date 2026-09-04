@@ -19,9 +19,9 @@ function formatDate(dateStr: string): string {
 }
 ---
 
-<article class="group relative overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-md" data-animate>
+<article class="group relative rounded-2xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-md" data-animate>
   <a href={`/projects/${project.slug}`} class="block" tabindex="-1" aria-hidden="true">
-    <div class="relative aspect-video overflow-hidden bg-base-200">
+    <div class="relative aspect-video overflow-hidden rounded-t-2xl bg-base-200">
       <!-- Cover image — degrades to bg-base-200 when file is absent -->
       <div
         class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
@@ -32,8 +32,8 @@ function formatDate(dateStr: string): string {
     </div>
   </a>
 
-  <!-- Category badges — outside the overflow-hidden image div so the tooltip isn't clipped -->
-  <div class="absolute left-3 top-3 z-10 flex items-start gap-1.5">
+  <!-- Category badges — on article (not inside overflow-hidden image) so tooltip is never clipped -->
+  <div class="absolute left-3 top-3 z-10 flex flex-col items-start gap-1.5">
     {categories.length > 0 && (
       <span class="rounded-full bg-[#E31E24] px-3 py-1 text-xs font-semibold text-white shadow">
         {categories[0]}
@@ -44,7 +44,7 @@ function formatDate(dateStr: string): string {
         <span class="block cursor-default rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#E31E24] shadow">
           +{categories.length - 1}
         </span>
-        <div class="pointer-events-none absolute left-0 top-full mt-1.5 flex flex-col gap-1 opacity-0 transition-opacity duration-150 group-hover/more:pointer-events-auto group-hover/more:opacity-100">
+        <div class="pointer-events-none absolute left-0 top-full mt-1 flex flex-col gap-1 opacity-0 transition-opacity duration-150 group-hover/more:pointer-events-auto group-hover/more:opacity-100">
           {categories.slice(1).map((cat) => (
             <span class="whitespace-nowrap rounded-full bg-[#E31E24] px-3 py-1 text-xs font-semibold text-white shadow">
               {cat}
