@@ -13,14 +13,14 @@ interface Props {
 const { title, subtitle, breadcrumb } = Astro.props;
 ---
 
-<section class="relative flex min-h-[40vh] items-center overflow-hidden bg-[#1a1a1a]">
+<section class="relative flex min-h-[28vh] items-center overflow-hidden bg-[#1a1a1a]">
   <!-- Subtle red gradient accent top-right -->
   <div
     class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(227,30,36,0.18)_0%,transparent_65%)]"
     aria-hidden="true"
   ></div>
 
-  <div class="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 text-center">
+  <div class="relative z-10 mx-auto w-full max-w-6xl px-6 py-10 text-center">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb" class="mb-6">
       <ol class="flex list-none items-center justify-center gap-2 text-sm">
