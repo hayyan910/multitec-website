@@ -92,12 +92,12 @@ const whyUs = [
     </div>
 
     <!-- Image column -->
-    <div class="relative hidden min-h-[420px] lg:block">
+    <div class="relative hidden min-h-[420px] bg-[#111] lg:block">
       <Image
         src="/images/company/hero-bg.jpg"
         alt="Multitec Maldives electrical engineering work"
-        width={1200}
-        height={1400}
+        width={900}
+        height={1050}
         class="absolute inset-0 h-full w-full object-cover"
         loading="eager"
       />
@@ -221,7 +221,7 @@ const whyUs = [
                   set:html={point.icon}
                 />
               </div>
-              <h3 class={`mt-5 text-base font-semibold ${isLast ? 'text-white' : 'text-[#1a1a1a]'}`}>{point.title}</h3>
+              <h3 class={`font-display mt-5 text-base font-semibold ${isLast ? 'text-white' : 'text-[#1a1a1a]'}`}>{point.title}</h3>
               <p class={`mt-2 text-sm leading-relaxed ${isLast ? 'text-white/50' : 'text-[#4a4a4a]'}`}>{point.description}</p>
               {isLast && (
                 <a href="/contact" class="mt-5 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-[#E31E24] hover:underline">

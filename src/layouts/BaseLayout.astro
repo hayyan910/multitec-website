@@ -169,6 +169,21 @@ const navLinks = [
         const els = document.querySelectorAll<HTMLElement>('[data-animate]:not(.in-view)');
         if (!els.length) return;
 
+        // Elements already inside the viewport should just be visible, not fade in —
+        // IntersectionObserver callbacks always fire a frame late, which would otherwise
+        // paint them at opacity:0 first and animate the reveal on every page load.
+        const toObserve: HTMLElement[] = [];
+        els.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            el.classList.add('in-view');
+          } else {
+            toObserve.push(el);
+          }
+        });
+
+        if (!toObserve.length) return;
+
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
@@ -181,7 +196,7 @@ const navLinks = [
           { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
         );
 
-        els.forEach((el) => observer.observe(el));
+        toObserve.forEach((el) => observer.observe(el));
       }
 
       observeAnimations();
