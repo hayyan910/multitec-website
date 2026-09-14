@@ -4,11 +4,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CtaBanner from '../components/CtaBanner.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import StatsBar from '../components/StatsBar.astro';
 import { getFeaturedProjects, getServices } from '../utils/sanity';
 
 const services = await getServices();
 const featuredProjects = await getFeaturedProjects();
+
+const stats = [
+  { number: '23+', label: 'Years Active' },
+  { number: '200+', label: 'Projects Completed' },
+  { number: '50+', label: 'Clients Served' },
+];
 
 const whyUs = [
   {
@@ -43,83 +48,84 @@ const whyUs = [
   description="Trusted electrical engineers in the Maldives since 2003. Panel boards, CCTV, access control, wiring and maintenance."
 >
 
-  <!-- ── SECTION 1: HERO ── -->
-  <section class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1a1a1a]">
-    <!-- Background image (shows when hero-bg.jpg is added to public/images/company/) -->
-    <Image
-      src="/images/company/hero-bg.jpg"
-      alt=""
-      width={1920}
-      height={1080}
-      class="absolute inset-0 h-full w-full object-cover"
-      loading="eager"
-    />
-    <!-- Dark overlay -->
-    <div class="absolute inset-0 bg-black/65"></div>
-
-    <!-- Content -->
-    <div class="relative z-10 mx-auto max-w-4xl px-6 py-32 text-center">
+  <!-- ── SECTION 1: HERO (split) ── -->
+  <section class="relative grid overflow-hidden bg-[#1a1a1a] lg:grid-cols-2">
+    <!-- Text column -->
+    <div class="flex flex-col justify-center px-6 py-20 sm:px-10 md:py-28 lg:px-16 lg:py-32">
       <span
-        class="mb-5 inline-block rounded-full border border-[#E31E24]/40 bg-[#E31E24]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#E31E24]"
+        class="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-[#E31E24]/30 bg-[#E31E24]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#E31E24]"
       >
+        <span class="h-1.5 w-1.5 rounded-full bg-[#E31E24]"></span>
         Trusted Electrical Engineering — Since 2003
       </span>
 
-      <h1 class="mb-6 text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl">
-        Powering the Maldives with<br class="hidden sm:block" />
-        <span class="text-[#E31E24]"> Precision &amp; Expertise</span>
+      <h1 class="font-display max-w-lg text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-[3.25rem]">
+        Powering the Maldives with <span class="text-[#E31E24]">Precision &amp; Expertise</span>
       </h1>
 
-      <p class="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/75 md:text-xl">
-        From panel board supply to island-wide CCTV and lightning protection — Multitec
-        delivers end-to-end electrical solutions that keep homes, resorts, and infrastructure
-        running safely.
+      <p class="mt-6 max-w-md text-base leading-relaxed text-white/60 md:text-lg">
+        End-to-end electrical solutions — panel boards, CCTV, lightning protection, and more.
+        Serving every island of the Republic.
       </p>
 
-      <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <a href="/projects" class="btn btn-primary btn-lg min-w-44 shadow-lg">
+      <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+        <a href="/projects" class="btn btn-primary shadow-lg">
           View Our Projects
         </a>
         <a
           href="/contact"
-          class="btn btn-outline btn-lg min-w-44 border-white text-white hover:border-white hover:bg-white hover:text-[#1a1a1a]"
+          class="btn btn-outline border-white/25 text-white hover:border-white hover:bg-white hover:text-[#1a1a1a]"
         >
           Get in Touch
         </a>
       </div>
+
+      <!-- Stats -->
+      <dl class="mt-12 flex gap-0 border-t border-white/10 pt-7">
+        {stats.map((stat, i) => (
+          <div class={`flex flex-col ${i < stats.length - 1 ? 'mr-8 border-r border-white/10 pr-8' : ''}`}>
+            <dt class="font-display text-3xl font-bold tracking-tight text-[#E31E24]">{stat.number}</dt>
+            <dd class="mt-1 text-xs font-medium uppercase tracking-wide text-white/40">{stat.label}</dd>
+          </div>
+        ))}
+      </dl>
     </div>
 
-    <!-- Scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1.5" aria-hidden="true">
-      <span class="text-[10px] font-medium uppercase tracking-[0.2em] text-white/35">Scroll</span>
-      <div class="scroll-bounce text-white/35">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M6 9l6 6l6 -6" />
-        </svg>
+    <!-- Image column -->
+    <div class="relative hidden min-h-[420px] lg:block">
+      <Image
+        src="/images/company/hero-bg.jpg"
+        alt="Multitec Maldives electrical engineering work"
+        width={1200}
+        height={1400}
+        class="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+      />
+      <div class="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#1a1a1a]/30"></div>
+
+      <!-- Floating credibility badge -->
+      <div class="absolute bottom-10 left-10 right-10 flex items-center gap-4 rounded-2xl border border-white/10 bg-[#0f0f0f]/80 p-5 backdrop-blur">
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#E31E24]">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 13l4 4l10 -10" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-white">IEC Standards Certified</p>
+          <p class="mt-0.5 text-xs text-white/50">Full documentation on every project</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ── SECTION 2: STATS BAR ── -->
-  <StatsBar />
-
-  <!-- ── SECTION 3: SERVICES ── -->
+  <!-- ── SECTION 2: SERVICES ── -->
   <section class="bg-white py-20 md:py-28" aria-labelledby="services-heading">
     <div class="mx-auto max-w-6xl px-6">
       <header class="mb-14 text-center" data-animate>
         <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-[#E31E24]">
           What We Do
         </p>
-        <h2 id="services-heading" class="text-3xl font-bold text-[#1a1a1a] md:text-4xl">
+        <h2 id="services-heading" class="font-display text-3xl font-bold text-[#1a1a1a] md:text-4xl">
           Our Services
         </h2>
         <p class="mx-auto mt-4 max-w-xl text-base text-[#4a4a4a]">
@@ -145,14 +151,14 @@ const whyUs = [
     </div>
   </section>
 
-  <!-- ── SECTION 4: FEATURED PROJECTS ── -->
+  <!-- ── SECTION 3: FEATURED PROJECTS ── -->
   <section class="bg-[#FAFAFA] py-20 md:py-28" aria-labelledby="projects-heading">
     <div class="mx-auto max-w-6xl px-6">
       <header class="mb-14 text-center" data-animate>
         <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-[#E31E24]">
           Our Work
         </p>
-        <h2 id="projects-heading" class="text-3xl font-bold text-[#1a1a1a] md:text-4xl">
+        <h2 id="projects-heading" class="font-display text-3xl font-bold text-[#1a1a1a] md:text-4xl">
           Project Highlights
         </h2>
         <p class="mx-auto mt-4 max-w-xl text-base text-[#4a4a4a]">
@@ -177,14 +183,14 @@ const whyUs = [
     </div>
   </section>
 
-  <!-- ── SECTION 5: WHY CHOOSE US ── -->
+  <!-- ── SECTION 4: WHY CHOOSE US ── -->
   <section class="bg-[#F5F5F5] py-20 md:py-28" aria-labelledby="why-heading">
     <div class="mx-auto max-w-6xl px-6">
       <header class="mb-14 text-center" data-animate>
         <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-[#E31E24]">
           Why Multitec
         </p>
-        <h2 id="why-heading" class="text-3xl font-bold text-[#1a1a1a] md:text-4xl">
+        <h2 id="why-heading" class="font-display text-3xl font-bold text-[#1a1a1a] md:text-4xl">
           Why Choose Us?
         </h2>
         <p class="mx-auto mt-4 max-w-xl text-base text-[#4a4a4a]">
@@ -193,34 +199,46 @@ const whyUs = [
         </p>
       </header>
 
-      <div class="grid gap-8 sm:grid-cols-2">
-        {whyUs.map((point) => (
-          <div class="flex gap-5" data-animate>
-            <div class="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E31E24] text-white shadow-sm">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-                set:html={point.icon}
-              />
-            </div>
-            <div>
-              <h3 class="text-base font-semibold text-[#1a1a1a]">{point.title}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-[#4a4a4a]">{point.description}</p>
-            </div>
-          </div>
-        ))}
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {whyUs.map((point, i) => {
+          const isLast = i === whyUs.length - 1;
+          return (
+            <article
+              class={`flex flex-col rounded-2xl p-7 ${isLast ? 'bg-[#1a1a1a]' : 'border border-black/5 bg-white'}`}
+              data-animate
+            >
+              <div class={`flex h-11 w-11 items-center justify-center rounded-xl ${isLast ? 'bg-[#E31E24]/15' : 'bg-[#E31E24]/10'} text-[#E31E24]`}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  set:html={point.icon}
+                />
+              </div>
+              <h3 class={`mt-5 text-base font-semibold ${isLast ? 'text-white' : 'text-[#1a1a1a]'}`}>{point.title}</h3>
+              <p class={`mt-2 text-sm leading-relaxed ${isLast ? 'text-white/50' : 'text-[#4a4a4a]'}`}>{point.description}</p>
+              {isLast && (
+                <a href="/contact" class="mt-5 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-[#E31E24] hover:underline">
+                  Get in Touch
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" />
+                  </svg>
+                </a>
+              )}
+            </article>
+          );
+        })}
       </div>
     </div>
   </section>
 
-  <!-- ── SECTION 6: CTA BANNER ── -->
+  <!-- ── SECTION 5: CTA BANNER ── -->
   <CtaBanner
     heading="Ready to Start Your Project?"
     subtext="Talk to our engineers about your electrical requirements — whether it's a single installation or a large-scale fitout."
