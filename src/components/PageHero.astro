@@ -14,6 +14,22 @@ const { title, subtitle, breadcrumb } = Astro.props;
 ---
 
 <section class="relative flex min-h-[28vh] items-center overflow-hidden bg-[#1a1a1a]">
+  <!-- Ambient circuit-trace texture — matches the home hero's vocabulary -->
+  <svg class="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" aria-hidden="true">
+    <defs>
+      <pattern id="page-hero-circuit" width="130" height="130" patternUnits="userSpaceOnUse">
+        <path d="M0 65 H45 V25 H100" stroke="white" stroke-width="1" fill="none" />
+        <path d="M130 100 H85 V125" stroke="white" stroke-width="1" fill="none" />
+        <path d="M65 0 V40 H130" stroke="white" stroke-width="1" fill="none" />
+        <circle cx="45" cy="25" r="2.5" fill="white" />
+        <circle cx="100" cy="25" r="2.5" fill="white" />
+        <circle cx="85" cy="125" r="2.5" fill="white" />
+        <circle cx="65" cy="40" r="2.5" fill="white" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#page-hero-circuit)" />
+  </svg>
+
   <!-- Subtle red gradient accent top-right -->
   <div
     class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(227,30,36,0.18)_0%,transparent_65%)]"

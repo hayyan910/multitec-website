@@ -34,8 +34,22 @@ const categories = Array.isArray(project?.category)
   {project ? (
     <article>
       <!-- Project header — two column on large screens -->
-      <header class="bg-[#1a1a1a] text-white">
-        <div class="mx-auto max-w-6xl px-6 py-16 lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
+      <header class="relative overflow-hidden bg-[#1a1a1a] text-white">
+        <svg class="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" aria-hidden="true">
+          <defs>
+            <pattern id="project-hero-circuit" width="130" height="130" patternUnits="userSpaceOnUse">
+              <path d="M0 65 H45 V25 H100" stroke="white" stroke-width="1" fill="none" />
+              <path d="M130 100 H85 V125" stroke="white" stroke-width="1" fill="none" />
+              <path d="M65 0 V40 H130" stroke="white" stroke-width="1" fill="none" />
+              <circle cx="45" cy="25" r="2.5" fill="white" />
+              <circle cx="100" cy="25" r="2.5" fill="white" />
+              <circle cx="85" cy="125" r="2.5" fill="white" />
+              <circle cx="65" cy="40" r="2.5" fill="white" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#project-hero-circuit)" />
+        </svg>
+        <div class="relative mx-auto max-w-6xl px-6 py-16 lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
           <!-- Left: details -->
           <div class="py-4">
             <a
@@ -46,7 +60,7 @@ const categories = Array.isArray(project?.category)
             </a>
             <div class="mb-4 flex flex-wrap gap-2">
               {categories.map((cat) => (
-                <span class="rounded-full bg-[#E31E24]/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#E31E24]">
+                <span class="rounded-full bg-[#E31E24]/20 px-3 py-1 text-xs font-semibold text-[#E31E24]">
                   {cat}
                 </span>
               ))}
