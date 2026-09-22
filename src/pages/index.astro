@@ -202,9 +202,6 @@ const whyUs = [
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={serviceIcons[service.icon] ?? serviceIcons.bolt} />
                 </div>
                 <div>
-                  <span class="mb-3 inline-block rounded-full bg-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
-                    Most Requested
-                  </span>
                   <h3 class="font-display text-xl font-bold text-white">{service.title}</h3>
                   <p class="mt-2 max-w-sm text-sm leading-relaxed text-white/70">{service.shortDescription}</p>
                   <a href={`/services#${service.id}`} class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:underline">
@@ -220,9 +217,6 @@ const whyUs = [
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={serviceIcons[service.icon] ?? serviceIcons.bolt} />
               </div>
               <div>
-                <span class="mb-3 inline-block rounded-full bg-[#E31E24]/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#E31E24]">
-                  Most Requested
-                </span>
                 <h3 class="font-display text-xl font-bold text-[#1a1a1a]">{service.title}</h3>
                 <p class="mt-2 max-w-sm text-sm leading-relaxed text-[#4a4a4a]">{service.shortDescription}</p>
                 <a href={`/services#${service.id}`} class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#E31E24] hover:underline">
