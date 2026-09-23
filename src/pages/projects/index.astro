@@ -4,8 +4,23 @@ import PageHero from '../../components/PageHero.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import CtaBanner from '../../components/CtaBanner.astro';
 import { getProjects } from '../../utils/sanity';
+import { CATEGORY_ORDER, slugify } from '../../data/project-categories';
 
 const projects = await getProjects();
+
+// Build the filter chip list: canonical categories first (in the order
+// defined in project-categories.ts), then any category found in the data
+// that isn't in that list yet — so nothing is ever silently hidden.
+const categoriesInUse = new Set(projects.flatMap((p) => p.category ?? []));
+
+const knownChips = CATEGORY_ORDER.filter((c) => categoriesInUse.has(c.value));
+const knownValues = new Set(knownChips.map((c) => c.value));
+const extraChips = [...categoriesInUse]
+  .filter((value) => !knownValues.has(value))
+  .sort((a, b) => a.localeCompare(b))
+  .map((value) => ({ value, label: value, slug: slugify(value) }));
+
+const filterChips = [...knownChips, ...extraChips];
 ---
 
 <BaseLayout
@@ -24,16 +39,128 @@ const projects = await getProjects();
   <section class="bg-white py-16 md:py-20" aria-label="Projects grid">
     <div class="mx-auto max-w-6xl px-6">
       {projects.length > 0 ? (
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
-            <ProjectCard project={project} />
-          ))}
-        </div>
+        <>
+          {filterChips.length > 1 && (
+            <div class="mb-10 flex flex-wrap items-center gap-2" role="group" aria-label="Filter projects by category">
+              <button
+                type="button"
+                data-filter-chip
+                data-value="all"
+                aria-pressed="true"
+                class="rounded-full border border-[#E31E24] bg-[#E31E24] px-4 py-2 text-sm font-medium text-white transition-colors duration-200"
+              >
+                All
+              </button>
+              {filterChips.map((chip) => (
+                <button
+                  type="button"
+                  data-filter-chip
+                  data-value={chip.value}
+                  data-slug={chip.slug}
+                  aria-pressed="false"
+                  class="rounded-full border border-base-300 bg-white px-4 py-2 text-sm font-medium text-[#4a4a4a] transition-colors duration-200 hover:border-[#E31E24] hover:text-[#E31E24]"
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <p class="sr-only" aria-live="polite" data-filter-status></p>
+
+          <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3" data-projects-grid>
+            {projects.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+
+          <p class="hidden py-20 text-center text-[#4a4a4a]/50" data-filter-empty>
+            No projects in this category yet.
+          </p>
+        </>
       ) : (
         <p class="py-20 text-center text-[#4a4a4a]/50">Projects coming soon.</p>
       )}
     </div>
   </section>
+
+  <script>
+    const ACTIVE_CLASSES = ['bg-[#E31E24]', 'border-[#E31E24]', 'text-white'];
+    const INACTIVE_CLASSES = ['border-base-300', 'text-[#4a4a4a]', 'bg-white', 'hover:border-[#E31E24]', 'hover:text-[#E31E24]'];
+
+    function initProjectFilters() {
+      const grid = document.querySelector<HTMLElement>('[data-projects-grid]');
+      const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter-chip]');
+      const emptyState = document.querySelector<HTMLElement>('[data-filter-empty]');
+      const status = document.querySelector<HTMLElement>('[data-filter-status]');
+      if (!grid || !chips.length) return;
+
+      const cards = grid.querySelectorAll<HTMLElement>('[data-project-card]');
+
+      function setActiveChip(value: string) {
+        chips.forEach((chip) => {
+          const isActive = chip.dataset.value === value;
+          chip.setAttribute('aria-pressed', String(isActive));
+          chip.classList.remove(...ACTIVE_CLASSES, ...INACTIVE_CLASSES);
+          chip.classList.add(...(isActive ? ACTIVE_CLASSES : INACTIVE_CLASSES));
+        });
+      }
+
+      function applyFilter(value: string, { updateUrl = true } = {}) {
+        let visibleCount = 0;
+        cards.forEach((card) => {
+          const categories = (card.dataset.categories ?? '').split('|');
+          const matches = value === 'all' || categories.includes(value);
+          card.classList.toggle('hidden', !matches);
+          if (matches) visibleCount += 1;
+        });
+
+        setActiveChip(value);
+        emptyState?.classList.toggle('hidden', visibleCount !== 0);
+        if (status) {
+          status.textContent =
+            value === 'all'
+              ? `Showing all ${cards.length} projects`
+              : `Showing ${visibleCount} of ${cards.length} projects`;
+        }
+
+        if (updateUrl) {
+          const url = new URL(window.location.href);
+          if (value === 'all') {
+            url.searchParams.delete('category');
+          } else {
+            const chip = document.querySelector<HTMLButtonElement>(`[data-filter-chip][data-value="${CSS.escape(value)}"]`);
+            url.searchParams.set('category', chip?.dataset.slug ?? value);
+          }
+          window.history.replaceState({}, '', url);
+        }
+      }
+
+      function valueFromSlug(slug: string | null): string {
+        if (!slug) return 'all';
+        const chip = Array.from(chips).find((c) => c.dataset.slug === slug || c.dataset.value === slug);
+        return chip?.dataset.value ?? 'all';
+      }
+
+      chips.forEach((chip) => {
+        chip.addEventListener('click', () => {
+          const value = chip.dataset.value ?? 'all';
+          applyFilter(value);
+        });
+      });
+
+      window.addEventListener('popstate', () => {
+        const slug = new URL(window.location.href).searchParams.get('category');
+        applyFilter(valueFromSlug(slug), { updateUrl: false });
+      });
+
+      const initialSlug = new URL(window.location.href).searchParams.get('category');
+      applyFilter(valueFromSlug(initialSlug), { updateUrl: false });
+    }
+
+    initProjectFilters();
+    document.addEventListener('astro:page-load', initProjectFilters);
+  </script>
 
   <!-- ── CTA BANNER ── -->
   <CtaBanner

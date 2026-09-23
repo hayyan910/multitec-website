@@ -19,7 +19,12 @@ function formatDate(dateStr: string): string {
 }
 ---
 
-<article class="group relative rounded-2xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-md" data-animate>
+<article
+  class="group relative rounded-2xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
+  data-animate
+  data-project-card
+  data-categories={categories.join('|')}
+>
   <a href={`/projects/${project.slug}`} class="block" tabindex="-1" aria-hidden="true">
     <div class="relative aspect-video overflow-hidden rounded-t-2xl bg-base-200">
       <!-- Cover image — degrades to bg-base-200 when file is absent -->
