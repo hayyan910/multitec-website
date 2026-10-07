@@ -94,10 +94,19 @@ const navLinks = [
 
       <!-- ── Page shell ── -->
       <div class="drawer-content flex min-h-screen flex-col">
-        <Header />
-        <main id="main-content" class="flex-1" tabindex="-1">
-          <slot />
-        </main>
+        <!--
+          Header + main share this wrapper (not Footer) so the sticky header's
+          containing block ends where main content does — it un-sticks and
+          scrolls away once the footer starts, instead of staying pinned on
+          top of the footer for the rest of the page (which, at the very
+          bottom of a short page, visibly overlapped the footer's own logo).
+        -->
+        <div class="flex flex-1 flex-col">
+          <Header />
+          <main id="main-content" class="flex-1" tabindex="-1">
+            <slot />
+          </main>
+        </div>
         <Footer />
 
         <!-- WhatsApp floating button -->
