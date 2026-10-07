@@ -116,14 +116,19 @@
     <use href="#cmp-transistor" class="board-component" transform="translate(1180,250)" />
   </g>
 
-  <!-- glow network: current fans out from both side chips -->
+  <!-- glow network: current fans out from both side chips. stroke-dasharray is
+       set as an attribute (not just in CSS) so it's invisible from the very
+       first parsed byte of HTML, with no dependency on a stylesheet having
+       loaded yet — the CSS rule alone left a gap on a hard refresh (cold
+       cache), where the stylesheet can arrive after the first paint and the
+       path briefly renders as a full solid line with no dasharray at all. -->
   <g>
-    <path class="glow-trace" d="M230,160 H340 V60 H420" />
-    <path class="glow-trace" d="M120,210 H30 V320" />
-    <path class="glow-trace" d="M360,280 H480 V220" />
-    <path class="glow-trace" d="M1370,160 H1260 V60 H1180" />
-    <path class="glow-trace" d="M1480,210 H1570 V320" />
-    <path class="glow-trace" d="M1240,280 H1120 V220" />
+    <path class="glow-trace" stroke-dasharray="0 99999" d="M230,160 H340 V60 H420" />
+    <path class="glow-trace" stroke-dasharray="0 99999" d="M120,210 H30 V320" />
+    <path class="glow-trace" stroke-dasharray="0 99999" d="M360,280 H480 V220" />
+    <path class="glow-trace" stroke-dasharray="0 99999" d="M1370,160 H1260 V60 H1180" />
+    <path class="glow-trace" stroke-dasharray="0 99999" d="M1480,210 H1570 V320" />
+    <path class="glow-trace" stroke-dasharray="0 99999" d="M1240,280 H1120 V220" />
   </g>
 </svg>
 
