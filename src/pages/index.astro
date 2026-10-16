@@ -121,24 +121,103 @@ const whyUs = [
         </a>
       </div>
 
-      <!-- Meter-style stats -->
-      <dl class="ml-7 mt-12 flex gap-10">
+      <!-- Meter-style stats — rings draw in and numbers count up on scroll-into-view, via GSAP ScrollTrigger below -->
+      <dl class="ml-7 mt-12 flex gap-10" data-stat-rings>
         {stats.map((stat, i) => {
           const dashoffsets = [34, 20, 55];
+          const circumference = 169.6;
+          const match = stat.number.match(/^(\d+)(.*)$/);
+          const [, value, suffix] = match ?? [null, stat.number, ''];
           return (
             <div class="flex flex-col items-start">
               <div class="relative flex h-[66px] w-[66px] items-center justify-center">
                 <svg width="66" height="66" class="absolute inset-0 -rotate-90">
                   <circle cx="33" cy="33" r="27" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" />
-                  <circle cx="33" cy="33" r="27" fill="none" stroke="#E31E24" stroke-width="3" stroke-dasharray="169.6" stroke-dashoffset={dashoffsets[i]} stroke-linecap="round" />
+                  <circle
+                    class="stat-ring-arc"
+                    cx="33" cy="33" r="27" fill="none" stroke="#E31E24" stroke-width="3"
+                    stroke-dasharray={circumference}
+                    stroke-dashoffset={dashoffsets[i]}
+                    stroke-linecap="round"
+                    data-circumference={circumference}
+                    data-target-offset={dashoffsets[i]}
+                  />
                 </svg>
-                <dt class="font-display text-base font-extrabold text-white">{stat.number}</dt>
+                <dt class="font-display text-base font-extrabold text-white">
+                  <span class="stat-ring-value" data-target-value={value}>{value}</span>{suffix}
+                </dt>
               </div>
               <dd class="mt-2 text-xs text-white/45">{stat.label}</dd>
             </div>
           );
         })}
       </dl>
+
+      <script>
+        import { gsap } from 'gsap';
+        import { ScrollTrigger } from 'gsap/ScrollTrigger';
+        gsap.registerPlugin(ScrollTrigger);
+
+        function initStatRings() {
+          const root = document.querySelector('[data-stat-rings]');
+          if (!root) return;
+
+          ScrollTrigger.getById('hero-stat-rings')?.kill();
+
+          const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const arcs = Array.from(root.querySelectorAll<SVGCircleElement>('.stat-ring-arc'));
+          const values = Array.from(root.querySelectorAll<HTMLElement>('.stat-ring-value'));
+
+          if (prefersReducedMotion) return; // static markup already shows final values
+
+          // Nothing is touched until onEnter actually fires — the static markup
+          // (final dashoffset + final number) stays correct and visible right up
+          // until that moment, even for rings already in view at page load.
+          // (Deliberately not using gsap.timeline({scrollTrigger}) + fromTo here:
+          // that pattern can apply its "from" state as soon as the timeline is
+          // built, before the trigger condition is met, which would flash the
+          // rings to empty. Building the tween inside onEnter avoids that
+          // ambiguity entirely instead of relying on immediateRender defaults.)
+          ScrollTrigger.create({
+            id: 'hero-stat-rings',
+            trigger: root,
+            start: 'top 85%',
+            once: true,
+            onEnter: () => {
+              const tl = gsap.timeline();
+              arcs.forEach((arc, i) => {
+                const circumference = Number(arc.dataset.circumference);
+                const targetOffset = Number(arc.dataset.targetOffset);
+                tl.fromTo(
+                  arc,
+                  { strokeDashoffset: circumference },
+                  { strokeDashoffset: targetOffset, duration: 1.4, ease: 'power2.out' },
+                  i * 0.12
+                );
+
+                const valueEl = values[i];
+                const targetValue = Number(valueEl.dataset.targetValue);
+                const counter = { val: 0 };
+                tl.to(
+                  counter,
+                  {
+                    val: targetValue,
+                    duration: 1.4,
+                    ease: 'power2.out',
+                    onUpdate: () => {
+                      valueEl.textContent = String(Math.round(counter.val));
+                    },
+                  },
+                  i * 0.12
+                );
+              });
+            },
+          });
+        }
+
+        initStatRings();
+        document.addEventListener('astro:page-load', initStatRings);
+      </script>
     </div>
 
     <!-- Image column -->

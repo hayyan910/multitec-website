@@ -9,20 +9,74 @@ const stats = [
 
 <section class="bg-[#1a1a1a] py-14" aria-label="Company statistics">
   <div class="mx-auto max-w-5xl px-6">
-    <dl class="grid grid-cols-2 gap-y-10 md:grid-cols-4">
-      {stats.map((stat, i) => (
-        <div
-          class={[
-            'flex flex-col items-center text-center',
-            i < stats.length - 1 ? 'md:border-r md:border-white/10' : '',
-          ].join(' ')}
-        >
-          <dt class="text-4xl font-bold tracking-tight text-[#E31E24] md:text-5xl">
-            {stat.number}
-          </dt>
-          <dd class="mt-2 text-sm font-medium text-white/60">{stat.label}</dd>
-        </div>
-      ))}
+    <dl class="grid grid-cols-2 gap-y-10 md:grid-cols-4" data-stats-bar>
+      {stats.map((stat, i) => {
+        const match = stat.number.match(/^(\d+)(.*)$/);
+        const [, value, suffix] = match ?? [null, stat.number, ''];
+        return (
+          <div
+            class={[
+              'flex flex-col items-center text-center',
+              i < stats.length - 1 ? 'md:border-r md:border-white/10' : '',
+            ].join(' ')}
+          >
+            <dt class="text-4xl font-bold tracking-tight text-[#E31E24] md:text-5xl">
+              <span class="stats-bar-value" data-target-value={value}>{value}</span>{suffix}
+            </dt>
+            <dd class="mt-2 text-sm font-medium text-white/60">{stat.label}</dd>
+          </div>
+        );
+      })}
     </dl>
   </div>
+
+  <script>
+    import { gsap } from 'gsap';
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
+    gsap.registerPlugin(ScrollTrigger);
+
+    function initStatsBar() {
+      const root = document.querySelector('[data-stats-bar]');
+      if (!root) return;
+
+      ScrollTrigger.getById('stats-bar')?.kill();
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const values = Array.from(root.querySelectorAll<HTMLElement>('.stats-bar-value'));
+
+      if (prefersReducedMotion) return; // static markup already shows final values
+
+      // Nothing is touched until onEnter fires — see the matching comment in
+      // index.astro's hero stat rings script for why this avoids gsap.timeline
+      // + scrollTrigger's immediateRender ambiguity.
+      ScrollTrigger.create({
+        id: 'stats-bar',
+        trigger: root,
+        start: 'top 85%',
+        once: true,
+        onEnter: () => {
+          const tl = gsap.timeline();
+          values.forEach((valueEl, i) => {
+            const targetValue = Number(valueEl.dataset.targetValue);
+            const counter = { val: 0 };
+            tl.to(
+              counter,
+              {
+                val: targetValue,
+                duration: 1.4,
+                ease: 'power2.out',
+                onUpdate: () => {
+                  valueEl.textContent = String(Math.round(counter.val));
+                },
+              },
+              i * 0.1
+            );
+          });
+        },
+      });
+    }
+
+    initStatsBar();
+    document.addEventListener('astro:page-load', initStatsBar);
+  </script>
 </section>

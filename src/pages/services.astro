@@ -143,12 +143,26 @@ const steps = [
       </header>
 
       <!-- Steps -->
-      <div class="relative">
-        <!-- Connector line — desktop only, sits behind the step circles -->
-        <div
-          class="absolute top-6 left-8 right-8 hidden h-px bg-[#1a1a1a]/10 md:block"
+      <div class="relative" data-process-steps>
+        <!-- Connector line — desktop only, sits behind the step circles.
+             The bright line draws left-to-right on scroll-in via GSAP (see
+             script below) — current literally flowing through the process,
+             same stroke-dashoffset technique as CircuitBoard.astro. -->
+        <svg
+          class="absolute top-6 left-8 hidden h-px w-[calc(100%-4rem)] overflow-visible md:block"
+          viewBox="0 0 1000 2"
+          preserveAspectRatio="none"
           aria-hidden="true"
-        ></div>
+        >
+          <line x1="0" y1="1" x2="1000" y2="1" stroke="#1a1a1a" stroke-opacity="0.1" stroke-width="2" />
+          <line
+            class="process-line-draw"
+            x1="0" y1="1" x2="1000" y2="1"
+            stroke="#E31E24" stroke-width="2"
+            stroke-dasharray="1000"
+            stroke-dashoffset="1000"
+          />
+        </svg>
 
         <ol class="relative grid grid-cols-1 gap-8 md:grid-cols-5 md:gap-4">
           {steps.map((step, i) => (
@@ -170,6 +184,43 @@ const steps = [
         </ol>
       </div>
     </div>
+
+    <script>
+      import { gsap } from 'gsap';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
+      gsap.registerPlugin(ScrollTrigger);
+
+      function initProcessLine() {
+        const trigger = document.querySelector('[data-process-steps]');
+        const line = document.querySelector<SVGLineElement>('.process-line-draw');
+        if (!trigger || !line) return;
+
+        ScrollTrigger.getById('process-line')?.kill();
+
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+          line.style.strokeDashoffset = '0'; // show fully drawn, skip the animation
+          return;
+        }
+
+        // Nothing is touched until onEnter fires — same reasoning as the hero
+        // stat rings' script: avoids gsap.timeline({scrollTrigger})'s
+        // immediateRender ambiguity flashing the line before the trigger
+        // condition is actually met.
+        ScrollTrigger.create({
+          id: 'process-line',
+          trigger,
+          start: 'top 75%',
+          once: true,
+          onEnter: () => {
+            gsap.to(line, { strokeDashoffset: 0, duration: 1.2, ease: 'power2.out' });
+          },
+        });
+      }
+
+      initProcessLine();
+      document.addEventListener('astro:page-load', initProcessLine);
+    </script>
   </section>
 
   <!-- ── SECTION 4: CTA BANNER ── -->
