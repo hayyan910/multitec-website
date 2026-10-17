@@ -172,16 +172,20 @@ import PageHero from '../components/PageHero.astro';
             </button>
           </form>
 
-          <!-- Success state -->
+          <!-- Success state — form fades/lifts out, this fades/settles in, and the
+               checkmark draws itself (stroke-dashoffset, same technique as the
+               circuit board and Services process line) via GSAP in the script below -->
           <div id="form-success" class="hidden flex-col items-center gap-4 py-10 text-center">
-            <span class="flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10"/></svg>
+            <span class="success-badge flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path id="success-check-path" d="M5 12l5 5l10 -10" stroke-dasharray="24" stroke-dashoffset="24" />
+              </svg>
             </span>
-            <div>
+            <div class="success-text">
               <p class="text-lg font-semibold text-[#1a1a1a]">Message sent!</p>
               <p class="mt-1 text-sm text-[#4a4a4a]">Thank you for reaching out. We'll get back to you within one business day.</p>
             </div>
-            <button id="reset-btn" class="btn btn-outline btn-sm mt-2">Send another message</button>
+            <button id="reset-btn" class="success-reset-btn btn btn-outline btn-sm mt-2">Send another message</button>
           </div>
         </div>
 
@@ -209,57 +213,134 @@ import PageHero from '../components/PageHero.astro';
 </BaseLayout>
 
 <script>
-  const form = document.getElementById('contact-form') as HTMLFormElement;
-  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
-  const btnText = document.getElementById('btn-text') as HTMLSpanElement;
-  const btnSpinner = document.getElementById('btn-spinner') as HTMLElement;
-  const formError = document.getElementById('form-error') as HTMLParagraphElement;
-  const formSuccess = document.getElementById('form-success') as HTMLDivElement;
-  const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
+  import { gsap } from 'gsap';
 
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    formError.classList.add('hidden');
-    formError.textContent = '';
+  // Re-initializes on every View Transition visit to this page (astro:page-load
+  // fires on same-route revisits too, and the form's DOM node can persist across
+  // them) — the dataset flag below guards against binding the submit listener
+  // more than once on the same node.
+  function initContactForm() {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+    const btnText = document.getElementById('btn-text') as HTMLSpanElement | null;
+    const btnSpinner = document.getElementById('btn-spinner') as HTMLElement | null;
+    const formError = document.getElementById('form-error') as HTMLParagraphElement | null;
+    const formSuccess = document.getElementById('form-success') as HTMLDivElement | null;
+    const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement | null;
+    const checkPath = document.getElementById('success-check-path') as SVGPathElement | null;
 
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
+    if (!form || !submitBtn || !btnText || !btnSpinner || !formError || !formSuccess || !resetBtn) return;
+    if (form.dataset.gsapBound === 'true') return;
+    form.dataset.gsapBound = 'true';
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const badge = formSuccess.querySelector<HTMLElement>('.success-badge');
+    const textBlock = formSuccess.querySelector<HTMLElement>('.success-text');
+    const resetBtnEl = formSuccess.querySelector<HTMLElement>('.success-reset-btn');
+
+    const checkLength = checkPath ? checkPath.getTotalLength() : 0;
+    if (checkPath) {
+      checkPath.style.strokeDasharray = String(checkLength);
+      checkPath.style.strokeDashoffset = String(checkLength);
     }
 
-    submitBtn.disabled = true;
-    btnText.textContent = 'Sending…';
-    btnSpinner.classList.remove('hidden');
+    function showSuccess() {
+      if (!form || !formSuccess) return;
 
-    try {
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
-      });
-      const json = await res.json();
-
-      if (json.success) {
+      if (prefersReducedMotion) {
         form.classList.add('hidden');
         formSuccess.classList.remove('hidden');
         formSuccess.classList.add('flex');
-      } else {
-        throw new Error(json.message ?? 'Submission failed');
+        if (checkPath) checkPath.style.strokeDashoffset = '0';
+        return;
       }
-    } catch (err) {
-      formError.textContent = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
-      formError.classList.remove('hidden');
-    } finally {
-      submitBtn.disabled = false;
-      btnText.textContent = 'Send Message';
-      btnSpinner.classList.add('hidden');
-    }
-  });
 
-  resetBtn?.addEventListener('click', () => {
-    form.reset();
-    form.classList.remove('hidden');
-    formSuccess.classList.add('hidden');
-    formSuccess.classList.remove('flex');
-  });
+      const tl = gsap.timeline();
+      tl.to(form, { opacity: 0, y: -8, duration: 0.3, ease: 'power2.in' })
+        .add(() => {
+          form.classList.add('hidden');
+          formSuccess.classList.remove('hidden');
+          formSuccess.classList.add('flex');
+          gsap.set(form, { opacity: 1, y: 0 }); // restore for next time it's shown
+          gsap.set(formSuccess, { opacity: 0, y: 8 });
+          if (badge) gsap.set(badge, { opacity: 0, scale: 0.7 });
+          if (textBlock) gsap.set(textBlock, { opacity: 0, y: 6 });
+          if (resetBtnEl) gsap.set(resetBtnEl, { opacity: 0, y: 6 });
+        })
+        .to(formSuccess, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
+
+      if (badge) tl.to(badge, { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)' }, '-=0.15');
+      if (checkPath) tl.to(checkPath, { strokeDashoffset: 0, duration: 0.4, ease: 'power2.out' }, '-=0.05');
+      if (textBlock) tl.to(textBlock, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.15');
+      if (resetBtnEl) tl.to(resetBtnEl, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.2');
+    }
+
+    function showForm() {
+      if (!form || !formSuccess) return;
+
+      if (prefersReducedMotion) {
+        form.reset();
+        form.classList.remove('hidden');
+        formSuccess.classList.add('hidden');
+        formSuccess.classList.remove('flex');
+        if (checkPath) checkPath.style.strokeDashoffset = String(checkLength);
+        return;
+      }
+
+      const tl = gsap.timeline();
+      tl.to(formSuccess, { opacity: 0, y: -8, duration: 0.25, ease: 'power2.in' })
+        .add(() => {
+          form.reset();
+          formSuccess.classList.add('hidden');
+          formSuccess.classList.remove('flex');
+          gsap.set(formSuccess, { opacity: 1, y: 0 }); // restore for next time it's shown
+          form.classList.remove('hidden');
+          gsap.set(form, { opacity: 0, y: 8 });
+          if (checkPath) checkPath.style.strokeDashoffset = String(checkLength);
+        })
+        .to(form, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      formError.classList.add('hidden');
+      formError.textContent = '';
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      btnText.textContent = 'Sending…';
+      btnSpinner.classList.remove('hidden');
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          showSuccess();
+        } else {
+          throw new Error(json.message ?? 'Submission failed');
+        }
+      } catch (err) {
+        formError.textContent = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+        formError.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = 'Send Message';
+        btnSpinner.classList.add('hidden');
+      }
+    });
+
+    resetBtn.addEventListener('click', showForm);
+  }
+
+  initContactForm();
+  document.addEventListener('astro:page-load', initContactForm);
 </script>
