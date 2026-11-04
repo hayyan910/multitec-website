@@ -23,6 +23,11 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const project = await sanityClient.fetch(PROJECT_QUERY, { slug }) as Project | null;
+// The GROQ projection above resolves images to plain URL strings
+// ("images": images[].asset->url), which doesn't match the shared
+// Project.images type ({ url, alt }[]) — that type describes a different
+// shape used elsewhere. Re-cast to what this query actually returns.
+const galleryImages = (project?.images as unknown as string[] | undefined) ?? [];
 const categories = Array.isArray(project?.category)
   ? project.category
   : project?.category
@@ -110,19 +115,249 @@ const categories = Array.isArray(project?.category)
       </header>
 
       <!-- Gallery -->
-      {project.images && project.images.length > 0 && (
+      {galleryImages.length > 0 && (
         <section class="bg-[#F5F5F5] py-14" aria-label="Project gallery">
           <div class="mx-auto max-w-6xl px-6">
-            <div class={`grid gap-4 ${project.images.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : project.images.length === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-3'}`}>
-              {project.images.map((img) => (
-                <img
-                  src={img}
-                  alt={`${project.title} photo`}
-                  class="w-full rounded-lg object-cover aspect-[4/3] shadow-sm"
-                />
+            <div class={`grid gap-4 ${galleryImages.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : galleryImages.length === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-3'}`}>
+              {galleryImages.map((img, i) => (
+                <button
+                  type="button"
+                  class="group relative cursor-zoom-in overflow-hidden rounded-lg shadow-sm"
+                  data-gallery-trigger
+                  data-index={i}
+                  aria-label={`View photo ${i + 1} of ${galleryImages.length} full size`}
+                >
+                  <img
+                    src={img}
+                    alt={`${project.title} photo ${i + 1}`}
+                    class="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </button>
               ))}
             </div>
           </div>
+
+          <!-- Lightbox -->
+          <dialog
+            id="gallery-lightbox"
+            class="gallery-lightbox"
+            aria-label={`${project.title} gallery, full size view`}
+            data-images={JSON.stringify(galleryImages)}
+          >
+            <button type="button" class="gallery-lightbox-close" data-gallery-close aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 6l-12 12" /><path d="M6 6l12 12" />
+              </svg>
+            </button>
+            {galleryImages.length > 1 && (
+              <>
+                <button type="button" class="gallery-lightbox-nav gallery-lightbox-prev" data-gallery-prev aria-label="Previous photo">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M15 6l-6 6l6 6" />
+                  </svg>
+                </button>
+                <button type="button" class="gallery-lightbox-nav gallery-lightbox-next" data-gallery-next aria-label="Next photo">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 6l6 6l-6 6" />
+                  </svg>
+                </button>
+              </>
+            )}
+            <img data-gallery-image alt="" />
+            {galleryImages.length > 1 && (
+              <p class="gallery-lightbox-counter" data-gallery-counter aria-live="polite"></p>
+            )}
+          </dialog>
+
+          <style>
+            .gallery-lightbox {
+              position: fixed;
+              inset: 0;
+              margin: auto;
+              max-width: min(92vw, 1100px);
+              max-height: 88vh;
+              padding: 0;
+              border: none;
+              border-radius: 0.75rem;
+              background: transparent;
+              overflow: visible;
+              opacity: 0;
+            }
+
+            .gallery-lightbox::backdrop {
+              background: rgba(10, 10, 10, 0.88);
+              opacity: 0;
+            }
+
+            @media (prefers-reduced-motion: no-preference) {
+              .gallery-lightbox,
+              .gallery-lightbox::backdrop {
+                transition: opacity 0.25s ease;
+              }
+              .gallery-lightbox {
+                transition: opacity 0.25s ease, transform 0.25s ease;
+                transform: scale(0.96);
+              }
+            }
+
+            .gallery-lightbox.is-open,
+            .gallery-lightbox.is-open::backdrop {
+              opacity: 1;
+            }
+
+            .gallery-lightbox.is-open {
+              transform: scale(1);
+            }
+
+            .gallery-lightbox img {
+              display: block;
+              max-width: 100%;
+              max-height: 88vh;
+              border-radius: 0.75rem;
+              object-fit: contain;
+            }
+
+            .gallery-lightbox-close {
+              position: fixed;
+              top: 1.25rem;
+              right: 1.25rem;
+              display: flex;
+              height: 2.5rem;
+              width: 2.5rem;
+              align-items: center;
+              justify-content: center;
+              border-radius: 9999px;
+              background: rgba(255, 255, 255, 0.1);
+              color: white;
+              transition: background-color 0.2s ease;
+            }
+            .gallery-lightbox-close:hover {
+              background: rgba(255, 255, 255, 0.2);
+            }
+
+            .gallery-lightbox-nav {
+              position: fixed;
+              top: 50%;
+              display: flex;
+              height: 3rem;
+              width: 3rem;
+              translate: 0 -50%;
+              align-items: center;
+              justify-content: center;
+              border-radius: 9999px;
+              background: rgba(255, 255, 255, 0.1);
+              color: white;
+              transition: background-color 0.2s ease;
+            }
+            .gallery-lightbox-nav:hover {
+              background: rgba(255, 255, 255, 0.2);
+            }
+            .gallery-lightbox-prev {
+              left: 1.25rem;
+            }
+            .gallery-lightbox-next {
+              right: 1.25rem;
+            }
+
+            .gallery-lightbox-counter {
+              position: fixed;
+              bottom: 1.25rem;
+              left: 50%;
+              translate: -50% 0;
+              font-size: 0.8125rem;
+              color: rgba(255, 255, 255, 0.7);
+            }
+          </style>
+
+          <script>
+            function initGalleryLightbox() {
+              const dialogEl = document.querySelector<HTMLDialogElement>('#gallery-lightbox');
+              if (!dialogEl) return;
+              if (dialogEl.dataset.lightboxBound === 'true') return;
+              dialogEl.dataset.lightboxBound = 'true';
+              // Re-bound to a non-nullable alias: TS's narrowing from the
+              // guard above doesn't persist into the nested function/event
+              // closures below, which all reference this.
+              const dialog: HTMLDialogElement = dialogEl;
+
+              const images: string[] = JSON.parse(dialog.dataset.images ?? '[]');
+              const imgEl = dialog.querySelector<HTMLImageElement>('[data-gallery-image]');
+              const counterEl = dialog.querySelector<HTMLElement>('[data-gallery-counter]');
+              const closeBtn = dialog.querySelector<HTMLButtonElement>('[data-gallery-close]');
+              const prevBtn = dialog.querySelector<HTMLButtonElement>('[data-gallery-prev]');
+              const nextBtn = dialog.querySelector<HTMLButtonElement>('[data-gallery-next]');
+              const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-gallery-trigger]'));
+
+              let currentIndex = 0;
+              let closeTimer: number | undefined;
+
+              function render() {
+                if (!imgEl || !images[currentIndex]) return;
+                imgEl.src = images[currentIndex];
+                imgEl.alt = `Gallery photo ${currentIndex + 1} of ${images.length}`;
+                if (counterEl) counterEl.textContent = `${currentIndex + 1} / ${images.length}`;
+              }
+
+              function open(index: number) {
+                currentIndex = index;
+                render();
+                window.clearTimeout(closeTimer);
+                dialog.classList.remove('is-open');
+                dialog.showModal();
+                document.documentElement.classList.add('overflow-hidden');
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => dialog.classList.add('is-open'));
+                });
+              }
+
+              function requestClose() {
+                dialog.classList.remove('is-open');
+                document.documentElement.classList.remove('overflow-hidden');
+                const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (prefersReducedMotion) {
+                  dialog.close();
+                  return;
+                }
+                closeTimer = window.setTimeout(() => dialog.close(), 250);
+              }
+
+              function next() {
+                currentIndex = (currentIndex + 1) % images.length;
+                render();
+              }
+
+              function prev() {
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                render();
+              }
+
+              triggers.forEach((trigger) => {
+                trigger.addEventListener('click', () => open(Number(trigger.dataset.index)));
+              });
+
+              closeBtn?.addEventListener('click', requestClose);
+              nextBtn?.addEventListener('click', next);
+              prevBtn?.addEventListener('click', prev);
+
+              dialog.addEventListener('cancel', (e) => {
+                e.preventDefault();
+                requestClose();
+              });
+
+              dialog.addEventListener('click', (e) => {
+                if (e.target === dialog) requestClose();
+              });
+
+              dialog.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') next();
+                if (e.key === 'ArrowLeft') prev();
+              });
+            }
+
+            initGalleryLightbox();
+            document.addEventListener('astro:page-load', initGalleryLightbox);
+          </script>
         </section>
       )}
 
