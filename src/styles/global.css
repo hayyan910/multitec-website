@@ -13,6 +13,16 @@
   --color-body:        #4a4a4a;
 }
 
+/* Smooth in-page anchor scrolling (e.g. the hero's scroll cue) — the header
+   is sticky at h-16 (4rem), so scroll-padding-top keeps the target heading
+   from landing underneath it. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 4rem;
+  }
+}
+
 /*
   DaisyUI 'multitec' theme
   Primary red  — #E31E24 → oklch(58.5% 0.226 26.6)
