@@ -117,28 +117,32 @@ const compliance = [
       if (!image) return;
       // astro:page-load also fires on the initial page load (not just
       // client-side navigations), and this function is also called directly
-      // below. Without this guard, a second init that lands after the image
-      // has already scrolled into view creates a fresh ScrollTrigger whose
-      // onEnter fires immediately on creation — launching a second tween
-      // that overlaps the first (killing the old ScrollTrigger by id doesn't
-      // kill a tween it already started).
+      // below — without this guard, two competing scroll-scrubbed tweens
+      // would both drive the same element's scale.
       if (image.dataset.storyRevealBound === 'true') return;
       image.dataset.storyRevealBound = 'true';
 
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (prefersReducedMotion) return; // static markup already shows the resting scale
 
-      // A single settle-in, not a continuous Ken-Burns pan: the image eases
-      // down to its resting scale once on scroll-in, then stays static — see
-      // the matching comment pattern in index.astro's stat rings for why the
-      // tween is built inside onEnter rather than gsap.timeline({scrollTrigger}).
-      ScrollTrigger.create({
-        id: 'story-image',
-        trigger: image,
-        start: 'top 55%',
-        once: true,
-        onEnter: () => {
-          gsap.fromTo(image, { scale: 1.06 }, { scale: 1, duration: 1.8, ease: 'power2.out' });
+      // Scroll-scrubbed, not a one-shot reveal: the image holds a visible
+      // zoom at page load and gradually settles to its true scale as the
+      // page scrolls, tied directly to scroll position (scrub) so there's
+      // no snap/jump — it just tracks the scroll. Tied to absolute scroll
+      // distance from the top of the page, not the image's own position:
+      // on this page the image already sits well inside the viewport at
+      // scrollY 0 (the hero above it is short), so a trigger relative to
+      // the image's own entry into the viewport (e.g. 'top bottom') would
+      // already be partway through its range before the page even loads.
+      gsap.set(image, { scale: 1.08 });
+      gsap.to(image, {
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: {
+          id: 'story-image',
+          start: 0,
+          end: 500,
+          scrub: 0.6,
         },
       });
     }
