@@ -98,6 +98,7 @@ const compliance = [
             alt="Multitec Maldives electrical engineering work"
             width={800}
             height={600}
+            data-story-image
             class="h-full min-h-72 w-full object-cover"
           />
         </div>
@@ -105,6 +106,46 @@ const compliance = [
       </div>
     </div>
   </section>
+
+  <script>
+    import { gsap } from 'gsap';
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
+    gsap.registerPlugin(ScrollTrigger);
+
+    function initStoryImageReveal() {
+      const image = document.querySelector<HTMLImageElement>('[data-story-image]');
+      if (!image) return;
+      // astro:page-load also fires on the initial page load (not just
+      // client-side navigations), and this function is also called directly
+      // below. Without this guard, a second init that lands after the image
+      // has already scrolled into view creates a fresh ScrollTrigger whose
+      // onEnter fires immediately on creation — launching a second tween
+      // that overlaps the first (killing the old ScrollTrigger by id doesn't
+      // kill a tween it already started).
+      if (image.dataset.storyRevealBound === 'true') return;
+      image.dataset.storyRevealBound = 'true';
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return; // static markup already shows the resting scale
+
+      // A single settle-in, not a continuous Ken-Burns pan: the image eases
+      // down to its resting scale once on scroll-in, then stays static — see
+      // the matching comment pattern in index.astro's stat rings for why the
+      // tween is built inside onEnter rather than gsap.timeline({scrollTrigger}).
+      ScrollTrigger.create({
+        id: 'story-image',
+        trigger: image,
+        start: 'top 55%',
+        once: true,
+        onEnter: () => {
+          gsap.fromTo(image, { scale: 1.06 }, { scale: 1, duration: 1.8, ease: 'power2.out' });
+        },
+      });
+    }
+
+    initStoryImageReveal();
+    document.addEventListener('astro:page-load', initStoryImageReveal);
+  </script>
 
   <!-- ── SECTION 3: STATS BAR ── -->
   <StatsBar />
