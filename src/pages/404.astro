@@ -14,8 +14,12 @@ import CircuitBoard from '../components/CircuitBoard.astro';
 
     <div class="relative z-10 mx-auto w-full max-w-3xl px-6 py-14 text-center sm:py-20">
       <div class="flex items-center justify-center gap-5">
-        <span class="h-16 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-[#E31E24] to-[#8f1116]" aria-hidden="true"></span>
-        <span class="font-display text-7xl font-black text-white md:text-8xl">404</span>
+        <span
+          class="h-16 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-[#E31E24] to-[#8f1116]"
+          data-breaker-tick
+          aria-hidden="true"
+        ></span>
+        <span class="font-display text-7xl font-black text-white md:text-8xl" data-fault-numeral>404</span>
       </div>
 
       <h1 class="font-display mt-8 text-3xl font-bold text-white md:text-4xl">
@@ -38,4 +42,38 @@ import CircuitBoard from '../components/CircuitBoard.astro';
       </div>
     </div>
   </section>
+
+  <script>
+    import { gsap } from 'gsap';
+
+    function initCircuitFault() {
+      const breaker = document.querySelector<HTMLElement>('[data-breaker-tick]');
+      const numeral = document.querySelector<HTMLElement>('[data-fault-numeral]');
+      if (!breaker || !numeral) return;
+      if (breaker.dataset.faultBound === 'true') return;
+      breaker.dataset.faultBound = 'true';
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return; // static markup already shows the resting state
+
+      // The error itself, dramatized: the breaker trips (double flare), which
+      // "cuts power" to the numeral, which flickers as it loses and regains
+      // power before settling. One cause-and-effect moment, fires once.
+      const tl = gsap.timeline({ delay: 0.15 });
+
+      tl.to(breaker, { filter: 'brightness(2.2)', boxShadow: '0 0 18px 2px rgba(227,30,36,0.9)', duration: 0.08 })
+        .to(breaker, { filter: 'brightness(1)', boxShadow: '0 0 0 0 rgba(227,30,36,0)', duration: 0.1 })
+        .to(breaker, { filter: 'brightness(1.8)', boxShadow: '0 0 14px 1px rgba(227,30,36,0.75)', duration: 0.06 }, '+=0.04')
+        .to(breaker, { filter: 'brightness(1)', boxShadow: '0 0 0 0 rgba(227,30,36,0)', duration: 0.12 })
+        .to(numeral, { opacity: 0.2, textShadow: '0 0 14px rgba(227,30,36,0.7)', duration: 0.06 }, '<+=0.02')
+        .to(numeral, { opacity: 1, textShadow: '0 0 0 rgba(227,30,36,0)', duration: 0.1 })
+        .to(numeral, { opacity: 0.5, textShadow: '0 0 10px rgba(227,30,36,0.55)', duration: 0.05 }, '+=0.08')
+        .to(numeral, { opacity: 1, textShadow: '0 0 0 rgba(227,30,36,0)', duration: 0.15 })
+        .to(numeral, { opacity: 0.85, duration: 0.04 }, '+=0.1')
+        .to(numeral, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+    }
+
+    initCircuitFault();
+    document.addEventListener('astro:page-load', initCircuitFault);
+  </script>
 </BaseLayout>
