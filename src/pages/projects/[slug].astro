@@ -109,7 +109,8 @@ const categories = Array.isArray(project?.category)
               <img
                 src={coverImageUrl}
                 alt={`${project.title} project photo`}
-                class="w-full rounded-xl object-cover shadow-lg aspect-[4/3]"
+                class="w-full rounded-xl object-cover shadow-lg aspect-[4/3] opacity-0 transition-opacity duration-500"
+                data-fade-image
               />
             </div>
           )}
@@ -132,7 +133,8 @@ const categories = Array.isArray(project?.category)
                   <img
                     src={img}
                     alt={`${project.title} photo ${i + 1}`}
-                    class="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    class="aspect-[4/3] w-full object-cover opacity-0 transition-all duration-500 group-hover:scale-105"
+                    data-fade-image
                     loading="lazy"
                   />
                 </button>
@@ -383,6 +385,33 @@ const categories = Array.isArray(project?.category)
         </div>
       </nav>
     </article>
+
+    <script>
+      // Cover photo and gallery thumbnails fade in on load instead of
+      // popping in abruptly — guarded per-image (not a single page-level
+      // flag) since there can be many of these on one page.
+      function initImageFadeIn() {
+        const images = document.querySelectorAll<HTMLImageElement>('[data-fade-image]');
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        images.forEach((img) => {
+          if (img.dataset.fadeBound === 'true') return;
+          img.dataset.fadeBound = 'true';
+
+          if (prefersReducedMotion || img.complete) {
+            img.classList.remove('opacity-0');
+            return;
+          }
+
+          const reveal = () => img.classList.remove('opacity-0');
+          img.addEventListener('load', reveal, { once: true });
+          img.addEventListener('error', reveal, { once: true });
+        });
+      }
+
+      initImageFadeIn();
+      document.addEventListener('astro:page-load', initImageFadeIn);
+    </script>
   ) : (
     <section class="flex min-h-[70vh] items-center justify-center px-4">
       <div class="text-center">
