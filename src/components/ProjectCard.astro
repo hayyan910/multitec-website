@@ -1,11 +1,17 @@
 ---
 import type { Project } from '../types';
+import { sanityImageUrl } from '../utils/sanityImage';
 
 interface Props {
   project: Project;
 }
 
 const { project } = Astro.props;
+// Card renders at roughly 350-400px wide in the grid — 700px covers 2x retina
+// without shipping the full-resolution Sanity original (seen as large as
+// 4000px wide, the dominant contributor to this site's PageSpeed "enormous
+// network payload" / "improve image delivery" findings).
+const coverImageUrl = project.coverImage ? sanityImageUrl(project.coverImage, 700) : undefined;
 const categories = Array.isArray(project.category)
   ? project.category
   : project.category
@@ -30,7 +36,7 @@ function formatDate(dateStr: string): string {
       <!-- Cover image — degrades to bg-base-200 when file is absent -->
       <div
         class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-        style={project.coverImage ? `background-image: url('${project.coverImage}')` : undefined}
+        style={coverImageUrl ? `background-image: url('${coverImageUrl}')` : undefined}
         role="img"
         aria-label={project.title}
       />

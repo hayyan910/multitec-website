@@ -3,13 +3,14 @@ import { sanityClient } from 'sanity:client';
 import { defineQuery } from 'groq';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Project } from '../../types';
+import { sanityImageUrl } from '../../utils/sanityImage';
 
 const PROJECT_QUERY = defineQuery(
   `*[_type == "project" && slug.current == $slug][0] {
     _id, title, "slug": slug.current, description, category,
     client, location, year, completionDate,
-    "coverImage": coverImage.asset->url,
-    "images": images[].asset->url,
+    coverImage,
+    images,
     featured, body
   }`
 );
@@ -23,11 +24,12 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const project = await sanityClient.fetch(PROJECT_QUERY, { slug }) as Project | null;
-// The GROQ projection above resolves images to plain URL strings
-// ("images": images[].asset->url), which doesn't match the shared
-// Project.images type ({ url, alt }[]) — that type describes a different
-// shape used elsewhere. Re-cast to what this query actually returns.
-const galleryImages = (project?.images as unknown as string[] | undefined) ?? [];
+const coverImageUrl = project?.coverImage ? sanityImageUrl(project.coverImage, 900) : undefined;
+// Two sizes per gallery photo: small for the grid thumbnail, larger for the
+// lightbox's full-size view (still far short of the raw Sanity original,
+// which was seen as large as 4000px wide).
+const galleryThumbUrls = (project?.images ?? []).map((img) => sanityImageUrl(img, 700));
+const galleryFullUrls = (project?.images ?? []).map((img) => sanityImageUrl(img, 1400, 82));
 const categories = Array.isArray(project?.category)
   ? project.category
   : project?.category
@@ -102,10 +104,10 @@ const categories = Array.isArray(project?.category)
           </div>
 
           <!-- Right: cover image -->
-          {project.coverImage && (
+          {coverImageUrl && (
             <div class="mt-10 lg:mt-0">
               <img
-                src={project.coverImage}
+                src={coverImageUrl}
                 alt={`${project.title} project photo`}
                 class="w-full rounded-xl object-cover shadow-lg aspect-[4/3]"
               />
@@ -115,17 +117,17 @@ const categories = Array.isArray(project?.category)
       </header>
 
       <!-- Gallery -->
-      {galleryImages.length > 0 && (
+      {galleryThumbUrls.length > 0 && (
         <section class="bg-[#F5F5F5] py-14" aria-label="Project gallery">
           <div class="mx-auto max-w-6xl px-6">
-            <div class={`grid gap-4 ${galleryImages.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : galleryImages.length === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-3'}`}>
-              {galleryImages.map((img, i) => (
+            <div class={`grid gap-4 ${galleryThumbUrls.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : galleryThumbUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-3'}`}>
+              {galleryThumbUrls.map((img, i) => (
                 <button
                   type="button"
                   class="group relative cursor-zoom-in overflow-hidden rounded-lg shadow-sm"
                   data-gallery-trigger
                   data-index={i}
-                  aria-label={`View photo ${i + 1} of ${galleryImages.length} full size`}
+                  aria-label={`View photo ${i + 1} of ${galleryThumbUrls.length} full size`}
                 >
                   <img
                     src={img}
@@ -143,14 +145,14 @@ const categories = Array.isArray(project?.category)
             id="gallery-lightbox"
             class="gallery-lightbox"
             aria-label={`${project.title} gallery, full size view`}
-            data-images={JSON.stringify(galleryImages)}
+            data-images={JSON.stringify(galleryFullUrls)}
           >
             <button type="button" class="gallery-lightbox-close" data-gallery-close aria-label="Close">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M18 6l-12 12" /><path d="M6 6l12 12" />
               </svg>
             </button>
-            {galleryImages.length > 1 && (
+            {galleryThumbUrls.length > 1 && (
               <>
                 <button type="button" class="gallery-lightbox-nav gallery-lightbox-prev" data-gallery-prev aria-label="Previous photo">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -165,7 +167,7 @@ const categories = Array.isArray(project?.category)
               </>
             )}
             <img data-gallery-image alt="" />
-            {galleryImages.length > 1 && (
+            {galleryThumbUrls.length > 1 && (
               <p class="gallery-lightbox-counter" data-gallery-counter aria-live="polite"></p>
             )}
           </dialog>

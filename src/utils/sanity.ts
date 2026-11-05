@@ -12,7 +12,7 @@ const PROJECT_FIELDS = `
   location,
   year,
   completionDate,
-  "coverImage": coverImage.asset->url,
+  coverImage,
   featured,
   body
 `;
