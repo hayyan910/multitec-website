@@ -94,6 +94,12 @@ const filterChips = [...knownChips, ...extraChips];
       const emptyState = document.querySelector<HTMLElement>('[data-filter-empty]');
       const status = document.querySelector<HTMLElement>('[data-filter-status]');
       if (!grid || !chips.length) return;
+      // astro:page-load also fires on the initial page load (not just
+      // client-side navigations), and this function is also called directly
+      // below — without this guard, every listener gets bound twice, firing
+      // two startViewTransition() calls per click and breaking the animation.
+      if (grid.dataset.filtersBound === 'true') return;
+      grid.dataset.filtersBound = 'true';
 
       const cards = grid.querySelectorAll<HTMLElement>('[data-project-card]');
 
