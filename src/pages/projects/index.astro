@@ -142,10 +142,32 @@ const filterChips = [...knownChips, ...extraChips];
         return chip?.dataset.value ?? 'all';
       }
 
+      // Filtering animates via the View Transitions API when available: cards
+      // that leave/enter fade+scale, and cards that stay get a smooth
+      // position morph into their new grid slot instead of an instant snap.
+      // Transition names are assigned only for the duration of the
+      // transition so they don't linger and interfere with Astro's own
+      // page-to-page view transitions elsewhere on the site.
       chips.forEach((chip) => {
         chip.addEventListener('click', () => {
           const value = chip.dataset.value ?? 'all';
-          applyFilter(value);
+          const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+          if (!document.startViewTransition || prefersReducedMotion) {
+            applyFilter(value);
+            return;
+          }
+
+          cards.forEach((card, i) => {
+            card.style.viewTransitionName = `project-card-${i}`;
+          });
+
+          const transition = document.startViewTransition(() => applyFilter(value));
+          transition.finished.finally(() => {
+            cards.forEach((card) => {
+              card.style.viewTransitionName = '';
+            });
+          });
         });
       });
 
