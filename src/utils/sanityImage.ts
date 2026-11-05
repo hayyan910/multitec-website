@@ -1,7 +1,7 @@
-import imageUrlBuilder from '@sanity/image-url';
+import { createImageUrlBuilder } from '@sanity/image-url';
 import type { SanityImageRef } from '../types';
 
-const builder = imageUrlBuilder({
+const builder = createImageUrlBuilder({
   projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID,
   dataset: import.meta.env.PUBLIC_SANITY_DATASET,
 });

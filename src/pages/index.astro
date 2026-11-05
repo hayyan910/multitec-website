@@ -5,6 +5,7 @@ import CtaBanner from '../components/CtaBanner.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { getFeaturedProjects, getServices } from '../utils/sanity';
+import heroBg from '../assets/images/hero-bg.jpg';
 
 const services = await getServices();
 const featuredProjects = await getFeaturedProjects();
@@ -223,12 +224,13 @@ const whyUs = [
     <!-- Image column -->
     <div class="relative hidden min-h-[420px] bg-[#111] lg:block">
       <Image
-        src="/images/company/hero-bg.jpg"
+        src={heroBg}
         alt="Multitec Maldives electrical engineering work"
         width={900}
         height={1050}
         class="absolute inset-0 h-full w-full object-cover"
         loading="eager"
+        fetchpriority="high"
       />
       <div class="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#1a1a1a]/30"></div>
 
@@ -282,7 +284,7 @@ const whyUs = [
           i === 0 ? (
             <article class="group relative overflow-hidden rounded-2xl bg-[#111]" data-animate>
               <Image
-                src="/images/company/hero-bg.jpg"
+                src={heroBg}
                 alt=""
                 width={900}
                 height={700}
