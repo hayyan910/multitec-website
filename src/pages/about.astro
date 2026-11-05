@@ -128,12 +128,16 @@ const compliance = [
       // Scroll-scrubbed, not a one-shot reveal: the image holds a visible
       // zoom at page load and gradually settles to its true scale as the
       // page scrolls, tied directly to scroll position (scrub) so there's
-      // no snap/jump — it just tracks the scroll. Tied to absolute scroll
-      // distance from the top of the page, not the image's own position:
-      // on this page the image already sits well inside the viewport at
-      // scrollY 0 (the hero above it is short), so a trigger relative to
-      // the image's own entry into the viewport (e.g. 'top bottom') would
-      // already be partway through its range before the page even loads.
+      // no snap/jump — it just tracks the scroll. Starts at the top of the
+      // page (scrollY 0) rather than the image's own viewport entry — on
+      // this page the image already sits well inside the viewport at
+      // scrollY 0 (the hero above it is short), so an entry-relative start
+      // like 'top bottom' would already be partway through its range before
+      // the page even loads. The end point IS tied to the image's own
+      // position though: computed (as a function, so it re-measures on
+      // resize) so the zoom finishes exactly when the image's vertical
+      // center reaches the viewport's center — not a fixed scroll distance
+      // that could complete while the image has already scrolled out of view.
       gsap.set(image, { scale: 1.08 });
       gsap.to(image, {
         scale: 1,
@@ -141,7 +145,11 @@ const compliance = [
         scrollTrigger: {
           id: 'story-image',
           start: 0,
-          end: 500,
+          end: () => {
+            const rect = image.getBoundingClientRect();
+            const imageCenterDocY = rect.top + window.scrollY + rect.height / 2;
+            return imageCenterDocY - window.innerHeight / 2;
+          },
           scrub: 0.6,
         },
       });
