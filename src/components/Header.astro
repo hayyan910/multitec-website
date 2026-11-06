@@ -50,11 +50,13 @@ const navLinks = [
       </a>
     </nav>
 
-    <!-- Mobile hamburger — toggles the DaisyUI drawer defined in BaseLayout -->
+    <!-- Mobile hamburger — toggles the DaisyUI drawer defined in BaseLayout.
+         aria-label lives on the #mobile-nav-drawer input itself, not here —
+         aria-label is a prohibited attribute on <label> per the ARIA spec
+         (its accessible name must come from content, not an override). -->
     <label
       for="mobile-nav-drawer"
       class="btn btn-ghost btn-sm text-white md:hidden"
-      aria-label="Open navigation menu"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
