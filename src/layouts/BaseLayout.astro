@@ -86,11 +86,18 @@ const navLinks = [
     </a>
 
     <!--
-      DaisyUI drawer-end: side panel slides in from the right.
-      The <label for="mobile-nav-drawer"> toggle lives in Header.astro.
+      DaisyUI drawer-end: side panel slides in from the right. This checkbox
+      drives the same drawer-open CSS as before (DaisyUI's
+      .drawer-toggle:checked ~ .drawer-side rule, left untouched), but it's
+      no longer an interactive control a user touches directly — JS below
+      flips its checked state. It's aria-hidden + untabbable because the
+      real control is the #mobile-nav-toggle button in Header.astro, which
+      properly reports open/closed state via aria-expanded (the old
+      <label for> + hidden-checkbox pattern had no way to do that, and left
+      this checkbox sitting outside every landmark region on the page).
     -->
     <div class="drawer drawer-end">
-      <input id="mobile-nav-drawer" type="checkbox" class="drawer-toggle" aria-label="Toggle navigation menu" />
+      <input id="mobile-nav-drawer" type="checkbox" class="drawer-toggle" aria-hidden="true" tabindex="-1" />
 
       <!-- ── Page shell ── -->
       <div class="drawer-content flex min-h-screen flex-col">
@@ -128,12 +135,10 @@ const navLinks = [
 
       <!-- ── Mobile side drawer ── -->
       <div class="drawer-side z-[200]">
-        <label
-          for="mobile-nav-drawer"
-          class="drawer-overlay"
-        ></label>
+        <div class="drawer-overlay" aria-hidden="true" data-mobile-nav-overlay></div>
 
         <nav
+          id="mobile-nav-panel"
           class="flex min-h-screen w-72 flex-col bg-[#1a1a1a] px-6 py-8"
           aria-label="Mobile navigation"
         >
@@ -211,6 +216,70 @@ const navLinks = [
 
       observeAnimations();
       document.addEventListener('astro:page-load', observeAnimations);
+
+      // Mobile nav toggle — a real button driving aria-expanded, in place of
+      // the old hidden-checkbox + <label for> CSS trick. The checkbox and
+      // DaisyUI's .drawer-toggle:checked CSS stay as the actual open/close
+      // visual mechanism (unchanged); this just flips the checkbox's
+      // checked state programmatically instead of a user touching it
+      // directly, and manages focus the way a real disclosure control should.
+      function initMobileNavToggle() {
+        const toggle = document.querySelector<HTMLButtonElement>('#mobile-nav-toggle');
+        const checkbox = document.querySelector<HTMLInputElement>('#mobile-nav-drawer');
+        const overlay = document.querySelector<HTMLElement>('[data-mobile-nav-overlay]');
+        const panel = document.querySelector<HTMLElement>('#mobile-nav-panel');
+        if (!toggle || !checkbox || !overlay || !panel) return;
+        if (toggle.dataset.navToggleBound === 'true') return;
+        toggle.dataset.navToggleBound = 'true';
+
+        const drawerSide = panel.closest<HTMLElement>('.drawer-side');
+
+        function focusFirstPanelItem() {
+          panel.querySelector<HTMLElement>('a, button')?.focus();
+        }
+
+        function open() {
+          checkbox.checked = true;
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.setAttribute('aria-label', 'Close navigation menu');
+          // DaisyUI's drawer CSS has its own transition-delay before
+          // visibility actually flips (so opacity/slide can animate in
+          // sync) — focusing before that delay elapses silently no-ops,
+          // since a still-hidden element isn't focusable. Waiting for the
+          // real transitionend avoids guessing at that delay's duration.
+          if (drawerSide) {
+            const onTransitionEnd = (e: TransitionEvent) => {
+              if (e.propertyName !== 'visibility') return;
+              drawerSide.removeEventListener('transitionend', onTransitionEnd);
+              focusFirstPanelItem();
+            };
+            drawerSide.addEventListener('transitionend', onTransitionEnd);
+          } else {
+            focusFirstPanelItem();
+          }
+        }
+
+        function close({ returnFocus = false } = {}) {
+          checkbox.checked = false;
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.setAttribute('aria-label', 'Open navigation menu');
+          if (returnFocus) toggle.focus();
+        }
+
+        toggle.addEventListener('click', () => {
+          if (checkbox.checked) close({ returnFocus: true });
+          else open();
+        });
+
+        overlay.addEventListener('click', () => close());
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && checkbox.checked) close({ returnFocus: true });
+        });
+      }
+
+      initMobileNavToggle();
+      document.addEventListener('astro:page-load', initMobileNavToggle);
     </script>
   </body>
 </html>
