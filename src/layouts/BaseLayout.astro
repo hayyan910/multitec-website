@@ -90,7 +90,7 @@ const navLinks = [
       The <label for="mobile-nav-drawer"> toggle lives in Header.astro.
     -->
     <div class="drawer drawer-end">
-      <input id="mobile-nav-drawer" type="checkbox" class="drawer-toggle" />
+      <input id="mobile-nav-drawer" type="checkbox" class="drawer-toggle" aria-label="Toggle navigation menu" />
 
       <!-- ── Page shell ── -->
       <div class="drawer-content flex min-h-screen flex-col">
@@ -155,7 +155,7 @@ const navLinks = [
                   class={[
                     'block rounded px-3 py-3 text-sm font-medium transition-colors duration-200',
                     pathname === href
-                      ? 'text-[#E31E24]'
+                      ? 'bg-[#E31E24]/15 text-white'
                       : 'text-white/70 hover:text-white',
                   ].join(' ')}
                   aria-current={pathname === href ? 'page' : undefined}

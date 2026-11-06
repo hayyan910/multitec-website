@@ -131,7 +131,7 @@ const whyUs = [
           const [, value, suffix] = match ?? [null, stat.number, ''];
           return (
             <div class="flex flex-col items-start">
-              <div class="relative flex h-[66px] w-[66px] items-center justify-center">
+              <dt class="relative flex h-[66px] w-[66px] items-center justify-center font-display text-base font-extrabold text-white">
                 <svg width="66" height="66" class="absolute inset-0 -rotate-90">
                   <circle cx="33" cy="33" r="27" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" />
                   <circle
@@ -144,10 +144,8 @@ const whyUs = [
                     data-target-offset={dashoffsets[i]}
                   />
                 </svg>
-                <dt class="font-display text-base font-extrabold text-white">
-                  <span class="stat-ring-value" data-target-value={value}>{value}</span>{suffix}
-                </dt>
-              </div>
+                <span class="stat-ring-value" data-target-value={value}>{value}</span>{suffix}
+              </dt>
               <dd class="mt-2 text-xs text-white/45">{stat.label}</dd>
             </div>
           );
