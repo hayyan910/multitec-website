@@ -49,7 +49,7 @@ const iconSvg = icons[service.icon] ?? icons.bolt;
     href={`/services#${service.id}`}
     class="mt-auto inline-flex items-center gap-1 text-sm font-medium text-[#E31E24] hover:underline"
   >
-    Learn more
+    Learn more<span class="sr-only"> about {service.title}</span>
     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M5 12h14" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" />
     </svg>
