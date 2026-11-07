@@ -17,14 +17,6 @@
   --spacing-frame: clamp(1.5rem, 5vw, 6rem);
 }
 
-/* TEMPORARY layout comparison (see BaseLayout ?frame=wide): widens every
-   max-w-6xl content column to 90rem and makes the header/hero gutter follow
-   that same column, so the whole site shares one left edge. */
-html[data-frame='wide'] {
-  --container-6xl: 90rem;
-  --spacing-frame: max(1.5rem, calc((100vw - 90rem) / 2 + 1.5rem));
-}
-
 /* Smooth in-page anchor scrolling (e.g. the hero's scroll cue) — the header
    is sticky at h-16 (4rem), so scroll-padding-top keeps the target heading
    from landing underneath it. */
