@@ -73,18 +73,8 @@ const whyUs = [
 
   <!-- ── SECTION 1: HERO (grounded in the trade) ── -->
   <section
-    class="home-hero relative grid min-h-[min(calc(100dvh-4rem),50rem)] overflow-hidden bg-[#1a1a1a] lg:grid-cols-[11fr_9fr]"
-    data-hero-variant="c"
+    class="home-hero relative grid min-h-[min(calc(100dvh-4rem),68rem)] overflow-hidden bg-[#1a1a1a] lg:grid-cols-[11fr_9fr]"
   >
-    <!-- TEMPORARY design comparison: /?hero=a shows variant A (full-bleed
-         photo), default is variant C (blended photo + circuit feed). Remove
-         this script and the losing variant's CSS once one is chosen. -->
-    <script is:inline>
-      (() => {
-        const v = new URLSearchParams(location.search).get('hero');
-        if (v === 'a' || v === 'c') document.currentScript.parentElement.dataset.heroVariant = v;
-      })();
-    </script>
     <!-- Ambient circuit-trace texture -->
     <svg class="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" aria-hidden="true">
       <defs>
@@ -102,9 +92,9 @@ const whyUs = [
     </svg>
 
     <!-- Text column -->
-    <!-- On desktop the left padding tracks the site's centered max-w-6xl
-         container, so the hero shares a left edge with the logo and sections. -->
-    <div class="relative z-10 flex flex-col justify-center px-6 py-20 sm:px-10 md:py-24 lg:py-16 lg:pl-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))] lg:pr-12">
+    <!-- On desktop the left padding uses the full-width frame gutter shared
+         with the header, so the hero text lines up with the logo. -->
+    <div class="relative z-10 flex flex-col justify-center px-6 py-20 sm:px-10 md:py-24 lg:py-16 lg:pl-frame lg:pr-12">
       <!-- Nameplate -->
       <div class="relative mb-8 inline-flex w-fit items-center gap-2.5 rounded-md border border-white/15 bg-gradient-to-b from-[#333333] to-[#1c1c1c] px-4 py-2.5 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_3px_8px_rgba(0,0,0,0.4)]">
         <span class="absolute left-1 top-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]"></span>
@@ -117,7 +107,7 @@ const whyUs = [
 
       <!-- Headline with breaker-tick -->
       <div class="flex items-start gap-5">
-        <div class="relative mt-2.5 h-28 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-[#E31E24] to-[#8f1116]">
+        <div class="relative mt-2.5 h-28 w-1.5 shrink-0 2xl:mt-4 2xl:h-36 rounded-full bg-gradient-to-b from-[#E31E24] to-[#8f1116]">
           <!-- Single-line-diagram feed: a trace runs in from the screen edge
                and terminates at the breaker-tick, filling the wide-screen gutter. -->
           <span class="hero-trace" aria-hidden="true">
@@ -127,12 +117,12 @@ const whyUs = [
           </span>
           <span class="hero-tick-dot absolute -left-1 -top-2 h-3.5 w-3.5 rounded-full bg-[#E31E24] shadow-[0_0_12px_rgba(227,30,36,0.7)]"></span>
         </div>
-        <h1 class="font-display max-w-lg text-4xl font-black leading-[1.06] tracking-tight text-white sm:text-5xl lg:text-[3.25rem]">
+        <h1 class="font-display max-w-lg text-4xl font-black leading-[1.06] tracking-tight text-white sm:text-5xl lg:text-[3.25rem] 2xl:max-w-2xl 2xl:text-[4.25rem]">
           Powering the Maldives with Precision &amp; Expertise
         </h1>
       </div>
 
-      <p class="ml-7 mt-6 max-w-md text-base leading-relaxed text-white/60 md:text-lg">
+      <p class="ml-7 mt-6 max-w-md text-base leading-relaxed text-white/60 md:text-lg 2xl:max-w-xl 2xl:text-xl">
         End-to-end electrical solutions — panel boards, CCTV, lightning protection, and more.
         Serving every island of the Republic.
       </p>
@@ -247,7 +237,7 @@ const whyUs = [
     </div>
 
     <!-- Image column -->
-    <div class="hero-photo-col relative hidden min-h-[420px] lg:block">
+    <div class="relative hidden min-h-[420px] lg:block">
       <div class="hero-photo absolute inset-0 bg-[#111]">
         <Image
           src={heroBg}
@@ -262,7 +252,7 @@ const whyUs = [
       </div>
 
       <!-- Credential badge — compact, anchored to the bottom of the photo -->
-      <div class="hero-badge absolute bottom-10 left-6 flex w-fit items-center gap-3 rounded-xl border border-white/10 bg-[#0f0f0f]/85 p-3.5 backdrop-blur">
+      <div class="absolute bottom-10 left-6 flex w-fit items-center gap-3 rounded-xl border border-white/10 bg-[#0f0f0f]/85 p-3.5 backdrop-blur">
         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E31E24]">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M5 13l4 4l10 -10" />
@@ -466,53 +456,34 @@ const whyUs = [
 </BaseLayout>
 
 <style>
-  /* Hero layout variants (temporary comparison, see data-hero-variant).
-     Both only change the desktop split layout; mobile is unaffected. */
+  /* Desktop hero: the photo bleeds left and fades into the dark side, and a
+     circuit trace feeds the breaker-tick from the screen edge. Mobile hides
+     the photo column and trace entirely. */
   .hero-trace {
     display: none;
   }
 
   @media (min-width: 1024px) {
-    /* ── Variant A: photo spans the whole hero under a left-to-right scrim ── */
-    [data-hero-variant='a'] .hero-photo-col {
-      position: static;
-    }
-    [data-hero-variant='a'] .hero-photo-scrim {
-      background: linear-gradient(
-        to right,
-        #1a1a1a 0%,
-        rgb(26 26 26 / 0.94) 38%,
-        rgb(26 26 26 / 0.6) 62%,
-        rgb(26 26 26 / 0.15) 100%
-      );
-    }
-    [data-hero-variant='a'] .hero-badge {
-      left: auto;
-      right: 7rem; /* clears the floating WhatsApp button */
-    }
-
-    /* ── Variant C: photo bleeds left and fades into the dark side ── */
-    [data-hero-variant='c'] .hero-photo {
+    .hero-photo {
       left: -14vw;
       -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 45%);
       mask-image: linear-gradient(to right, transparent 0%, #000 45%);
     }
-    [data-hero-variant='c'] .hero-photo-scrim {
+    .hero-photo-scrim {
       background: linear-gradient(to right, rgb(26 26 26 / 0.5), rgb(26 26 26 / 0) 55%);
     }
-
   }
 
   /* Trace spans exactly from the screen edge to the breaker-tick: its width
-     mirrors the text column's left padding. Below 1280px that gutter is too
+     is the same frame gutter as the text column's left padding. Below 1280px that gutter is too
      narrow to read as a line, so it's only shown from there up. */
   @media (min-width: 1280px) {
-    [data-hero-variant='c'] .hero-trace {
+    .hero-trace {
       display: block;
       position: absolute;
       right: 100%;
       top: -2px;
-      width: max(1.5rem, calc((100vw - 72rem) / 2 + 1.5rem));
+      width: var(--spacing-frame);
       height: 2px;
       background: linear-gradient(to right, rgb(227 30 36 / 0.3), rgb(227 30 36 / 0.9));
     }
@@ -549,10 +520,10 @@ const whyUs = [
   }
 
   @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-    [data-hero-variant='c'] .hero-trace-pulse {
+    .hero-trace-pulse {
       animation: hero-trace-pulse 1.3s cubic-bezier(0.55, 0, 0.35, 1) 0.5s forwards;
     }
-    [data-hero-variant='c'] .hero-tick-dot {
+    .hero-tick-dot {
       animation: hero-tick-flare 0.7s ease-out 1.7s;
     }
   }

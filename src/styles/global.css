@@ -11,6 +11,10 @@
   --color-surface:     #FAFAFA;
   --color-heading:     #1a1a1a;
   --color-body:        #4a4a4a;
+
+  /* Side gutter for full-width bands (header, home hero): grows with the
+     screen instead of following the centered max-w-6xl content column. */
+  --spacing-frame: clamp(1.5rem, 5vw, 6rem);
 }
 
 /* Smooth in-page anchor scrolling (e.g. the hero's scroll cue) — the header
