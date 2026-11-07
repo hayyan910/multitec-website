@@ -33,10 +33,37 @@ const serviceIcons: Record<string, string> = {
 };
 
 const stats = [
-  { number: '23+', label: 'Years Active' },
-  { number: '200+', label: 'Projects Completed' },
-  { number: '50+', label: 'Clients Served' },
-];
+  { number: '23+', label: 'Years Active', unit: 'YRS' },
+  { number: '200+', label: 'Projects Completed', unit: 'PROJ' },
+  { number: '50+', label: 'Clients Served', unit: 'CLNT' },
+].map((stat) => {
+  const [, value, suffix] = stat.number.match(/^(\d+)(.*)$/) ?? [null, stat.number, ''];
+  return { ...stat, value, suffix };
+});
+
+// Analog panel-meter dial (viewBox 0 0 100 100). The needle rests at the same
+// "running normally" position on every meter: it signals the gauge is live,
+// not a fake reading of the number, which has no meaningful full scale.
+const DIAL = { cx: 50, cy: 66, r: 40, sweep: 50, rest: 18 };
+const round = (n: number) => Math.round(n * 100) / 100;
+const polar = (deg: number, r: number) => {
+  const a = (deg * Math.PI) / 180;
+  return [round(DIAL.cx + r * Math.sin(a)), round(DIAL.cy - r * Math.cos(a))];
+};
+const arcPath = (from: number, to: number, r: number) => {
+  const [x1, y1] = polar(from, r);
+  const [x2, y2] = polar(to, r);
+  return `M${x1} ${y1} A${r} ${r} 0 0 1 ${x2} ${y2}`;
+};
+const dialTicks = Array.from({ length: 21 }, (_, i) => {
+  const deg = -DIAL.sweep + i * 5;
+  const major = i % 5 === 0;
+  const [x1, y1] = polar(deg, DIAL.r);
+  const [x2, y2] = polar(deg, DIAL.r - (major ? 7 : 3.5));
+  return { x1, y1, x2, y2, major };
+});
+const dialScale = arcPath(-DIAL.sweep, DIAL.sweep, DIAL.r);
+const dialRedZone = arcPath(32, DIAL.sweep, DIAL.r + 2.5);
 
 const whyUs = [
   {
@@ -139,100 +166,163 @@ const whyUs = [
         </a>
       </div>
 
-      <!-- Meter-style stats — rings draw in and numbers count up on scroll-into-view, via GSAP ScrollTrigger below -->
-      <dl class="ml-7 mt-12 flex gap-6 sm:gap-10" data-stat-rings>
-        {stats.map((stat, i) => {
-          const dashoffsets = [34, 20, 55];
-          const circumference = 169.6;
-          const match = stat.number.match(/^(\d+)(.*)$/);
-          const [, value, suffix] = match ?? [null, stat.number, ''];
-          return (
-            <div class="flex flex-col items-start">
-              <dt class="relative flex h-[66px] w-[66px] items-center justify-center font-display text-base font-extrabold text-white">
-                <svg width="66" height="66" class="absolute inset-0 -rotate-90">
-                  <circle cx="33" cy="33" r="27" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" />
-                  <circle
-                    class="stat-ring-arc"
-                    cx="33" cy="33" r="27" fill="none" stroke="#E31E24" stroke-width="3"
-                    stroke-dasharray={circumference}
-                    stroke-dashoffset={dashoffsets[i]}
-                    stroke-linecap="round"
-                    data-circumference={circumference}
-                    data-target-offset={dashoffsets[i]}
-                  />
-                </svg>
-                <span class="stat-ring-value" data-target-value={value}>{value}</span>{suffix}
-              </dt>
-              <dd class="mt-2 text-xs text-white/45">{stat.label}</dd>
+      <!-- Hero stats, styled as panel instruments that "power on" once the
+           circuit pulse reaches the breaker-tick. Two designs for comparison:
+           B = digital readouts (default), C = analog panel meters (?stats=c). -->
+      <div class="ml-7 mt-12" data-hero-stats data-stats-variant="b">
+
+        <!-- Variant B: digital meter readouts -->
+        <dl class="stats-readout grid w-full max-w-md grid-cols-3 divide-x divide-white/10 overflow-hidden rounded-lg border border-white/10 bg-[#121212] shadow-[inset_0_2px_8px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.06)]">
+          {stats.map((stat) => (
+            <div class="readout-cell flex flex-col gap-2 px-3.5 py-3.5 sm:px-5">
+              <dt class="order-2 text-[11px] leading-tight text-white/55">{stat.label}</dt>
+              <dd class="order-1 flex items-center gap-2">
+                <span class="readout-led h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden="true"></span>
+                <span class="readout-display font-display text-2xl font-bold leading-none tabular-nums sm:text-[1.75rem]">
+                  <span class="readout-digits inline-block text-right" style={`min-width: ${stat.value.length}ch`} data-target-value={stat.value}>{stat.value}</span><span class="readout-suffix">{stat.suffix}</span>
+                </span>
+              </dd>
             </div>
-          );
-        })}
-      </dl>
+          ))}
+        </dl>
+
+        <!-- Variant C: analog panel meters -->
+        <dl class="stats-gauges grid w-full max-w-md grid-cols-3 gap-3">
+          {stats.map((stat) => (
+            <div class="gauge flex flex-col items-center text-center">
+              <dt class="order-2 mt-1 text-[11px] leading-tight text-white/55">{stat.label}</dt>
+              <dd class="order-1 flex flex-col items-center">
+                <span class="gauge-bezel relative block h-[84px] w-[84px] rounded-md p-[5px] lg:h-24 lg:w-24" aria-hidden="true">
+                  <span class="gauge-lamp absolute right-1.5 top-1.5 h-1 w-1 rounded-full"></span>
+                  <svg viewBox="0 0 100 100" class="h-full w-full">
+                    <rect x="0" y="0" width="100" height="100" rx="5" fill="#161616" />
+                    <path d={dialScale} fill="none" stroke="rgb(255 255 255 / 0.35)" stroke-width="1" />
+                    <path d={dialRedZone} fill="none" stroke="#E31E24" stroke-width="3.5" />
+                    {dialTicks.map((t) => (
+                      <line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke={t.major ? 'rgb(255 255 255 / 0.75)' : 'rgb(255 255 255 / 0.35)'} stroke-width={t.major ? 1.6 : 0.9} />
+                    ))}
+                    <text x="50" y="86" text-anchor="middle" font-size="8" font-weight="600" letter-spacing="1" fill="rgb(255 255 255 / 0.4)">{stat.unit}</text>
+                    <g data-needle data-rest={DIAL.rest} transform={`rotate(${DIAL.rest} ${DIAL.cx} ${DIAL.cy})`}>
+                      <line x1={DIAL.cx} y1={DIAL.cy + 6} x2={DIAL.cx} y2={DIAL.cy - DIAL.r + 3} stroke="#ff3a40" stroke-width="1.6" stroke-linecap="round" />
+                    </g>
+                    <circle cx={DIAL.cx} cy={DIAL.cy} r="3.5" fill="#2a2a2a" stroke="rgb(255 255 255 / 0.3)" stroke-width="0.8" />
+                    <rect x="0" y="0" width="100" height="50" rx="5" fill="url(#gauge-glass)" />
+                  </svg>
+                </span>
+                <span class="mt-2 font-display text-xl font-bold leading-none text-white tabular-nums">
+                  <span class="gauge-digits inline-block text-right" style={`min-width: ${stat.value.length}ch`} data-target-value={stat.value}>{stat.value}</span>{stat.suffix}
+                </span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <svg width="0" height="0" class="absolute" aria-hidden="true">
+          <defs>
+            <linearGradient id="gauge-glass" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity="0.07" />
+              <stop offset="1" stop-color="#fff" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <!-- Runs during parsing, before first paint: picks the variant
+             (TEMPORARY ?stats= comparison) and, unless reduced motion is on,
+             puts the instruments in their "off" state so the power-on
+             animation never flashes the final values first. -->
+        <script is:inline>
+          (() => {
+            const root = document.currentScript.parentElement;
+            const v = new URLSearchParams(location.search).get('stats');
+            if (v === 'b' || v === 'c') root.dataset.statsVariant = v;
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            root.dataset.armed = '';
+            root.querySelectorAll('[data-needle]').forEach((n) => n.setAttribute('transform', 'rotate(-50 50 66)'));
+          })();
+        </script>
+      </div>
 
       <script>
         import { gsap } from 'gsap';
         import { ScrollTrigger } from 'gsap/ScrollTrigger';
         gsap.registerPlugin(ScrollTrigger);
 
-        function initStatRings() {
-          const root = document.querySelector('[data-stat-rings]');
-          if (!root) return;
+        const LED_ON = { backgroundColor: '#ff3a40', boxShadow: '0 0 8px 2px rgba(255, 58, 64, 0.75)' };
 
-          ScrollTrigger.getById('hero-stat-rings')?.kill();
+        function countUp(tl: gsap.core.Timeline, el: HTMLElement, at: number, duration: number) {
+          const target = Number(el.dataset.targetValue);
+          const counter = { val: 0 };
+          el.textContent = '0';
+          tl.to(counter, {
+            val: target,
+            duration,
+            ease: 'power2.out',
+            onUpdate: () => { el.textContent = String(Math.round(counter.val)); },
+          }, at);
+        }
 
-          const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-          const arcs = Array.from(root.querySelectorAll<SVGCircleElement>('.stat-ring-arc'));
-          const values = Array.from(root.querySelectorAll<HTMLElement>('.stat-ring-value'));
+        function powerReadouts(root: HTMLElement, delay: number) {
+          const tl = gsap.timeline({ delay });
+          root.querySelectorAll<HTMLElement>('.readout-cell').forEach((cell, i) => {
+            const at = i * 0.28;
+            const digits = cell.querySelector<HTMLElement>('.readout-digits')!;
+            const suffix = cell.querySelector<HTMLElement>('.readout-suffix')!;
+            tl.to(cell.querySelector('.readout-led'), { ...LED_ON, duration: 0.08 }, at);
+            // A display warming up: a couple of uneven flickers, then steady.
+            tl.to([digits, suffix], { keyframes: { opacity: [0, 1, 0.2, 0.9, 0.5, 1] }, duration: 0.4, ease: 'none' }, at + 0.06);
+            countUp(tl, digits, at + 0.06, 1.1);
+          });
+        }
 
-          if (prefersReducedMotion) return; // static markup already shows final values
+        function powerGauges(root: HTMLElement, delay: number) {
+          const tl = gsap.timeline({ delay });
+          root.querySelectorAll<HTMLElement>('.gauge').forEach((gauge, i) => {
+            const at = i * 0.22;
+            const needle = gauge.querySelector<SVGGElement>('[data-needle]')!;
+            const digits = gauge.querySelector<HTMLElement>('.gauge-digits')!;
+            const rest = Number(needle.dataset.rest);
+            // Hand the armed pose over to GSAP's own transform tracking.
+            needle.removeAttribute('transform');
+            gsap.set(needle, { rotation: -50, svgOrigin: '50 66' });
 
-          // Nothing is touched until onEnter actually fires — the static markup
-          // (final dashoffset + final number) stays correct and visible right up
-          // until that moment, even for rings already in view at page load.
-          // (Deliberately not using gsap.timeline({scrollTrigger}) + fromTo here:
-          // that pattern can apply its "from" state as soon as the timeline is
-          // built, before the trigger condition is met, which would flash the
-          // rings to empty. Building the tween inside onEnter avoids that
-          // ambiguity entirely instead of relying on immediateRender defaults.)
+            tl.to(gauge.querySelector('.gauge-lamp'), { ...LED_ON, duration: 0.08 }, at);
+            // Power-on self-test: needle swings to full scale, then settles.
+            tl.to(needle, { rotation: 50, svgOrigin: '50 66', duration: 0.45, ease: 'power2.in' }, at + 0.05);
+            tl.to(needle, { rotation: rest, svgOrigin: '50 66', duration: 1.4, ease: 'elastic.out(1, 0.35)' }, at + 0.5);
+            tl.to(digits, { opacity: 1, duration: 0.2 }, at + 0.05);
+            countUp(tl, digits, at + 0.05, 1.4);
+          });
+        }
+
+        function initHeroStats() {
+          const root = document.querySelector<HTMLElement>('[data-hero-stats]');
+          if (!root || root.dataset.statsBound === 'true') return;
+          root.dataset.statsBound = 'true';
+          ScrollTrigger.getById('hero-stats')?.kill();
+
+          if (!('armed' in root.dataset)) return; // reduced motion: static final values
+
+          // On wide screens the circuit pulse runs into the breaker-tick first
+          // (CSS, ~1.8s); the instruments power on right as it arrives.
+          const initAt = performance.now();
+          const trace = document.querySelector('.hero-trace');
+          const fedByTrace = !!trace && getComputedStyle(trace).display !== 'none';
+
           ScrollTrigger.create({
-            id: 'hero-stat-rings',
+            id: 'hero-stats',
             trigger: root,
-            start: 'top 85%',
+            start: 'top 92%',
             once: true,
             onEnter: () => {
-              const tl = gsap.timeline();
-              arcs.forEach((arc, i) => {
-                const circumference = Number(arc.dataset.circumference);
-                const targetOffset = Number(arc.dataset.targetOffset);
-                tl.fromTo(
-                  arc,
-                  { strokeDashoffset: circumference },
-                  { strokeDashoffset: targetOffset, duration: 1.4, ease: 'power2.out' },
-                  i * 0.12
-                );
-
-                const valueEl = values[i];
-                const targetValue = Number(valueEl.dataset.targetValue);
-                const counter = { val: 0 };
-                tl.to(
-                  counter,
-                  {
-                    val: targetValue,
-                    duration: 1.4,
-                    ease: 'power2.out',
-                    onUpdate: () => {
-                      valueEl.textContent = String(Math.round(counter.val));
-                    },
-                  },
-                  i * 0.12
-                );
-              });
+              const elapsed = (performance.now() - initAt) / 1000;
+              const delay = fedByTrace ? Math.max(0.15, 1.75 - elapsed) : 0.15;
+              if (root.dataset.statsVariant === 'c') powerGauges(root, delay);
+              else powerReadouts(root, delay);
             },
           });
         }
 
-        initStatRings();
-        document.addEventListener('astro:page-load', initStatRings);
+        initHeroStats();
+        document.addEventListener('astro:page-load', initHeroStats);
       </script>
     </div>
 
@@ -538,6 +628,63 @@ const whyUs = [
     35% {
       transform: scale(1.3);
       box-shadow: 0 0 26px 6px rgb(227 30 36 / 0.95);
+    }
+  }
+
+  /* ── Hero stats instruments ── */
+  [data-stats-variant='b'] .stats-gauges,
+  [data-stats-variant='c'] .stats-readout {
+    display: none;
+  }
+
+  /* B: glowing LED-meter digits. */
+  .readout-digits,
+  .readout-suffix {
+    color: #ff3a40;
+    text-shadow: 0 0 10px rgb(255 58 64 / 0.45);
+  }
+  .readout-suffix {
+    margin-left: 1px;
+    font-size: 0.7em;
+  }
+
+  /* C: metal bezel around each meter face. */
+  .gauge-bezel {
+    background: linear-gradient(145deg, #3a3a3a, #1b1b1b);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08),
+      0 4px 10px rgb(0 0 0 / 0.5),
+      inset 0 1px 0 rgb(255 255 255 / 0.12);
+  }
+
+  /* Indicator lamps are lit at rest; the armed (pre-animation) state turns
+     them off until GSAP powers them on. */
+  .readout-led,
+  .gauge-lamp {
+    background: #ff3a40;
+    box-shadow: 0 0 8px 2px rgb(255 58 64 / 0.75);
+  }
+  [data-armed] .readout-led,
+  [data-armed] .gauge-lamp {
+    background: #3b1416;
+    box-shadow: none;
+    animation: stats-lamp-failsafe 0s 4s forwards;
+  }
+  [data-armed] .readout-digits,
+  [data-armed] .readout-suffix,
+  [data-armed] .gauge-digits {
+    opacity: 0;
+    animation: stats-value-failsafe 0s 4s forwards;
+  }
+  /* Failsafe: if the animation script never runs, everything still lights up
+     after 4s rather than leaving the stats blank. */
+  @keyframes stats-value-failsafe {
+    to { opacity: 1; }
+  }
+  @keyframes stats-lamp-failsafe {
+    to {
+      background: #ff3a40;
+      box-shadow: 0 0 8px 2px rgb(255 58 64 / 0.75);
     }
   }
 </style>
