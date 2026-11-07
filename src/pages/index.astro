@@ -144,16 +144,13 @@ const whyUs = [
       </div>
 
       <!-- Hero stats as panel instruments that "power on" once the circuit
-           pulse reaches the breaker-tick.
-           TEMPORARY comparison: default is the mounting plate (matches the
-           nameplate above); ?stats=seg shows the previous single-box layout. -->
-      <div class="ml-7 mt-12" data-hero-stats data-stats-variant="plate">
+           pulse reaches the breaker-tick. -->
+      <div class="ml-7 mt-12" data-hero-stats>
 
         <!-- Mounting plate: same finish and corner screws as the nameplate,
              holding three meter modules. -->
         <div
-          class="stats-plate relative w-full max-w-md rounded-md border border-white/15 bg-gradient-to-b from-[#333333] to-[#1c1c1c] p-3 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_3px_8px_rgba(0,0,0,0.4)] 2xl:max-w-lg"
-          data-variant-panel="plate"
+          class="relative w-full max-w-md rounded-md border border-white/15 bg-gradient-to-b from-[#333333] to-[#1c1c1c] p-3 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_3px_8px_rgba(0,0,0,0.4)] 2xl:max-w-lg"
         >
           <span class="absolute left-1 top-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
           <span class="absolute right-1 top-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
@@ -177,33 +174,12 @@ const whyUs = [
           </dl>
         </div>
 
-        <!-- Previous single-box layout (?stats=seg) -->
-        <dl
-          class="stats-box grid w-full max-w-md grid-cols-3 divide-x divide-white/10 overflow-hidden rounded-lg border border-white/10 bg-[#141414] shadow-[inset_0_2px_8px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.06)]"
-          data-variant-panel="seg"
-        >
-          {stats.map((stat) => (
-            <div class="meter relative flex flex-col gap-2.5 px-3 py-3 sm:px-4">
-              <span class="stat-led absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full" aria-hidden="true"></span>
-              <dt class="order-2 text-[11px] leading-tight text-white/55">{stat.label}</dt>
-              <dd class="order-1">
-                <span class="sr-only">{stat.number}</span>
-                <span class="inline-flex rounded-[3px] bg-[#0a0a0a] px-2 py-1.5 shadow-[inset_0_1px_4px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.05)]" aria-hidden="true">
-                  <SegmentDisplay value={stat.value} suffix={stat.suffix} class="h-5 sm:h-7" />
-                </span>
-              </dd>
-            </div>
-          ))}
-        </dl>
-
-        <!-- Runs during parsing, before first paint: picks the variant and,
-             unless reduced motion is on, puts the instruments in their "off"
-             state so the power-on animation never flashes final values first. -->
+        <!-- Runs during parsing, before first paint: unless reduced motion is
+             on, puts the instruments in their "off" state so the power-on
+             animation never flashes final values first. -->
         <script is:inline>
           (() => {
             const root = document.currentScript.parentElement;
-            const v = new URLSearchParams(location.search).get('stats');
-            if (v === 'plate' || v === 'seg') root.dataset.statsVariant = v;
             if (!matchMedia('(prefers-reduced-motion: reduce)').matches) root.dataset.armed = '';
           })();
         </script>
@@ -249,8 +225,7 @@ const whyUs = [
         }
 
         function powerMeters(root: HTMLElement, delay: number) {
-          const panel = root.querySelector(`[data-variant-panel="${root.dataset.statsVariant}"]`)!;
-          const meters = panel.querySelectorAll<HTMLElement>('.meter');
+          const meters = root.querySelectorAll<HTMLElement>('.meter');
           // Take over from the CSS armed state: displays dark, lamps off.
           meters.forEach((meter) => {
             setDisplay(meter.querySelector('svg')!, 'blank');
@@ -608,11 +583,6 @@ const whyUs = [
   }
 
   /* ── Hero stats instruments ── */
-  [data-stats-variant='plate'] .stats-box,
-  [data-stats-variant='seg'] .stats-plate {
-    display: none;
-  }
-
   /* Faint glass reflection across the top of each meter window. */
   .meter-window::after {
     content: '';
