@@ -72,7 +72,19 @@ const whyUs = [
 >
 
   <!-- ── SECTION 1: HERO (grounded in the trade) ── -->
-  <section class="relative grid min-h-[calc(100dvh-4rem)] overflow-hidden bg-[#1a1a1a] lg:grid-cols-[11fr_9fr]">
+  <section
+    class="home-hero relative grid min-h-[min(calc(100dvh-4rem),50rem)] overflow-hidden bg-[#1a1a1a] lg:grid-cols-[11fr_9fr]"
+    data-hero-variant="c"
+  >
+    <!-- TEMPORARY design comparison: /?hero=a shows variant A (full-bleed
+         photo), default is variant C (blended photo + circuit feed). Remove
+         this script and the losing variant's CSS once one is chosen. -->
+    <script is:inline>
+      (() => {
+        const v = new URLSearchParams(location.search).get('hero');
+        if (v === 'a' || v === 'c') document.currentScript.parentElement.dataset.heroVariant = v;
+      })();
+    </script>
     <!-- Ambient circuit-trace texture -->
     <svg class="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" aria-hidden="true">
       <defs>
@@ -106,7 +118,14 @@ const whyUs = [
       <!-- Headline with breaker-tick -->
       <div class="flex items-start gap-5">
         <div class="relative mt-2.5 h-28 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-[#E31E24] to-[#8f1116]">
-          <span class="absolute -left-1 -top-2 h-3.5 w-3.5 rounded-full bg-[#E31E24] shadow-[0_0_12px_rgba(227,30,36,0.7)]"></span>
+          <!-- Single-line-diagram feed: a trace runs in from the screen edge
+               and terminates at the breaker-tick, filling the wide-screen gutter. -->
+          <span class="hero-trace" aria-hidden="true">
+            <span class="hero-trace-pulse"></span>
+            <span class="hero-trace-node hero-trace-node--near"></span>
+            <span class="hero-trace-node hero-trace-node--far"></span>
+          </span>
+          <span class="hero-tick-dot absolute -left-1 -top-2 h-3.5 w-3.5 rounded-full bg-[#E31E24] shadow-[0_0_12px_rgba(227,30,36,0.7)]"></span>
         </div>
         <h1 class="font-display max-w-lg text-4xl font-black leading-[1.06] tracking-tight text-white sm:text-5xl lg:text-[3.25rem]">
           Powering the Maldives with Precision &amp; Expertise
@@ -228,20 +247,22 @@ const whyUs = [
     </div>
 
     <!-- Image column -->
-    <div class="relative hidden min-h-[420px] bg-[#111] lg:block">
-      <Image
-        src={heroBg}
-        alt="Multitec Maldives electrical engineering work"
-        width={2400}
-        quality={90}
-        class="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
-        fetchpriority="high"
-      />
-      <div class="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#1a1a1a]/30"></div>
+    <div class="hero-photo-col relative hidden min-h-[420px] lg:block">
+      <div class="hero-photo absolute inset-0 bg-[#111]">
+        <Image
+          src={heroBg}
+          alt="Multitec Maldives electrical engineering work"
+          width={2400}
+          quality={90}
+          class="absolute inset-0 h-full w-full object-cover"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <div class="hero-photo-scrim absolute inset-0"></div>
+      </div>
 
-      <!-- Credential badge — compact, anchored to the bottom-left of the photo -->
-      <div class="absolute bottom-10 left-6 flex w-fit items-center gap-3 rounded-xl border border-white/10 bg-[#0f0f0f]/85 p-3.5 backdrop-blur">
+      <!-- Credential badge — compact, anchored to the bottom of the photo -->
+      <div class="hero-badge absolute bottom-10 left-6 flex w-fit items-center gap-3 rounded-xl border border-white/10 bg-[#0f0f0f]/85 p-3.5 backdrop-blur">
         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E31E24]">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M5 13l4 4l10 -10" />
@@ -443,3 +464,109 @@ const whyUs = [
   />
 
 </BaseLayout>
+
+<style>
+  /* Hero layout variants (temporary comparison, see data-hero-variant).
+     Both only change the desktop split layout; mobile is unaffected. */
+  .hero-trace {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    /* ── Variant A: photo spans the whole hero under a left-to-right scrim ── */
+    [data-hero-variant='a'] .hero-photo-col {
+      position: static;
+    }
+    [data-hero-variant='a'] .hero-photo-scrim {
+      background: linear-gradient(
+        to right,
+        #1a1a1a 0%,
+        rgb(26 26 26 / 0.94) 38%,
+        rgb(26 26 26 / 0.6) 62%,
+        rgb(26 26 26 / 0.15) 100%
+      );
+    }
+    [data-hero-variant='a'] .hero-badge {
+      left: auto;
+      right: 7rem; /* clears the floating WhatsApp button */
+    }
+
+    /* ── Variant C: photo bleeds left and fades into the dark side ── */
+    [data-hero-variant='c'] .hero-photo {
+      left: -14vw;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 45%);
+      mask-image: linear-gradient(to right, transparent 0%, #000 45%);
+    }
+    [data-hero-variant='c'] .hero-photo-scrim {
+      background: linear-gradient(to right, rgb(26 26 26 / 0.5), rgb(26 26 26 / 0) 55%);
+    }
+
+  }
+
+  /* Trace spans exactly from the screen edge to the breaker-tick: its width
+     mirrors the text column's left padding. Below 1280px that gutter is too
+     narrow to read as a line, so it's only shown from there up. */
+  @media (min-width: 1280px) {
+    [data-hero-variant='c'] .hero-trace {
+      display: block;
+      position: absolute;
+      right: 100%;
+      top: -2px;
+      width: max(1.5rem, calc((100vw - 72rem) / 2 + 1.5rem));
+      height: 2px;
+      background: linear-gradient(to right, rgb(227 30 36 / 0.3), rgb(227 30 36 / 0.9));
+    }
+  }
+
+  .hero-trace-node {
+    position: absolute;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    border: 1.5px solid #e31e24;
+    border-radius: 9999px;
+    background: #1a1a1a;
+    transform: translate(50%, -50%);
+  }
+  .hero-trace-node--near {
+    right: 30%;
+  }
+  .hero-trace-node--far {
+    right: 70%;
+  }
+
+  .hero-trace-pulse {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      transparent calc(100% - 7rem),
+      #ff8a8d calc(100% - 0.75rem),
+      transparent 100%
+    );
+    filter: drop-shadow(0 0 4px rgb(255 80 85 / 0.9));
+    transform: translateX(-100%);
+  }
+
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    [data-hero-variant='c'] .hero-trace-pulse {
+      animation: hero-trace-pulse 1.3s cubic-bezier(0.55, 0, 0.35, 1) 0.5s forwards;
+    }
+    [data-hero-variant='c'] .hero-tick-dot {
+      animation: hero-tick-flare 0.7s ease-out 1.7s;
+    }
+  }
+
+  @keyframes hero-trace-pulse {
+    0% { transform: translateX(-100%); opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateX(0); opacity: 0; }
+  }
+
+  @keyframes hero-tick-flare {
+    35% {
+      transform: scale(1.3);
+      box-shadow: 0 0 26px 6px rgb(227 30 36 / 0.95);
+    }
+  }
+</style>
