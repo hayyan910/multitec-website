@@ -1,0 +1,66 @@
+---
+import { DIGIT_SEGMENTS, PLUS, SEG, SEGMENT_IDS, SEGMENT_POINTS, segmentLayout } from '../utils/sevenSegment';
+
+interface Props {
+  value: string;
+  suffix?: string;
+  class?: string;
+}
+
+const { value, suffix = '', class: className } = Astro.props;
+const layout = segmentLayout(value, suffix);
+---
+
+<!-- Decorative: callers provide the value as text for assistive tech. -->
+<svg
+  class:list={['seg-digits', className]}
+  viewBox={`0 0 ${layout.width} ${SEG.h}`}
+  data-cells={layout.cells}
+  data-target-value={value}
+  aria-hidden="true"
+>
+  <g transform={`translate(${SEG.slant} 0) skewX(-8)`}>
+    {layout.chars.map((ch, i) => (
+      <g data-digit transform={`translate(${i * SEG.pitch} 0)`}>
+        {SEGMENT_IDS.map((id) => (
+          <polygon
+            points={SEGMENT_POINTS[id]}
+            data-seg={id}
+            class={DIGIT_SEGMENTS[ch].includes(id) ? 'seg is-on' : 'seg'}
+          />
+        ))}
+      </g>
+    ))}
+    {layout.hasPlus && (
+      <g data-plus>
+        <rect class="seg is-on" x={layout.plusX} y={SEG.h / 2 - PLUS.bar / 2} width={PLUS.size} height={PLUS.bar} />
+        <rect class="seg is-on" x={layout.plusX + PLUS.size / 2 - PLUS.bar / 2} y={SEG.h / 2 - PLUS.size / 2} width={PLUS.bar} height={PLUS.size} />
+      </g>
+    )}
+  </g>
+</svg>
+
+<style>
+  /* Unlit segments stay faintly visible, as on a real LED meter; the glow
+     follows the lit segments' shape. */
+  .seg-digits {
+    width: auto;
+    overflow: visible;
+    filter: drop-shadow(0 0 4px rgb(255 58 64 / 0.55));
+  }
+  .seg {
+    fill: rgb(255 58 64 / 0.09);
+  }
+  .seg.is-on {
+    fill: #ff3a40;
+  }
+  /* Pre-animation "off" state (set by the parent before first paint), with
+     a failsafe that lights the display after 4s if the animation never runs. */
+  :global([data-armed]) .seg.is-on {
+    fill: rgb(255 58 64 / 0.09);
+    animation: segment-failsafe 0s 4s forwards;
+  }
+  @keyframes segment-failsafe {
+    to { fill: #ff3a40; }
+  }
+</style>

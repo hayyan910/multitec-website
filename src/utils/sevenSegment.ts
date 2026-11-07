@@ -64,3 +64,20 @@ export const SEGMENT_IDS = Object.keys(SEGMENT_POINTS) as SegmentId[];
 export function toDisplayChars(value: number, cells: number): string[] {
   return String(value).padStart(cells, ' ').slice(-cells).split('');
 }
+
+export const PLUS = { gap: 7, size: 14, bar: 4 } as const;
+
+/** One digit cell per digit of the final value, plus an optional lit "+". */
+export function segmentLayout(value: string, suffix: string) {
+  const cells = value.length;
+  const digitsWidth = (cells - 1) * SEG.pitch + SEG.w;
+  const hasPlus = suffix === '+';
+  const plusX = digitsWidth + PLUS.gap;
+  return {
+    cells,
+    chars: toDisplayChars(Number(value), cells),
+    hasPlus,
+    plusX,
+    width: (hasPlus ? plusX + PLUS.size : digitsWidth) + SEG.slant + 1,
+  };
+}

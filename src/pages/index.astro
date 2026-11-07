@@ -6,7 +6,7 @@ import ServiceCard from '../components/ServiceCard.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { getProjects, getServices } from '../utils/sanity';
 import heroBg from '../assets/images/hero-bg.jpg';
-import { DIGIT_SEGMENTS, SEG, SEGMENT_IDS, SEGMENT_POINTS, toDisplayChars } from '../utils/sevenSegment';
+import SegmentDisplay from '../components/SegmentDisplay.astro';
 
 const services = await getServices();
 // Always show 6 (fills both the 2- and 3-column grid evenly): featured
@@ -33,29 +33,13 @@ const serviceIcons: Record<string, string> = {
   tool: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 10h3v-3l-3.5 -3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1 -3 3l-6 -6a6 6 0 0 1 -8 -8l3.5 3.5" />`,
 };
 
-const PLUS = { gap: 7, size: 14, bar: 4 };
 const stats = [
   { number: '23+', label: 'Years Active' },
   { number: '200+', label: 'Projects Completed' },
   { number: '50+', label: 'Clients Served' },
 ].map((stat) => {
   const [, value, suffix] = stat.number.match(/^(\d+)(.*)$/) ?? [null, stat.number, ''];
-  // 7-segment layout: one digit cell per digit of the final value, then a
-  // lit "+" drawn as two bars.
-  const cells = value.length;
-  const digitsWidth = (cells - 1) * SEG.pitch + SEG.w;
-  const hasPlus = suffix === '+';
-  const plusX = digitsWidth + PLUS.gap;
-  return {
-    ...stat,
-    value,
-    suffix,
-    cells,
-    chars: toDisplayChars(Number(value), cells),
-    hasPlus,
-    plusX,
-    segWidth: (hasPlus ? plusX + PLUS.size : digitsWidth) + SEG.slant + 1,
-  };
+  return { ...stat, value, suffix };
 });
 
 const whyUs = [
@@ -160,60 +144,52 @@ const whyUs = [
       </div>
 
       <!-- Hero stats as panel instruments that "power on" once the circuit
-           pulse reaches the breaker-tick. Default: 7-segment displays.
-           TEMPORARY comparison: ?stats=b shows the previous LED-text readouts. -->
-      <div class="ml-7 mt-12" data-hero-stats data-stats-variant="seg">
+           pulse reaches the breaker-tick.
+           TEMPORARY comparison: default is the mounting plate (matches the
+           nameplate above); ?stats=seg shows the previous single-box layout. -->
+      <div class="ml-7 mt-12" data-hero-stats data-stats-variant="plate">
 
-        <!-- 7-segment displays (default) -->
-        <dl class="stats-segment grid w-full max-w-md grid-cols-3 divide-x divide-white/10 overflow-hidden rounded-lg border border-white/10 bg-[#141414] shadow-[inset_0_2px_8px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.06)]">
+        <!-- Mounting plate: same finish and corner screws as the nameplate,
+             holding three meter modules. -->
+        <div
+          class="stats-plate relative w-full max-w-md rounded-md border border-white/15 bg-gradient-to-b from-[#333333] to-[#1c1c1c] p-3 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_3px_8px_rgba(0,0,0,0.4)] 2xl:max-w-lg"
+          data-variant-panel="plate"
+        >
+          <span class="absolute left-1 top-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
+          <span class="absolute right-1 top-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
+          <span class="absolute bottom-1 left-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
+          <span class="absolute bottom-1 right-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
+          <dl class="grid grid-cols-3 gap-2.5">
+            {stats.map((stat) => (
+              <div class="meter flex flex-col gap-2">
+                <dt class="order-2 flex items-start gap-1.5 text-[10px] font-semibold uppercase leading-tight tracking-wider text-white/60">
+                  <span class="stat-led mt-[3px] h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden="true"></span>
+                  {stat.label}
+                </dt>
+                <dd class="order-1">
+                  <span class="sr-only">{stat.number}</span>
+                  <span class="meter-window relative flex justify-end overflow-hidden rounded-[3px] bg-[#0a0a0a] px-2 py-2 shadow-[inset_0_1px_4px_rgba(0,0,0,0.9),0_0_0_1px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.07)]" aria-hidden="true">
+                    <SegmentDisplay value={stat.value} suffix={stat.suffix} class="h-5 sm:h-7 2xl:h-8" />
+                  </span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <!-- Previous single-box layout (?stats=seg) -->
+        <dl
+          class="stats-box grid w-full max-w-md grid-cols-3 divide-x divide-white/10 overflow-hidden rounded-lg border border-white/10 bg-[#141414] shadow-[inset_0_2px_8px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.06)]"
+          data-variant-panel="seg"
+        >
           {stats.map((stat) => (
-            <div class="seg-cell relative flex flex-col gap-2.5 px-3 py-3 sm:px-4">
-              <span class="readout-led absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full" aria-hidden="true"></span>
+            <div class="meter relative flex flex-col gap-2.5 px-3 py-3 sm:px-4">
+              <span class="stat-led absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full" aria-hidden="true"></span>
               <dt class="order-2 text-[11px] leading-tight text-white/55">{stat.label}</dt>
               <dd class="order-1">
                 <span class="sr-only">{stat.number}</span>
-                <span class="seg-window inline-flex rounded-[3px] bg-[#0a0a0a] px-2 py-1.5 shadow-[inset_0_1px_4px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.05)]" aria-hidden="true">
-                  <svg
-                    class="seg-digits h-5 w-auto sm:h-7"
-                    viewBox={`0 0 ${stat.segWidth} ${SEG.h}`}
-                    data-cells={stat.cells}
-                    data-target-value={stat.value}
-                  >
-                    <g transform={`translate(${SEG.slant} 0) skewX(-8)`}>
-                      {stat.chars.map((ch, i) => (
-                        <g data-digit transform={`translate(${i * SEG.pitch} 0)`}>
-                          {SEGMENT_IDS.map((id) => (
-                            <polygon
-                              points={SEGMENT_POINTS[id]}
-                              data-seg={id}
-                              class={DIGIT_SEGMENTS[ch].includes(id) ? 'seg is-on' : 'seg'}
-                            />
-                          ))}
-                        </g>
-                      ))}
-                      {stat.hasPlus && (
-                        <g data-plus>
-                          <rect class="seg is-on" x={stat.plusX} y={SEG.h / 2 - PLUS.bar / 2} width={PLUS.size} height={PLUS.bar} />
-                          <rect class="seg is-on" x={stat.plusX + PLUS.size / 2 - PLUS.bar / 2} y={SEG.h / 2 - PLUS.size / 2} width={PLUS.bar} height={PLUS.size} />
-                        </g>
-                      )}
-                    </g>
-                  </svg>
-                </span>
-              </dd>
-            </div>
-          ))}
-        </dl>
-
-        <!-- Previous LED-text readouts (?stats=b) -->
-        <dl class="stats-readout grid w-full max-w-md grid-cols-3 divide-x divide-white/10 overflow-hidden rounded-lg border border-white/10 bg-[#121212] shadow-[inset_0_2px_8px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.06)]">
-          {stats.map((stat) => (
-            <div class="readout-cell flex flex-col gap-2 px-3.5 py-3.5 sm:px-5">
-              <dt class="order-2 text-[11px] leading-tight text-white/55">{stat.label}</dt>
-              <dd class="order-1 flex items-center gap-2">
-                <span class="readout-led h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden="true"></span>
-                <span class="readout-display font-display text-2xl font-bold leading-none tabular-nums sm:text-[1.75rem]">
-                  <span class="readout-digits inline-block text-right" style={`min-width: ${stat.value.length}ch`} data-target-value={stat.value}>{stat.value}</span><span class="readout-suffix">{stat.suffix}</span>
+                <span class="inline-flex rounded-[3px] bg-[#0a0a0a] px-2 py-1.5 shadow-[inset_0_1px_4px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.05)]" aria-hidden="true">
+                  <SegmentDisplay value={stat.value} suffix={stat.suffix} class="h-5 sm:h-7" />
                 </span>
               </dd>
             </div>
@@ -227,7 +203,7 @@ const whyUs = [
           (() => {
             const root = document.currentScript.parentElement;
             const v = new URLSearchParams(location.search).get('stats');
-            if (v === 'b' || v === 'seg') root.dataset.statsVariant = v;
+            if (v === 'plate' || v === 'seg') root.dataset.statsVariant = v;
             if (!matchMedia('(prefers-reduced-motion: reduce)').matches) root.dataset.armed = '';
           })();
         </script>
@@ -272,36 +248,25 @@ const whyUs = [
           }, at);
         }
 
-        function powerSegments(root: HTMLElement, delay: number) {
-          const cells = root.querySelectorAll<HTMLElement>('.seg-cell');
+        function powerMeters(root: HTMLElement, delay: number) {
+          const panel = root.querySelector(`[data-variant-panel="${root.dataset.statsVariant}"]`)!;
+          const meters = panel.querySelectorAll<HTMLElement>('.meter');
           // Take over from the CSS armed state: displays dark, lamps off.
-          cells.forEach((cell) => {
-            setDisplay(cell.querySelector('svg')!, 'blank');
-            gsap.set(cell.querySelector('.readout-led'), LED_OFF);
+          meters.forEach((meter) => {
+            setDisplay(meter.querySelector('svg')!, 'blank');
+            gsap.set(meter.querySelector('.stat-led'), LED_OFF);
           });
           delete root.dataset.armed;
 
           const tl = gsap.timeline({ delay });
-          cells.forEach((cell, i) => {
+          meters.forEach((meter, i) => {
             const at = i * 0.3;
-            const svg = cell.querySelector('svg')!;
-            tl.to(cell.querySelector('.readout-led'), { ...LED_ON, duration: 0.08 }, at);
+            const svg = meter.querySelector('svg')!;
+            tl.to(meter.querySelector('.stat-led'), { ...LED_ON, duration: 0.08 }, at);
             // Lamp test, like a real meter on power-up: every segment lit, then dark.
             tl.call(() => setDisplay(svg, 'test'), [], at + 0.1);
             tl.call(() => setDisplay(svg, 'blank'), [], at + 0.45);
             countUp(tl, Number(svg.dataset.targetValue), at + 0.55, 1.1, (n) => setDisplay(svg, n));
-          });
-        }
-
-        function powerReadouts(root: HTMLElement, delay: number) {
-          const tl = gsap.timeline({ delay });
-          root.querySelectorAll<HTMLElement>('.readout-cell').forEach((cell, i) => {
-            const at = i * 0.28;
-            const digits = cell.querySelector<HTMLElement>('.readout-digits')!;
-            const suffix = cell.querySelector<HTMLElement>('.readout-suffix')!;
-            tl.to(cell.querySelector('.readout-led'), { ...LED_ON, duration: 0.08 }, at);
-            tl.to([digits, suffix], { keyframes: { opacity: [0, 1, 0.2, 0.9, 0.5, 1] }, duration: 0.4, ease: 'none' }, at + 0.06);
-            countUp(tl, Number(digits.dataset.targetValue), at + 0.06, 1.1, (n) => { digits.textContent = String(n); });
           });
         }
 
@@ -327,8 +292,7 @@ const whyUs = [
             onEnter: () => {
               const elapsed = (performance.now() - initAt) / 1000;
               const delay = fedByTrace ? Math.max(0.15, 1.75 - elapsed) : 0.15;
-              if (root.dataset.statsVariant === 'b') powerReadouts(root, delay);
-              else powerSegments(root, delay);
+              powerMeters(root, delay);
             },
           });
         }
@@ -644,62 +608,30 @@ const whyUs = [
   }
 
   /* ── Hero stats instruments ── */
-  [data-stats-variant='seg'] .stats-readout,
-  [data-stats-variant='b'] .stats-segment {
+  [data-stats-variant='plate'] .stats-box,
+  [data-stats-variant='seg'] .stats-plate {
     display: none;
   }
 
-  /* 7-segment displays: unlit segments stay faintly visible, as on a real
-     LED meter; the glow follows the lit segments' shape. */
-  .seg {
-    fill: rgb(255 58 64 / 0.09);
-  }
-  .seg.is-on {
-    fill: #ff3a40;
-  }
-  .seg-digits {
-    overflow: visible;
-    filter: drop-shadow(0 0 4px rgb(255 58 64 / 0.55));
+  /* Faint glass reflection across the top of each meter window. */
+  .meter-window::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 50% 0;
+    background: linear-gradient(to bottom, rgb(255 255 255 / 0.06), transparent);
+    pointer-events: none;
   }
 
-  /* LED-text readouts (comparison variant). */
-  .readout-digits,
-  .readout-suffix {
-    color: #ff3a40;
-    text-shadow: 0 0 10px rgb(255 58 64 / 0.45);
-  }
-  .readout-suffix {
-    margin-left: 1px;
-    font-size: 0.7em;
-  }
-
-  /* Indicator lamps are lit at rest; the armed (pre-animation) state turns
-     everything off until GSAP powers it on. */
-  .readout-led {
+  /* Status lamps are lit at rest; the armed (pre-animation) state turns them
+     off until GSAP powers them on, with a 4s failsafe if it never runs. */
+  .stat-led {
     background: #ff3a40;
     box-shadow: 0 0 8px 2px rgb(255 58 64 / 0.75);
   }
-  [data-armed] .readout-led {
+  [data-armed] .stat-led {
     background: #3b1416;
     box-shadow: none;
     animation: stats-lamp-failsafe 0s 4s forwards;
-  }
-  [data-armed] .seg.is-on {
-    fill: rgb(255 58 64 / 0.09);
-    animation: stats-segment-failsafe 0s 4s forwards;
-  }
-  [data-armed] .readout-digits,
-  [data-armed] .readout-suffix {
-    opacity: 0;
-    animation: stats-value-failsafe 0s 4s forwards;
-  }
-  /* Failsafe: if the animation script never runs, everything still lights up
-     after 4s rather than leaving the stats blank. */
-  @keyframes stats-value-failsafe {
-    to { opacity: 1; }
-  }
-  @keyframes stats-segment-failsafe {
-    to { fill: #ff3a40; }
   }
   @keyframes stats-lamp-failsafe {
     to {
