@@ -62,13 +62,29 @@ const navLinks = [
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    <!-- Inter from Google Fonts -->
+    <!--
+      Inter + Space Grotesk from Google Fonts, loaded non-render-blocking:
+      media="print" makes the browser fetch it at normal priority without
+      holding up first paint, then onload flips it to media="all" once it's
+      actually available. display=swap in the URL means body text still
+      shows immediately in a fallback font either way, then swaps in.
+      <noscript> covers the rare case JS is disabled, where the onload
+      handler would never fire.
+    -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700;800;900&display=swap"
       rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700;800;900&display=swap"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700;800;900&display=swap"
+      />
+    </noscript>
 
     <meta name="generator" content={Astro.generator} />
 
