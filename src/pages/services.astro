@@ -102,7 +102,7 @@ const steps = [
             <!-- CTA -->
             <div class="pt-2">
               <a
-                href="/contact"
+                href={`/contact?type=quote&service=${service.id}`}
                 class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#E31E24] hover:underline"
               >
                 Request a Quote
@@ -228,7 +228,7 @@ const steps = [
     heading="Have a Project in Mind?"
     subtext="Tell us about your requirements and we'll put together a tailored solution for you."
     buttonText="Request a Quote"
-    buttonLink="/contact"
+    buttonLink="/contact?type=quote"
   />
 
 </BaseLayout>

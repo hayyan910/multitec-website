@@ -31,10 +31,6 @@ export const PROJECTS_QUERY = defineQuery(
   `*[_type == "project"] | order(_createdAt desc) { ${PROJECT_FIELDS} }`
 );
 
-export const FEATURED_PROJECTS_QUERY = defineQuery(
-  `*[_type == "project" && featured == true] | order(_createdAt desc) { ${PROJECT_FIELDS} }`
-);
-
 export const PROJECT_BY_SLUG_QUERY = defineQuery(
   `*[_type == "project" && slug.current == $slug][0] { ${PROJECT_FIELDS} }`
 );
@@ -49,10 +45,6 @@ export const SERVICES_QUERY = defineQuery(
 
 export async function getProjects(): Promise<Project[]> {
   return await sanityClient.fetch(PROJECTS_QUERY);
-}
-
-export async function getFeaturedProjects(): Promise<Project[]> {
-  return await sanityClient.fetch(FEATURED_PROJECTS_QUERY);
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {

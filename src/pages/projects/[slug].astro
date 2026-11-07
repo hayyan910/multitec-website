@@ -381,7 +381,7 @@ const categories = Array.isArray(project?.category)
       <nav class="border-t border-base-200 py-10" aria-label="Project navigation">
         <div class="mx-auto max-w-6xl px-6 flex justify-between">
           <a href="/projects" class="btn btn-outline btn-sm">&larr; All Projects</a>
-          <a href="/contact" class="btn btn-primary btn-sm">Discuss a Similar Project</a>
+          <a href={`/contact?type=consultation&project=${project.slug}`} class="btn btn-primary btn-sm">Discuss a Similar Project</a>
         </div>
       </nav>
     </article>
