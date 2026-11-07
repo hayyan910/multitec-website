@@ -88,6 +88,29 @@ const navLinks = [
 
     <meta name="generator" content={Astro.generator} />
 
+    <!-- TEMPORARY layout comparison: ?frame=wide switches the whole site to the
+         wider 90rem column (remembered for the tab via sessionStorage so it
+         survives navigation); ?frame=default switches back. Remove once a
+         layout is chosen. -->
+    <script is:inline>
+      (() => {
+        const param = new URLSearchParams(location.search).get('frame');
+        try {
+          if (param === 'wide') sessionStorage.setItem('frame', 'wide');
+          if (param === 'default') sessionStorage.removeItem('frame');
+        } catch {}
+        const apply = () => {
+          let wide = param === 'wide';
+          try { wide = sessionStorage.getItem('frame') === 'wide'; } catch {}
+          if (wide) document.documentElement.dataset.frame = 'wide';
+          else delete document.documentElement.dataset.frame;
+        };
+        apply();
+        // View Transitions replace <html>'s attributes on each navigation.
+        document.addEventListener('astro:after-swap', apply);
+      })();
+    </script>
+
     <!-- Astro View Transitions -->
     <ClientRouter />
   </head>
