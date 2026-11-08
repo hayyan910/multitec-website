@@ -1,0 +1,207 @@
+---
+import { ATOLLS, OFFICE, locate } from '../data/locations';
+import { sanityImageUrl } from '../utils/sanityImage';
+import type { Project } from '../types';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+const round = (n: number) => Math.round(n * 10) / 10;
+
+// Whole-country map (equirectangular, stylized) and a zoomed Greater Malé inset.
+const COUNTRY = { lon0: 72.55, lat0: 7.25, k: 100 };
+const cx = (lon: number) => round((lon - COUNTRY.lon0) * COUNTRY.k);
+const cy = (lat: number) => round((COUNTRY.lat0 - lat) * COUNTRY.k);
+const INSET = { lon0: 73.493, lat0: 4.236, k: 8000, w: 520, h: 600 };
+const ix = (lon: number) => round((lon - INSET.lon0) * INSET.k);
+const iy = (lat: number) => round((INSET.lat0 - lat) * INSET.k);
+const inInset = (lat: number, lon: number) =>
+  lon >= INSET.lon0 && lon <= INSET.lon0 + INSET.w / INSET.k && lat <= INSET.lat0 && lat >= INSET.lat0 - INSET.h / INSET.k;
+
+// Projects without a recognised location are left off the map.
+const located = projects.flatMap((project) => {
+  const at = locate(project.location);
+  return at ? [{ project, at }] : [];
+});
+
+// Projects sharing a location fan out around it so every node stays visible.
+const byPlace = new Map<string, typeof located>();
+located.forEach((entry) => {
+  const key = `${entry.at.lat},${entry.at.lon}`;
+  byPlace.set(key, [...(byPlace.get(key) ?? []), entry]);
+});
+const nodes = [...byPlace.values()].flatMap((group) =>
+  group.map(({ project, at }, j) => {
+    const inset = inInset(at.lat, at.lon);
+    const spread = group.length > 1 ? (inset ? 22 : 4) : 0;
+    const angle = (j / group.length) * Math.PI * 2 - Math.PI / 2;
+    const x = (inset ? ix(at.lon) : cx(at.lon)) + round(Math.cos(angle) * spread);
+    const y = (inset ? iy(at.lat) : cy(at.lat)) + round(Math.sin(angle) * spread);
+    return { project, inset, x, y };
+  }),
+).map((node, i) => ({ ...node, order: i }));
+
+const office = { ix: ix(OFFICE.lon), iy: iy(OFFICE.lat), cx: cx(OFFICE.lon), cy: cy(OFFICE.lat) };
+const insetRoute = (x: number, y: number) =>
+  Math.hypot(x - office.ix, y - office.iy) < 80
+    ? `M${office.ix} ${office.iy} L${x} ${y}`
+    : `M${office.ix} ${office.iy} C${office.ix + 90} ${office.iy - 10}, ${x - 60} ${y + 80}, ${x} ${y}`;
+const countryRoute = (x: number, y: number) =>
+  `M${office.cx} ${office.cy} C${cx(73.75)} ${cy(3)}, ${cx(73.6)} ${cy(1.4)}, ${x} ${y}`;
+const hasFarProjects = nodes.some((n) => !n.inset);
+
+const islands = [
+  { lat: 4.1755, lon: 73.5115, w: 150, h: 82, r: 30, label: 'MALÉ', lx: 70, ly: 538 },
+  { lat: 4.1925, lon: 73.528, w: 40, h: 230, r: 18, label: 'HULHULÉ · AIRPORT', lx: 300, ly: 380 },
+  { lat: 4.2165, lon: 73.5405, w: 92, h: 178, r: 26, label: 'HULHUMALÉ', lx: 400, ly: 60 },
+];
+const active = nodes[0]?.project.slug;
+---
+
+{nodes.length > 0 && (
+  <div class="project-map grid gap-6 sm:grid-cols-[110px_1fr] lg:grid-cols-[140px_1fr_340px] lg:gap-8" data-project-map>
+    <div class="hidden sm:block" aria-hidden="true">
+      <p class="mb-2 text-[10px] uppercase tracking-[0.1em] text-white/50">Republic of Maldives</p>
+      <svg viewBox="0 0 140 820" class="h-auto w-full">
+        {ATOLLS.map(([lat, lon, rx, ry]) => (
+          <ellipse cx={cx(lon)} cy={cy(lat)} rx={rx * COUNTRY.k} ry={ry * COUNTRY.k} fill="rgb(120 170 190 / .08)" stroke="rgb(233 238 242 / .32)" stroke-dasharray="2 2.5" />
+        ))}
+        <rect x={cx(73.47)} y={cy(4.26)} width="11" height="12" fill="none" stroke="rgb(255 58 64 / .8)" />
+        {nodes.filter((n) => !n.inset).map((n) => (
+          <path class="route" data-slug={n.project.slug} style={`--i:${n.order}`} d={countryRoute(n.x, n.y)} />
+        ))}
+        {nodes.filter((n) => !n.inset).map((n) => (
+          <g class="node" data-slug={n.project.slug} style={`--i:${n.order}`}>
+            <circle class="halo" cx={n.x} cy={n.y} r="8" />
+            <circle class="core" cx={n.x} cy={n.y} r="3" />
+          </g>
+        ))}
+        <circle cx={office.cx} cy={office.cy} r="3" fill="#fff" />
+      </svg>
+    </div>
+
+    <div class="relative rounded-lg border border-white/15 bg-[radial-gradient(circle_at_30%_70%,#16222b,#0f1418_70%)] p-3.5" aria-hidden="true">
+      <p class="absolute left-4 top-3.5 text-[10px] uppercase tracking-[0.1em] text-white/50">Greater Malé</p>
+      <svg viewBox="0 0 520 600" class="h-auto w-full">
+        <ellipse cx="260" cy="330" rx="250" ry="285" fill="none" stroke="rgb(233 238 242 / .12)" stroke-dasharray="4 6" />
+        {islands.map((isl) => (
+          <>
+            <rect x={ix(isl.lon) - isl.w / 2} y={iy(isl.lat) - isl.h / 2} width={isl.w} height={isl.h} rx={isl.r} fill="#26323a" stroke="rgb(233 238 242 / .25)" />
+            <text x={isl.lx} y={isl.ly} class="map-text" letter-spacing="1.5">{isl.label}</text>
+          </>
+        ))}
+        {nodes.filter((n) => n.inset).map((n) => (
+          <path class="route" data-slug={n.project.slug} style={`--i:${n.order}`} d={insetRoute(n.x, n.y)} />
+        ))}
+        {hasFarProjects && (
+          <>
+            <path class="route spur" d={`M${office.ix} ${office.iy} L${office.ix} 590`} />
+            <text x={office.ix + 8} y="584" class="map-text">to the southern atolls</text>
+          </>
+        )}
+        {nodes.filter((n) => n.inset).map((n) => (
+          <g class="node" data-slug={n.project.slug} style={`--i:${n.order}`}>
+            <circle class="halo" cx={n.x} cy={n.y} r="16" />
+            <circle class="core" cx={n.x} cy={n.y} r="5.5" />
+          </g>
+        ))}
+        <rect x={office.ix - 7} y={office.iy - 7} width="14" height="14" fill="#fff" />
+        <text x={office.ix - 52} y={office.iy - 14} class="map-text office">Multitec</text>
+      </svg>
+    </div>
+
+    <div class="grid content-start gap-3.5 sm:col-span-2 lg:col-span-1">
+      {nodes.map(({ project }) => (
+        <article class="map-detail overflow-hidden rounded-lg border border-white/15 bg-[#141b20]" data-detail={project.slug} hidden={project.slug !== active}>
+          {project.coverImage && (
+            <img src={sanityImageUrl(project.coverImage, 720)} alt={project.title} class="aspect-video w-full object-cover" loading="lazy" />
+          )}
+          <div class="grid gap-1.5 p-4">
+            <span class="text-xs font-semibold uppercase tracking-wide text-[#ff3a40]">{project.location}</span>
+            <h3 class="font-display text-lg font-bold text-white">{project.title}</h3>
+            <p class="text-sm text-white/70">{project.description}</p>
+            <a href={`/projects/${project.slug}`} class="mt-1 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-white hover:text-[#ff3a40]">
+              View project<span class="sr-only">: {project.title}</span>
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+            </a>
+          </div>
+        </article>
+      ))}
+      <ul class="grid gap-1" aria-label="Projects on the map">
+        {nodes.map(({ project }) => (
+          <li>
+            <button
+              type="button"
+              class="map-pick flex w-full justify-between gap-3 rounded-md border border-transparent px-2.5 py-2 text-left text-sm text-white/90 hover:bg-white/5"
+              data-slug={project.slug}
+              aria-pressed={project.slug === active ? 'true' : 'false'}
+            >
+              <span>{project.title}</span>
+              <span class="whitespace-nowrap text-xs text-white/50">{project.location}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+)}
+
+<style>
+  .map-text { font: 500 12px Inter, system-ui, sans-serif; fill: rgb(233 238 242 / 0.55); }
+  .map-text.office { font-weight: 600; fill: #fff; }
+  .route { stroke: #E31E24; fill: none; stroke-width: 1.6; stroke-linecap: round; }
+  .route.spur { stroke-dasharray: 3 5; }
+  .route.is-active { stroke: #ff3a40; stroke-width: 2.6; }
+  .node { cursor: pointer; }
+  .node .core { fill: #ff3a40; }
+  .node .halo { fill: #ff3a40; opacity: 0.18; }
+  .node.is-active .halo { opacity: 0.45; }
+  .map-pick[aria-pressed='true'] { border-color: rgb(255 58 64 / 0.5); background: rgb(227 30 36 / 0.12); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .node .halo { animation: map-pulse 2.4s ease-in-out infinite; }
+    /* Routes draw out from the office, one after another, when the map is first seen. */
+    .is-armed .route:not(.spur) { stroke-dasharray: 600; stroke-dashoffset: 600; }
+    .is-armed .node { opacity: 0; }
+    .is-armed.is-live .route:not(.spur) {
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i, 0) * 140ms);
+    }
+    .is-armed.is-live .node { opacity: 1; transition: opacity 0.45s ease calc(var(--i, 0) * 140ms + 1s); }
+  }
+  @keyframes map-pulse { 50% { opacity: 0.05; } }
+</style>
+
+<script>
+  function initProjectMap() {
+    const root = document.querySelector<HTMLElement>('[data-project-map]');
+    if (!root || root.dataset.mapBound) return;
+    root.dataset.mapBound = 'true';
+
+    function select(slug: string) {
+      root!.querySelectorAll<HTMLElement>('.map-detail').forEach((d) => { d.hidden = d.dataset.detail !== slug; });
+      root!.querySelectorAll<HTMLElement>('.map-pick').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.slug === slug)));
+      root!.querySelectorAll<SVGElement>('.route[data-slug], .node').forEach((n) => n.classList.toggle('is-active', n.dataset.slug === slug));
+    }
+    root.querySelectorAll<HTMLElement>('.map-pick, .node').forEach((el) => {
+      el.addEventListener('click', () => select(el.dataset.slug!));
+      el.addEventListener('mouseenter', () => select(el.dataset.slug!));
+    });
+    const first = root.querySelector<HTMLElement>('.map-pick[aria-pressed="true"]');
+    if (first) select(first.dataset.slug!);
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+    root.classList.add('is-armed');
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      root.classList.add('is-live');
+      io.disconnect();
+    }, { threshold: 0.3 });
+    io.observe(root);
+  }
+
+  initProjectMap();
+  document.addEventListener('astro:page-load', initProjectMap);
+</script>

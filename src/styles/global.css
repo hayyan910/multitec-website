@@ -4,6 +4,8 @@
 @theme {
   --font-sans:    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Large headlines only (hero, section headings, CTA); small titles keep --font-display. */
+  --font-headline: 'Space Grotesk', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Brand design tokens */
   --color-brand-red:   #E31E24;
@@ -15,6 +17,22 @@
   /* Side gutter for full-width bands (header, home hero): grows with the
      screen instead of following the centered max-w-6xl content column. */
   --spacing-frame: clamp(1.5rem, 5vw, 6rem);
+}
+
+/* TEMPORARY headline-font comparison (see BaseLayout ?face=). Condensed and
+   wide faces need different sizes to fill a similar footprint, so headings
+   built with --display-scale stay comparable across faces. */
+html[data-face='shoulders'] {
+  --font-headline: 'Big Shoulders Display', 'Space Grotesk', system-ui, sans-serif;
+  --display-scale: 1.28;
+}
+html[data-face='archivo'] {
+  --font-headline: 'Archivo', 'Space Grotesk', system-ui, sans-serif;
+  --display-stretch: 125%;
+  --display-scale: 0.8;
+}
+.font-headline {
+  font-stretch: var(--display-stretch, 100%);
 }
 
 /* Smooth in-page anchor scrolling (e.g. the hero's scroll cue) — the header

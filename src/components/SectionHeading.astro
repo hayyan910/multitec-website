@@ -1,0 +1,88 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  intro?: string;
+  tone?: 'light' | 'dark';
+}
+
+const { id, title, intro, tone = 'light' } = Astro.props;
+---
+
+<!-- Big left-aligned headline that "energises" once on reveal: a red trace
+     line draws, then current fills the outlined letters left to right. -->
+<header class:list={['section-heading mb-12 grid items-end gap-6 lg:grid-cols-[1.5fr_1fr] lg:gap-10', tone]} data-energize>
+  <div>
+    <span class="energize-trace mb-5 block h-1 w-16 bg-[#E31E24]" aria-hidden="true"></span>
+    <h2
+      id={id}
+      class="energize-text font-headline text-[calc(clamp(2.25rem,4.6vw,4rem)*var(--display-scale,1))] font-extrabold leading-[0.98] tracking-tight"
+    >
+      {title}
+    </h2>
+  </div>
+  {intro && <p class="max-w-md text-base leading-relaxed lg:justify-self-end">{intro}</p>}
+</header>
+
+<style>
+  @property --energize-fill {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 100%;
+  }
+
+  .section-heading.light { --heading-ink: #1a1a1a; color: #4a4a4a; }
+  .section-heading.dark { --heading-ink: #ffffff; color: rgb(255 255 255 / 0.65); }
+  .energize-text { color: var(--heading-ink); text-wrap: balance; }
+
+  /* Armed (set by script before the heading is seen): outline only. */
+  .is-armed .energize-text {
+    color: transparent;
+    -webkit-text-stroke: 1.2px rgb(227 30 36 / 0.8);
+    background: linear-gradient(var(--heading-ink), var(--heading-ink)) no-repeat 0 0 / var(--energize-fill) 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    --energize-fill: 0%;
+  }
+  .is-armed .energize-trace { transform: scaleX(0); transform-origin: left; }
+
+  .is-armed.is-lit .energize-text {
+    --energize-fill: 100%;
+    -webkit-text-stroke-color: transparent;
+    transition:
+      --energize-fill 1.1s cubic-bezier(0.65, 0, 0.35, 1) 0.25s,
+      -webkit-text-stroke-color 0.5s ease 1.25s;
+  }
+  .is-armed.is-lit .energize-trace {
+    transform: scaleX(1);
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+</style>
+
+<script>
+  // Plays once per heading per page view. Without motion (or without
+  // IntersectionObserver) headings simply stay in their filled resting state.
+  function initEnergize() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+    const headings = document.querySelectorAll<HTMLElement>('[data-energize]:not([data-energize-bound])');
+    if (!headings.length) return;
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-lit');
+        io.unobserve(entry.target);
+      }),
+      { threshold: 0.4 },
+    );
+    headings.forEach((heading) => {
+      heading.dataset.energizeBound = '';
+      // Headings already scrolled past stay filled rather than replaying.
+      if (heading.getBoundingClientRect().bottom < 0) return;
+      heading.classList.add('is-armed');
+      io.observe(heading);
+    });
+  }
+
+  initEnergize();
+  document.addEventListener('astro:page-load', initEnergize);
+</script>

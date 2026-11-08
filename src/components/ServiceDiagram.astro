@@ -1,0 +1,103 @@
+---
+import type { DiagramKind } from '../data/service-explorer';
+
+interface Props {
+  kind: DiagramKind;
+}
+
+const { kind } = Astro.props;
+const range = (n: number) => Array.from({ length: n }, (_, i) => i);
+const checklist = ['RCD trip testing', 'Breaker inspection', 'Cable integrity checks', 'Compliance report'];
+---
+
+<!-- Simplified illustrations of each service. "draw" strokes and "pop"
+     elements animate when an ancestor gets .play (see ServiceExplorer). -->
+<svg class="diagram h-full w-full" viewBox="0 0 400 250" aria-hidden="true">
+  {kind === 'lightning' && (
+    <>
+      <line class="faint" x1="30" y1="214" x2="370" y2="214" />
+      <rect class="ink" x="120" y="96" width="150" height="118" />
+      {range(3).map((r) => range(4).map((c) => (
+        <rect class="faint" x={134 + c * 34} y={110 + r * 30} width="20" height="16" />
+      )))}
+      <path class="ink" d="M195 96V58" />
+      <path class="red draw" style="--d:.05s;--dur:.35s" pathLength="1" d="M240 2 L214 30 H230 L199 58" />
+      <path class="red draw" style="--d:.45s;--dur:1.3s" pathLength="1" d="M195 58V96H270V214V232" />
+      <path class="ink pop" style="--d:1.6s" d="M258 232h24M262 238h16M266 244h8" />
+      <text class="label pop" style="--d:.5s" x="92" y="64">Air terminal</text>
+      <text class="label pop" style="--d:1s" x="280" y="150">Down conductor</text>
+      <text class="label red-text pop" style="--d:1.7s" x="290" y="240">Earth electrode</text>
+    </>
+  )}
+
+  {kind === 'cctv' && (
+    <>
+      <path class="zone pop" style="--d:.2s" d="M46 36 L196 60 L120 150 Z" />
+      <path class="zone pop" style="--d:.45s" d="M354 36 L204 60 L280 150 Z" />
+      <path class="zone pop" style="--d:.7s" d="M200 216 L120 140 L280 140 Z" />
+      <rect class="ink" x="40" y="30" width="320" height="190" />
+      <path class="ink" d="M200 30V100M40 130H140M260 130H360" />
+      {[[46, 36], [354, 36], [200, 216]].map(([x, y]) => <circle cx={x} cy={y} r="5.5" fill="#E31E24" />)}
+      <rect class="ink" x="296" y="178" width="46" height="26" fill="#fff" />
+      <text class="label" x="306" y="195">NVR</text>
+      <text class="label red-text pop" style="--d:1s" x="60" y="206">Overlapping coverage zones</text>
+    </>
+  )}
+
+  {kind === 'access' && (
+    <>
+      <path class="ink" d="M30 120H160M240 120H370" />
+      <path class="ink" d="M160 120V50" />
+      <path class="faint" stroke-dasharray="4 4" d="M160 50 A70 70 0 0 1 230 120" />
+      <rect class="ink" x="254" y="80" width="18" height="28" fill="#fff" />
+      <rect class="ink" x="226" y="112" width="12" height="16" fill="#fff" />
+      <rect class="ink" x="292" y="172" width="70" height="36" fill="#fff" />
+      <path class="red draw" style="--d:.2s;--dur:.8s" pathLength="1" d="M263 108V150H320V172" />
+      <path class="red draw" style="--d:.9s;--dur:.8s" pathLength="1" d="M300 172V140H232V128" />
+      <text class="label pop" style="--d:.1s" x="278" y="78">Card reader</text>
+      <text class="label pop" style="--d:1.5s" x="150" y="148">Electric lock</text>
+      <text class="label pop" style="--d:.8s" x="300" y="194">Controller</text>
+    </>
+  )}
+
+  {kind === 'maintenance' && (
+    <>
+      <defs>
+        <radialGradient id="diagram-heat">
+          <stop offset="0" stop-color="#ffd23f" />
+          <stop offset=".45" stop-color="#ff6a2b" />
+          <stop offset="1" stop-color="#E31E24" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <rect class="ink" x="70" y="24" width="140" height="202" rx="3" />
+      {range(5).map((r) => range(3).map((c) => (
+        <rect class="faint" x={86 + c * 40} y={42 + r * 36} width="28" height="22" rx="2" />
+      )))}
+      <circle class="pop" style="--d:.5s" cx="140" cy="125" r="28" fill="url(#diagram-heat)" />
+      <path class="red draw" style="--d:.9s;--dur:.5s" pathLength="1" d="M160 108 L236 70" />
+      <text class="label red-text pop" style="--d:1.2s" x="240" y="66">Hotspot found by</text>
+      <text class="label red-text pop" style="--d:1.2s" x="240" y="80">thermal scan</text>
+      {checklist.map((item, i) => (
+        <text class="label pop" style={`--d:${1.5 + i * 0.18}s`} x="240" y={128 + i * 22}>✓ {item}</text>
+      ))}
+    </>
+  )}
+</svg>
+
+<style>
+  .ink { stroke: #1a1a1a; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .faint { stroke: rgb(26 26 26 / 0.22); stroke-width: 1; fill: none; }
+  .red { stroke: #E31E24; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .zone { fill: rgb(227 30 36 / 0.13); stroke: rgb(227 30 36 / 0.5); stroke-width: 1; }
+  .label { font: 600 11px Inter, system-ui, sans-serif; fill: #3d4146; letter-spacing: 0.02em; }
+  .red-text { fill: #E31E24; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.motion) .draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    :global(.motion .play) .draw { animation: diagram-draw var(--dur, 1s) cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) forwards; }
+    :global(.motion) .pop { opacity: 0; }
+    :global(.motion .play) .pop { animation: diagram-pop 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) forwards; }
+  }
+  @keyframes diagram-draw { to { stroke-dashoffset: 0; } }
+  @keyframes diagram-pop { to { opacity: 1; } }
+</style>

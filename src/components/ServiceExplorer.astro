@@ -1,0 +1,179 @@
+---
+import { Image } from 'astro:assets';
+import ServiceDiagram from './ServiceDiagram.astro';
+import { SERVICE_EXPLORER, type Callout } from '../data/service-explorer';
+import { sanityImageUrl } from '../utils/sanityImage';
+import switchgearPhoto from '../assets/images/hero-bg.jpg';
+import type { Project, Service } from '../types';
+
+interface Props {
+  services: Service[];
+  projects: Project[];
+}
+
+const { services, projects } = Astro.props;
+
+const items = services.map((service, i) => {
+  const config = SERVICE_EXPLORER[service.id];
+  const media = config?.media;
+  const project = media?.kind === 'project-photo' ? projects.find((p) => p.slug === media.projectSlug) : undefined;
+  return {
+    ...service,
+    row: i + 1,
+    reference: config?.reference,
+    media,
+    projectPhoto: project?.coverImage ? sanityImageUrl(project.coverImage, 960, 80) : undefined,
+    callouts: (media && 'callouts' in media ? media.callouts : []) as Callout[],
+  };
+});
+---
+
+<!-- Accordion on mobile (each panel opens under its button); on desktop the
+     open panel sits in a sticky column beside the list. One is always open. -->
+<div
+  class="explorer grid border-t-[1.5px] border-[#1a1a1a] lg:grid-cols-[1fr_1.15fr] lg:grid-rows-[repeat(5,auto)_1fr] lg:gap-x-12"
+  data-explorer
+>
+  {items.map((item, i) => (
+    <>
+      <h3 class="border-b border-[#d9dcdf] lg:col-start-1 lg:[grid-row:var(--row)]" style={`--row:${item.row}`}>
+        <button
+          type="button"
+          id={`service-${item.id}-button`}
+          class="explorer-button group flex w-full items-center justify-between gap-4 py-4 text-left"
+          aria-expanded={i === 0 ? 'true' : 'false'}
+          aria-controls={`service-${item.id}-panel`}
+          data-index={i}
+        >
+          <span class="explorer-name font-headline text-[calc(1.35rem*var(--display-scale,1))] font-bold leading-tight text-[#1a1a1a]">
+            {item.title}
+          </span>
+          <svg class="explorer-arrow h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" />
+          </svg>
+        </button>
+      </h3>
+
+      <div
+        id={`service-${item.id}-panel`}
+        class="explorer-panel mb-6 mt-2 overflow-hidden rounded-xl border border-[#dfe2e5] bg-white lg:sticky lg:top-24 lg:col-start-2 lg:mb-0 lg:mt-0 lg:self-start lg:[grid-row:1/span_6]"
+        role="region"
+        aria-labelledby={`service-${item.id}-button`}
+        hidden={i !== 0}
+      >
+        {item.media && (
+          <div class="relative aspect-video border-b border-[#e4e6e8] bg-[#fafbfb]">
+            {item.media.kind === 'switchgear-photo' && (
+              <Image src={switchgearPhoto} alt="Switchgear room with a line-up of medium voltage panels" width={960} quality={80} class="h-full w-full object-cover" loading="lazy" />
+            )}
+            {item.media.kind === 'project-photo' && item.projectPhoto && (
+              <img src={item.projectPhoto} alt="" class="h-full w-full object-cover" loading="lazy" />
+            )}
+            {item.media.kind === 'diagram' && <ServiceDiagram kind={item.media.diagram} />}
+            {item.callouts.map((callout, k) => (
+              <div class="callout pop absolute flex items-center" style={`left:calc(${callout.x}% - 4.5px);top:calc(${callout.y}% - 4.5px);--d:${0.15 + k * 0.25}s`} aria-hidden="true">
+                <span class="h-[9px] w-[9px] shrink-0 rounded-full bg-[#E31E24] shadow-[0_0_0_3px_rgba(255,255,255,0.9)]"></span>
+                <span class="callout-leader h-[1.5px] w-8 shrink-0 bg-[#E31E24] sm:w-11" style={`--d:${0.25 + k * 0.25}s`}></span>
+                <span class="hidden whitespace-nowrap border border-[#E31E24] bg-white px-2 py-0.5 text-[11px] font-semibold text-[#1a1a1a] sm:block">{callout.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        <div class="grid gap-3 p-5">
+          <p class="text-sm leading-relaxed text-[#4a4a4a]">{item.shortDescription}</p>
+          {item.reference && (
+            <p class="border-t border-dashed border-[#d9dcdf] pt-3 text-xs font-semibold tracking-wide text-[#E31E24]">{item.reference}</p>
+          )}
+          <a href={`/services#${item.id}`} class="inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-[#1a1a1a] hover:text-[#E31E24]">
+            Learn more<span class="sr-only"> about {item.title}</span>
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </>
+  ))}
+</div>
+
+<style>
+  .explorer-button { position: relative; transition: padding-left 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .explorer-button::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0;
+    height: 3px;
+    background: #E31E24;
+    transform: translateY(-50%);
+    transition: width 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .explorer-arrow { color: #a3a7ab; transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.35s; }
+  .explorer-button[aria-expanded='true'] { padding-left: 1.75rem; }
+  .explorer-button[aria-expanded='true']::before { width: 1rem; }
+  .explorer-button[aria-expanded='true'] .explorer-name { color: #E31E24; }
+  .explorer-button[aria-expanded='true'] .explorer-arrow { color: #E31E24; transform: rotate(90deg); }
+  .explorer-button:hover:not([aria-expanded='true']) .explorer-name { color: #4a4a4a; }
+  @media (min-width: 1024px) {
+    .explorer-button[aria-expanded='true'] .explorer-arrow { transform: translateX(4px); }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .motion .pop { opacity: 0; }
+    .motion .play .pop { animation: explorer-pop 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) forwards; }
+    .motion .callout-leader { transform: scaleX(0); transform-origin: left; }
+    .motion .play .callout-leader { animation: explorer-grow 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) forwards; }
+    .motion .explorer-panel:not([hidden]) { animation: explorer-in 0.3s ease; }
+  }
+  @keyframes explorer-pop { to { opacity: 1; } }
+  @keyframes explorer-grow { to { transform: scaleX(1); } }
+  @keyframes explorer-in { from { opacity: 0; } }
+</style>
+
+<script>
+  function initExplorer() {
+    const root = document.querySelector<HTMLElement>('[data-explorer]');
+    if (!root || root.dataset.explorerBound) return;
+    root.dataset.explorerBound = 'true';
+
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('.explorer-button'));
+    const panels = buttons.map((b) => document.getElementById(b.getAttribute('aria-controls')!)!);
+    const motion = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hoverSelects = matchMedia('(min-width: 1024px) and (hover: hover)');
+
+    const play = (panel: HTMLElement) => {
+      if (!motion) return;
+      panel.classList.remove('play');
+      void panel.offsetWidth; // restart the CSS animations
+      panel.classList.add('play');
+    };
+
+    let current = 0;
+    function select(index: number) {
+      if (index === current) return;
+      current = index;
+      buttons.forEach((b, i) => b.setAttribute('aria-expanded', String(i === index)));
+      panels.forEach((p, i) => { p.hidden = i !== index; });
+      play(panels[index]);
+    }
+
+    buttons.forEach((button, i) => {
+      button.addEventListener('click', () => select(i));
+      button.addEventListener('mouseenter', () => { if (hoverSelects.matches) select(i); });
+    });
+
+    if (!motion || !('IntersectionObserver' in window)) return;
+    // The first panel plays its animation when the section is first seen.
+    root.classList.add('motion');
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      play(panels[current]);
+      io.disconnect();
+    }, { threshold: 0.3 });
+    io.observe(root);
+  }
+
+  initExplorer();
+  document.addEventListener('astro:page-load', initExplorer);
+</script>
