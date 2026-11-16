@@ -2,6 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import VariantPanel from '../components/VariantPanel.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -69,18 +70,27 @@ const navLinks = [
 
     <meta name="generator" content={Astro.generator} />
 
-    <!-- TEMPORARY dark-colour comparison: ?dark=black (brand #1a1a1a) or
-         ?dark=night (blue-grey, default). Remembered for the tab via
-         sessionStorage. Remove once chosen. -->
+    <!-- TEMPORARY dark shade + finish comparison (see VariantPanel and
+         global.css): ?dark=black|warm|graphite|ink|charcoal|night and
+         ?finish=flat|matte|sheen. Read on every navigation, remembered for
+         the tab via sessionStorage. Remove once chosen. -->
     <script is:inline>
       (() => {
-        const options = ['night', 'black'];
-        const param = new URLSearchParams(location.search).get('dark');
-        try { if (options.includes(param)) sessionStorage.setItem('dark', param); } catch {}
+        const choices = {
+          dark: ['black', 'warm', 'graphite', 'ink', 'charcoal', 'night'],
+          finish: ['flat', 'matte', 'sheen'],
+        };
         const apply = () => {
-          let choice = options.includes(param) ? param : 'night';
-          try { choice = sessionStorage.getItem('dark') || choice; } catch {}
-          document.documentElement.dataset.dark = choice;
+          const params = new URLSearchParams(location.search);
+          for (const [key, options] of Object.entries(choices)) {
+            let value = options[0];
+            try {
+              const fromUrl = params.get(key);
+              if (options.includes(fromUrl)) sessionStorage.setItem(key, fromUrl);
+              value = sessionStorage.getItem(key) || value;
+            } catch {}
+            document.documentElement.dataset[key] = options.includes(value) ? value : options[0];
+          }
         };
         apply();
         document.addEventListener('astro:after-swap', apply);
@@ -130,6 +140,7 @@ const navLinks = [
           </main>
         </div>
         <Footer />
+        <VariantPanel />
 
         <!-- WhatsApp floating button — wrapped in a named region so it isn't
              orphaned outside every landmark (header/main/footer) on the page -->
