@@ -33,7 +33,7 @@ const items = projects.slice(0, 3).map((project, i) => ({
           <span class="dimension-label">{[project.location, scope].filter(Boolean).join(' · ')}</span>
         </span>
         <div
-          class:list={['work-shot relative overflow-hidden bg-night-2', feature ? 'aspect-[3/2] lg:aspect-auto lg:min-h-[22rem] lg:flex-1' : 'aspect-[3/2] lg:aspect-auto lg:min-h-[13rem] lg:flex-1']}
+          class:list={['work-shot relative overflow-hidden bg-ink-2', feature ? 'aspect-[3/2] lg:aspect-auto lg:min-h-[22rem] lg:flex-1' : 'aspect-[3/2] lg:aspect-auto lg:min-h-[13rem] lg:flex-1']}
           data-animate="wipe"
           style={`--wipe-delay:${i * 0.12}s`}
         >
@@ -64,7 +64,7 @@ const items = projects.slice(0, 3).map((project, i) => ({
     top: 7px;
     translate: -50% -50%;
     padding: 0 0.5rem;
-    background: var(--color-night);
+    background: var(--color-ink);
     color: #ff3a40;
     font-size: 10.5px;
     font-weight: 600;

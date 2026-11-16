@@ -2,7 +2,6 @@
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import VariantPanel from '../components/VariantPanel.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -70,33 +69,6 @@ const navLinks = [
 
     <meta name="generator" content={Astro.generator} />
 
-    <!-- TEMPORARY dark shade + finish comparison (see VariantPanel and
-         global.css): ?dark=black|warm|graphite|ink|charcoal|night and
-         ?finish=flat|matte|sheen. Read on every navigation, remembered for
-         the tab via sessionStorage. Remove once chosen. -->
-    <script is:inline>
-      (() => {
-        const choices = {
-          dark: ['black', 'warm', 'graphite', 'ink', 'charcoal', 'night'],
-          finish: ['flat', 'matte', 'sheen'],
-        };
-        const apply = () => {
-          const params = new URLSearchParams(location.search);
-          for (const [key, options] of Object.entries(choices)) {
-            let value = options[0];
-            try {
-              const fromUrl = params.get(key);
-              if (options.includes(fromUrl)) sessionStorage.setItem(key, fromUrl);
-              value = sessionStorage.getItem(key) || value;
-            } catch {}
-            document.documentElement.dataset[key] = options.includes(value) ? value : options[0];
-          }
-        };
-        apply();
-        document.addEventListener('astro:after-swap', apply);
-      })();
-    </script>
-
     <!-- Astro View Transitions -->
     <ClientRouter />
   </head>
@@ -140,7 +112,6 @@ const navLinks = [
           </main>
         </div>
         <Footer />
-        <VariantPanel />
 
         <!-- WhatsApp floating button — wrapped in a named region so it isn't
              orphaned outside every landmark (header/main/footer) on the page -->
@@ -165,7 +136,7 @@ const navLinks = [
 
         <nav
           id="mobile-nav-panel"
-          class="flex min-h-screen w-72 flex-col bg-night px-6 py-8"
+          class="flex min-h-screen w-72 flex-col surface-ink px-6 py-8"
           aria-label="Mobile navigation"
         >
           <!-- Logo -->

@@ -48,7 +48,7 @@ const stats = [
 
   <!-- ── SECTION 1: HERO (grounded in the trade) ── -->
   <section
-    class="home-hero relative grid min-h-[min(calc(100dvh-4rem),68rem)] overflow-hidden bg-night lg:grid-cols-[11fr_9fr]"
+    class="home-hero relative grid min-h-[min(calc(100dvh-4rem),68rem)] overflow-hidden surface-ink lg:grid-cols-[11fr_9fr]"
   >
     <!-- Ambient circuit-trace texture -->
     <svg class="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" aria-hidden="true">
@@ -328,7 +328,7 @@ const stats = [
   <PhotoStrip projects={stripProjects} />
 
   <!-- ── SECTION 5: SELECTED WORK ── -->
-  <section class="bg-night py-16 md:py-24" aria-labelledby="projects-heading">
+  <section class="surface-ink py-16 md:py-24" aria-labelledby="projects-heading">
     <div class="mx-auto max-w-6xl px-6">
       <SectionHeading id="projects-heading" title="Selected work." tone="dark">
         <a slot="aside" href="/projects" class="link-underline text-white">
@@ -382,7 +382,7 @@ const stats = [
       mask-image: linear-gradient(to right, transparent 0%, #000 45%);
     }
     .hero-photo-scrim {
-      background: linear-gradient(to right, color-mix(in srgb, var(--color-night) 55%, transparent), transparent 55%);
+      background: linear-gradient(to right, color-mix(in srgb, var(--color-ink) 55%, transparent), transparent 55%);
     }
   }
 
@@ -408,7 +408,7 @@ const stats = [
     height: 9px;
     border: 1.5px solid #e31e24;
     border-radius: 9999px;
-    background: var(--color-night);
+    background: var(--color-ink);
     transform: translate(50%, -50%);
   }
   .hero-trace-node--near {
