@@ -1,0 +1,86 @@
+---
+import { PROCESS_STEPS } from '../data/process';
+---
+
+<!-- The five project stages on one line. As the section scrolls through the
+     viewport a red line fills along it and lights each stage it reaches;
+     scrolling back reverses it. Without motion every stage is simply lit. -->
+<ol class="process relative grid gap-7 pl-14 lg:grid-cols-5 lg:gap-8 lg:pl-0" data-process>
+  {PROCESS_STEPS.map((step, i) => (
+    <li class="process-step relative grid content-start gap-2.5">
+      <span class="process-number relative z-[1] grid h-[2.3rem] w-[2.3rem] place-items-center rounded-full border border-[#1a1a1a] bg-white text-sm font-semibold text-[#1a1a1a] max-lg:absolute max-lg:-left-14 max-lg:top-0" aria-hidden="true">{i + 1}</span>
+      <h3 class="font-display text-xl font-bold tracking-[-0.01em] text-[#1a1a1a] lg:mt-2.5">{step.title}</h3>
+      <p class="text-[0.93rem]">{step.description}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .process::before,
+  .process::after {
+    content: '';
+    position: absolute;
+    background: #d3d7da;
+    /* Mobile: a vertical rail through the numbers. */
+    left: 1.15rem;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+  .process::after {
+    background: #e31e24;
+    transform-origin: top;
+    transform: scaleY(var(--progress, 1));
+  }
+  @media (min-width: 1024px) {
+    .process::before,
+    .process::after { left: 0; right: 0; top: 1.15rem; bottom: auto; width: auto; height: 1px; }
+    .process::after { transform-origin: left; transform: scaleX(var(--progress, 1)); }
+  }
+
+  .process-number { transition: background-color 0.35s, border-color 0.35s, color 0.35s; }
+  .is-lit .process-number { background: #e31e24; border-color: #e31e24; color: #fff; }
+  .process-step :is(h3, p) { transition: opacity 0.4s; }
+  .is-tracking .process-step:not(.is-lit) :is(h3, p) { opacity: 0.4; }
+</style>
+
+<script>
+  let detach: (() => void) | undefined;
+
+  function initProcess() {
+    detach?.();
+    detach = undefined;
+    const root = document.querySelector<HTMLElement>('[data-process]');
+    if (!root) return;
+    const steps = Array.from(root.querySelectorAll<HTMLElement>('.process-step'));
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      steps.forEach((step) => step.classList.add('is-lit'));
+      return;
+    }
+
+    root.classList.add('is-tracking');
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = root.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 when the list's top reaches 80% down the screen, 1 a little after its bottom passes.
+      const progress = Math.min(Math.max((vh * 0.8 - rect.top) / (rect.height + vh * 0.35), 0), 1);
+      root.style.setProperty('--progress', progress.toFixed(3));
+      steps.forEach((step, i) => step.classList.toggle('is-lit', progress >= (i / (steps.length - 1)) * 0.98 + 0.01));
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    detach = () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+    };
+  }
+
+  initProcess();
+  document.addEventListener('astro:page-load', initProcess);
+</script>

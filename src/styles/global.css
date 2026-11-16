@@ -1,11 +1,26 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+/*
+  Self-hosted type (Fontshare, ITF Free Font License: free for commercial
+  web use). Cabinet Grotesk for headings, Switzer for text, Tabular for
+  large figures. Only the weights in use are shipped.
+*/
+@font-face { font-family: 'Cabinet Grotesk'; src: url('/fonts/cabinet-grotesk-500.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Cabinet Grotesk'; src: url('/fonts/cabinet-grotesk-700.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Cabinet Grotesk'; src: url('/fonts/cabinet-grotesk-800.woff2') format('woff2'); font-weight: 800; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Switzer'; src: url('/fonts/switzer-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Switzer'; src: url('/fonts/switzer-500.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Switzer'; src: url('/fonts/switzer-600.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Tabular'; src: url('/fonts/tabular-600.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+
 @theme {
-  --font-sans:    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  /* Large headlines only (hero, section headings, CTA); small titles keep --font-display. */
-  --font-headline: 'Space Grotesk', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans:     'Switzer', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display:  'Cabinet Grotesk', 'Switzer', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Large headlines (hero, section headings, CTA). Same face as --font-display today; kept separate so the two can diverge. */
+  --font-headline: 'Cabinet Grotesk', 'Switzer', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Large statistics. */
+  --font-figures:  'Tabular', 'Cabinet Grotesk', system-ui, sans-serif;
 
   /* Brand design tokens */
   --color-brand-red:   #E31E24;
@@ -13,26 +28,76 @@
   --color-surface:     #FAFAFA;
   --color-heading:     #1a1a1a;
   --color-body:        #4a4a4a;
+  /* Dark sections: a blue-grey "night" rather than flat black. */
+  --color-night:       #0f1a21;
+  --color-night-2:     #15232c;
+  /* Warm light ground for one contrasting section per page. */
+  --color-stone:       #eeebe5;
 
   /* Side gutter for full-width bands (header, home hero): grows with the
      screen instead of following the centered max-w-6xl content column. */
   --spacing-frame: clamp(1.5rem, 5vw, 6rem);
 }
 
-/* TEMPORARY headline-font comparison (see BaseLayout ?face=). Condensed and
-   wide faces need different sizes to fill a similar footprint, so headings
-   built with --display-scale stay comparable across faces. */
-html[data-face='shoulders'] {
-  --font-headline: 'Big Shoulders Display', 'Space Grotesk', system-ui, sans-serif;
-  --display-scale: 1.28;
-}
-html[data-face='archivo'] {
-  --font-headline: 'Archivo', 'Space Grotesk', system-ui, sans-serif;
-  --display-stretch: 125%;
-  --display-scale: 0.8;
-}
-.font-headline {
-  font-stretch: var(--display-stretch, 100%);
+/* Shared editorial controls. */
+@layer components {
+  /* Solid red button whose fill sweeps to ink (or white on dark grounds) on hover. */
+  .button-sweep {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-radius: 0.25rem;
+    background: var(--color-brand-red);
+    padding: 1rem 1.45rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1;
+    color: #fff;
+    transition: color 0.3s;
+  }
+  .button-sweep::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--sweep-to, var(--color-dark));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .button-sweep:hover::before { transform: scaleX(1); }
+  .button-sweep:hover { color: var(--sweep-ink, #fff); }
+  .button-sweep:active { transform: translateY(1px); }
+  .button-sweep.on-dark { --sweep-to: #fff; --sweep-ink: var(--color-dark); }
+
+  /* Text link whose short underline extends (and turns red) on hover. */
+  .link-underline {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding-bottom: 3px;
+    font-weight: 600;
+  }
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1.5px;
+    background: currentColor;
+    transform: scaleX(0.3);
+    transform-origin: left;
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.3s;
+  }
+  .link-underline:hover::after { transform: scaleX(1); background-color: var(--color-brand-red); }
+
+  .button-sweep svg, .link-underline svg { transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .button-sweep:hover svg, .link-underline:hover svg { transform: translateX(4px); }
 }
 
 /* Smooth in-page anchor scrolling (e.g. the hero's scroll cue) — the header
@@ -102,6 +167,26 @@ html[data-face='archivo'] {
   [data-animate].in-view {
     opacity: 1;
     translate: 0 0;
+  }
+}
+
+/* ── Photo wipe reveal — same trigger as above (data-animate="wipe"), but the
+   image is uncovered left to right instead of the block fading up. ── */
+@media (prefers-reduced-motion: no-preference) {
+  [data-animate='wipe'] {
+    opacity: 1;
+    translate: none;
+  }
+  [data-animate='wipe'] img {
+    clip-path: inset(0 100% 0 0);
+    scale: 1.06;
+    transition:
+      clip-path 1.1s cubic-bezier(0.65, 0, 0.35, 1) var(--wipe-delay, 0s),
+      scale 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) var(--wipe-delay, 0s);
+  }
+  [data-animate='wipe'].in-view img {
+    clip-path: inset(0 0 0 0);
+    scale: 1;
   }
 }
 

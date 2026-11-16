@@ -3,21 +3,32 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CtaBanner from '../components/CtaBanner.astro';
 import SectionHeading from '../components/SectionHeading.astro';
-import ServiceExplorer from '../components/ServiceExplorer.astro';
-import ProjectMap from '../components/ProjectMap.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import ServiceIndex from '../components/ServiceIndex.astro';
+import PhotoStrip from '../components/PhotoStrip.astro';
+import SelectedWork from '../components/SelectedWork.astro';
+import StatsBar from '../components/StatsBar.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
 import { getProjects, getServices } from '../utils/sanity';
 import heroBg from '../assets/images/hero-bg.jpg';
 import SegmentDisplay from '../components/SegmentDisplay.astro';
 
 const services = await getServices();
-// Always show 6 (fills both the 2- and 3-column grid evenly): featured
-// projects first, topped up with the most recent non-featured ones.
+// Featured projects first, then the most recent: the first three lead
+// "Selected work", the next three with photos fill the photo strip.
 const allProjects = await getProjects();
-const highlightProjects = [
+const orderedProjects = [
   ...allProjects.filter((p) => p.featured),
   ...allProjects.filter((p) => !p.featured),
-].slice(0, 6);
+];
+const selectedWork = orderedProjects.slice(0, 3);
+const stripProjects = orderedProjects.slice(3).filter((p) => p.coverImage).slice(0, 3);
+
+const facts = [
+  { title: 'URA licensed', detail: 'Electrical contractor' },
+  { title: 'Built to standard', detail: 'IEC 61439 · IEC 62305' },
+  { title: 'Malé-based', detail: 'Working across the atolls' },
+  { title: 'One point of contact', detail: 'From design to maintenance' },
+];
 
 const stats = [
   { number: '23+', label: 'Years Active' },
@@ -28,32 +39,6 @@ const stats = [
   return { ...stat, value, suffix };
 });
 
-const whyUs = [
-  {
-    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/>`,
-    title: '23 Years of Field-Proven Expertise',
-    description:
-      'Operating since 2003, our engineers bring decades of hands-on experience across the full spectrum of electrical systems in the Maldives.',
-  },
-  {
-    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/>`,
-    title: 'Island-Wide Coverage',
-    description:
-      'From Malé to remote atolls, we mobilise to every corner of the Republic — resorts, hospitals, commercial buildings, and residential projects.',
-  },
-  {
-    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 13l4 4l10 -10"/>`,
-    title: 'End-to-End Project Delivery',
-    description:
-      'We handle design, supply, installation, testing, and ongoing maintenance — a single point of accountability from kickoff to commissioning.',
-  },
-  {
-    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/><circle cx="12" cy="11" r="1" fill="currentColor" stroke="none"/><path d="M12 12l0 2.5"/>`,
-    title: 'Licensed & Safety-Certified',
-    description:
-      'All works comply with Maldivian electrical regulations and IEC standards, with full documentation and handover packages for every project.',
-  },
-];
 ---
 
 <BaseLayout
@@ -63,7 +48,7 @@ const whyUs = [
 
   <!-- ── SECTION 1: HERO (grounded in the trade) ── -->
   <section
-    class="home-hero relative grid min-h-[min(calc(100dvh-4rem),68rem)] overflow-hidden bg-[#1a1a1a] lg:grid-cols-[11fr_9fr]"
+    class="home-hero relative grid min-h-[min(calc(100dvh-4rem),68rem)] overflow-hidden bg-night lg:grid-cols-[11fr_9fr]"
   >
     <!-- Ambient circuit-trace texture -->
     <svg class="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" aria-hidden="true">
@@ -296,7 +281,7 @@ const whyUs = [
          fold cut isn't obvious. Links to the next section so it's a real
          affordance, not just decoration. -->
     <a
-      href="#services-heading"
+      href="#statement"
       class="scroll-bounce absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 text-white/40 transition-colors hover:text-white/70 lg:flex"
       aria-label="Scroll to explore our services"
     >
@@ -306,119 +291,78 @@ const whyUs = [
     </a>
   </section>
 
-  <!-- ── SECTION 2: SERVICES ── -->
-  <section class="bg-white py-20 md:py-28" aria-labelledby="services-heading">
+  <!-- ── SECTION 2: STATEMENT ── -->
+  <section id="statement" class="bg-[#f5f6f6] py-16 md:py-24" aria-label="About Multitec">
+    <div class="mx-auto max-w-6xl px-6">
+      <p class="max-w-5xl font-display text-[clamp(1.6rem,3vw,2.6rem)] font-bold leading-[1.18] tracking-[-0.02em] text-[#1a1a1a] [text-wrap:pretty]">
+        Since 2003 we've wired towers, resorts and public buildings across the Maldives.{' '}
+        <span class="text-[#5f6469]">One team takes every job from first drawing to final handover, so nothing falls between contractors.</span>
+      </p>
+      <ul class="mt-12 grid grid-cols-2 gap-x-8 gap-y-6 lg:grid-cols-4">
+        {facts.map((fact) => (
+          <li class="border-t border-[#d3d7da] pt-3 text-sm">
+            <span class="block font-semibold text-[#1a1a1a]">{fact.title}</span>{fact.detail}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── SECTION 3: SERVICES ── -->
+  <section class="bg-white py-16 md:py-24" aria-labelledby="services-heading">
     <div class="mx-auto max-w-6xl px-6">
       <SectionHeading
         id="services-heading"
         title="Six disciplines. One accountable team."
-        intro="From panel fabrication to final inspection, every stage is handled in-house and documented for URA approval. Select a service to see what the work involves."
+        intro="From the main switchboard to the last camera, we design, install and maintain it, and we answer for all of it."
       />
-      <ServiceExplorer services={services} projects={allProjects} />
-      <div class="mt-12">
-        <a
-          href="/services"
-          class="btn btn-outline border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
-        >
-          View All Services
+      <ServiceIndex services={services} />
+      <a href="/services" class="link-underline mt-10 text-[#1a1a1a]">
+        All services in detail
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── SECTION 4: PHOTO STRIP ── -->
+  <PhotoStrip projects={stripProjects} />
+
+  <!-- ── SECTION 5: SELECTED WORK ── -->
+  <section class="bg-night py-16 md:py-24" aria-labelledby="projects-heading">
+    <div class="mx-auto max-w-6xl px-6">
+      <SectionHeading id="projects-heading" title="Selected work." tone="dark">
+        <a slot="aside" href="/projects" class="link-underline text-white">
+          All 200+ projects
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
         </a>
-      </div>
+      </SectionHeading>
+      <SelectedWork projects={selectedWork} />
     </div>
   </section>
 
-  <!-- ── SECTION 3: FEATURED PROJECTS ── -->
-  <section class="bg-[#FAFAFA] pb-20 pt-12 md:pb-28 md:pt-16" aria-labelledby="projects-heading">
+  <!-- ── SECTION 6: NUMBERS ── -->
+  <StatsBar title="Two decades, by the numbers." />
+
+  <!-- ── SECTION 7: PROCESS ── -->
+  <section class="bg-white py-16 md:py-24" aria-labelledby="process-heading">
     <div class="mx-auto max-w-6xl px-6">
       <SectionHeading
-        id="projects-heading"
-        title="Project Highlights"
-        intro="A snapshot of recent work, from metering panels in Malé to full resort fit-outs in the southern atolls."
+        id="process-heading"
+        title="How a project runs."
+        intro="Five stages, the same on every job. You always know what happens next, and who is responsible for it."
       />
-
-      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {highlightProjects.map((project) => (
-          <ProjectCard project={project} />
-        ))}
-      </div>
-
-      <div class="mt-12" data-animate>
-        <a
-          href="/projects"
-          class="btn btn-outline border-[#1a1a1a] text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
-        >
-          View All Projects
-        </a>
-      </div>
+      <ProcessSteps />
     </div>
   </section>
 
-  <!-- ── SECTION 3b: PROJECT MAP ── -->
-  <section class="bg-[#0f1418] py-20 md:py-28" aria-labelledby="map-heading">
-    <div class="mx-auto max-w-6xl px-6">
-      <SectionHeading
-        id="map-heading"
-        tone="dark"
-        title="Wired across the atolls."
-        intro="Every project is wired back to our office in Malé. Select one to see where it is and what we did."
-      />
-      <ProjectMap projects={allProjects} />
-    </div>
-  </section>
-
-  <!-- ── SECTION 4: WHY CHOOSE US ── -->
-  <section class="bg-[#F5F5F5] pb-20 pt-12 md:pb-28 md:pt-16" aria-labelledby="why-heading">
-    <div class="mx-auto max-w-6xl px-6">
-      <SectionHeading
-        id="why-heading"
-        title="Why clients choose Multitec"
-        intro="We've built our reputation on technical excellence, reliability, and a deep understanding of what it takes to deliver in island conditions."
-      />
-
-      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {whyUs.map((point, i) => {
-          const isLast = i === whyUs.length - 1;
-          return (
-            <article
-              class={`flex flex-col rounded-2xl p-7 ${isLast ? 'bg-[#1a1a1a]' : 'border border-black/5 bg-white'}`}
-              data-animate
-            >
-              <div class={`flex h-11 w-11 items-center justify-center rounded-xl ${isLast ? 'bg-[#E31E24]/15' : 'bg-[#E31E24]/10'} text-[#E31E24]`}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                  set:html={point.icon}
-                />
-              </div>
-              <h3 class={`font-display mt-5 text-base font-semibold ${isLast ? 'text-white' : 'text-[#1a1a1a]'}`}>{point.title}</h3>
-              <p class={`mt-2 text-sm leading-relaxed ${isLast ? 'text-white/50' : 'text-[#4a4a4a]'}`}>{point.description}</p>
-              {isLast && (
-                <a href="/contact" class="mt-5 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-[#E31E24] hover:underline">
-                  Get in Touch
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M5 12h14" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" />
-                  </svg>
-                </a>
-              )}
-            </article>
-          );
-        })}
-      </div>
-    </div>
-  </section>
-
-  <!-- ── SECTION 5: CTA BANNER ── -->
+  <!-- ── SECTION 8: CLOSING ── -->
   <CtaBanner
-    heading="Ready to Start Your Project?"
-    subtext="Talk to our engineers about your electrical requirements — whether it's a single installation or a large-scale fitout."
-    buttonText="Get in Touch"
-    buttonLink="/contact"
+    heading="Planning a project? Bring us in early."
+    subtext="Early advice on loads, approvals and equipment saves time and cost later. Tell us what you're building."
+    buttonText="Get a quote"
+    buttonLink="/contact?type=quote"
+    secondaryText="Book a consultation"
+    secondaryLink="/contact?type=consultation"
   />
 
 </BaseLayout>
@@ -438,7 +382,7 @@ const whyUs = [
       mask-image: linear-gradient(to right, transparent 0%, #000 45%);
     }
     .hero-photo-scrim {
-      background: linear-gradient(to right, rgb(26 26 26 / 0.5), rgb(26 26 26 / 0) 55%);
+      background: linear-gradient(to right, rgb(15 26 33 / 0.55), rgb(15 26 33 / 0) 55%);
     }
   }
 
@@ -464,7 +408,7 @@ const whyUs = [
     height: 9px;
     border: 1.5px solid #e31e24;
     border-radius: 9999px;
-    background: #1a1a1a;
+    background: var(--color-night);
     transform: translate(50%, -50%);
   }
   .hero-trace-node--near {

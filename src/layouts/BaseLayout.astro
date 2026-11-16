@@ -62,49 +62,12 @@ const navLinks = [
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    <!--
-      Inter + Space Grotesk from Google Fonts, loaded non-render-blocking:
-      media="print" makes the browser fetch it at normal priority without
-      holding up first paint, then onload flips it to media="all" once it's
-      actually available. display=swap in the URL means body text still
-      shows immediately in a fallback font either way, then swaps in.
-      <noscript> covers the rare case JS is disabled, where the onload
-      handler would never fire.
-    -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Big+Shoulders+Display:wght@700;800;900&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700;800;900&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Big+Shoulders+Display:wght@700;800;900&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@700;800;900&display=swap"
-      />
-    </noscript>
+    <!-- Self-hosted fonts (see global.css). Preload the two faces visible
+         on first paint: the headline weight and body text. -->
+    <link rel="preload" href="/fonts/cabinet-grotesk-800.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/switzer-400.woff2" as="font" type="font/woff2" crossorigin />
 
     <meta name="generator" content={Astro.generator} />
-
-    <!-- TEMPORARY headline-font comparison: ?face=shoulders (default),
-         ?face=archivo or ?face=grotesk (current). Remembered for the tab via
-         sessionStorage. Remove, along with the unused font, once chosen. -->
-    <script is:inline>
-      (() => {
-        const faces = ['shoulders', 'archivo', 'grotesk'];
-        const param = new URLSearchParams(location.search).get('face');
-        try { if (faces.includes(param)) sessionStorage.setItem('face', param); } catch {}
-        const apply = () => {
-          let face = faces.includes(param) ? param : 'shoulders';
-          try { face = sessionStorage.getItem('face') || face; } catch {}
-          document.documentElement.dataset.face = face;
-        };
-        apply();
-        document.addEventListener('astro:after-swap', apply);
-      })();
-    </script>
 
     <!-- Astro View Transitions -->
     <ClientRouter />
@@ -173,7 +136,7 @@ const navLinks = [
 
         <nav
           id="mobile-nav-panel"
-          class="flex min-h-screen w-72 flex-col bg-[#1a1a1a] px-6 py-8"
+          class="flex min-h-screen w-72 flex-col bg-night px-6 py-8"
           aria-label="Mobile navigation"
         >
           <!-- Logo -->

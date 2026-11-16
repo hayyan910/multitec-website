@@ -4,24 +4,28 @@ interface Props {
   title: string;
   intro?: string;
   tone?: 'light' | 'dark';
+  /** Drop the bottom margin (when nothing follows the heading in its section). */
+  flush?: boolean;
 }
 
-const { id, title, intro, tone = 'light' } = Astro.props;
+const { id, title, intro, tone = 'light', flush = false } = Astro.props;
 ---
 
 <!-- Big left-aligned headline that "energises" once on reveal: a red trace
-     line draws, then current fills the outlined letters left to right. -->
-<header class:list={['section-heading mb-12 grid items-end gap-6 lg:grid-cols-[1.5fr_1fr] lg:gap-10', tone]} data-energize>
+     line draws, then current fills the outlined letters left to right.
+     The right column takes either the `intro` text or an `aside` slot. -->
+<header class:list={['section-heading grid items-end gap-6 lg:grid-cols-[1.5fr_1fr] lg:gap-16', tone, { 'mb-12': !flush }]} data-energize>
   <div>
     <span class="energize-trace mb-5 block h-1 w-16 bg-[#E31E24]" aria-hidden="true"></span>
     <h2
       id={id}
-      class="energize-text font-headline text-[calc(clamp(2.25rem,4.6vw,4rem)*var(--display-scale,1))] font-extrabold leading-[0.98] tracking-tight"
+      class="energize-text font-headline text-[clamp(2.3rem,4.8vw,4.4rem)] font-extrabold leading-[0.96] tracking-[-0.03em]"
     >
       {title}
     </h2>
   </div>
   {intro && <p class="max-w-md text-base leading-relaxed lg:justify-self-end">{intro}</p>}
+  {Astro.slots.has('aside') && <div class="lg:justify-self-end"><slot name="aside" /></div>}
 </header>
 
 <style>
@@ -32,7 +36,7 @@ const { id, title, intro, tone = 'light' } = Astro.props;
   }
 
   .section-heading.light { --heading-ink: #1a1a1a; color: #4a4a4a; }
-  .section-heading.dark { --heading-ink: #ffffff; color: rgb(255 255 255 / 0.65); }
+  .section-heading.dark { --heading-ink: #ffffff; color: rgb(255 255 255 / 0.68); }
   .energize-text { color: var(--heading-ink); text-wrap: balance; }
 
   /* Armed (set by script before the heading is seen): outline only. */

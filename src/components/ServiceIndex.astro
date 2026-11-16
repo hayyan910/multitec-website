@@ -1,0 +1,105 @@
+---
+import { SERVICE_REFERENCES } from '../data/service-references';
+import type { Service } from '../types';
+
+interface Props {
+  services: Service[];
+}
+
+const { services } = Astro.props;
+---
+
+<!-- An index of services: each row is a disclosure button showing the
+     service's standard on the right; one row is open at a time. -->
+<ul class="service-index border-t-[1.5px] border-[#1a1a1a]" data-service-index>
+  {services.map((service, i) => (
+    <li class:list={['service-row border-b border-[#d3d7da]', { 'is-open': i === 0 }]}>
+      <h3>
+        <button
+          type="button"
+          class="service-toggle grid w-full cursor-pointer grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 gap-y-1 py-5 text-left md:grid-cols-[minmax(0,7fr)_minmax(0,4fr)_auto]"
+          id={`service-${service.id}-toggle`}
+          aria-expanded={i === 0 ? 'true' : 'false'}
+          aria-controls={`service-${service.id}-panel`}
+        >
+          <span class="service-name font-display text-[clamp(1.3rem,2.2vw,1.85rem)] font-bold leading-tight tracking-[-0.015em] text-[#1a1a1a]">
+            {service.title}
+          </span>
+          <span class="row-start-2 text-sm text-[#5f6469] md:row-start-auto">{SERVICE_REFERENCES[service.id]}</span>
+          <span class="service-arrow row-span-2 grid h-10 w-10 place-items-center rounded-full border border-[#d3d7da] text-[#1a1a1a] md:row-span-1" aria-hidden="true">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+          </span>
+        </button>
+      </h3>
+      <div class="service-panel" id={`service-${service.id}-panel`} role="region" aria-labelledby={`service-${service.id}-toggle`}>
+        <div>
+          <p class="max-w-2xl pb-6 pl-6 md:pl-8">
+            {service.shortDescription}
+            <a href={`/services#${service.id}`} class="link-underline ml-1 text-[#1a1a1a]">
+              Learn more<span class="sr-only"> about {service.title}</span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .service-toggle { position: relative; }
+  .service-toggle::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1.1rem;
+    height: 3px;
+    background: #e31e24;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .service-arrow { transition: background-color 0.3s, border-color 0.3s, color 0.3s; }
+  .service-toggle:hover .service-arrow { border-color: #1a1a1a; }
+
+  /* Collapsed panels are hidden from everyone (visibility), not just clipped. */
+  .service-panel { display: grid; grid-template-rows: 0fr; visibility: hidden; }
+  .service-panel > div { overflow: hidden; }
+  .is-open .service-panel { grid-template-rows: 1fr; visibility: visible; }
+
+  .is-open .service-toggle::before,
+  .service-toggle:hover::before { transform: scaleX(1); }
+  .is-open .service-name,
+  .service-toggle:hover .service-name { transform: translateX(1.6rem); }
+  .is-open .service-name { color: #e31e24; }
+  .is-open .service-arrow { border-color: #e31e24; background: #e31e24; color: #fff; transform: rotate(90deg); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .service-toggle::before,
+    .service-name,
+    .service-arrow { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.3s, border-color 0.3s, color 0.3s; }
+    .service-panel { transition: grid-template-rows 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0.45s; }
+  }
+</style>
+
+<script>
+  function initServiceIndex() {
+    const root = document.querySelector<HTMLElement>('[data-service-index]');
+    if (!root || root.dataset.bound) return;
+    root.dataset.bound = 'true';
+
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('.service-row'));
+    rows.forEach((row) => {
+      row.querySelector('button')!.addEventListener('click', () => {
+        const open = !row.classList.contains('is-open');
+        rows.forEach((other) => {
+          const isTarget = other === row && open;
+          other.classList.toggle('is-open', isTarget);
+          other.querySelector('button')!.setAttribute('aria-expanded', String(isTarget));
+        });
+      });
+    });
+  }
+
+  initServiceIndex();
+  document.addEventListener('astro:page-load', initServiceIndex);
+</script>

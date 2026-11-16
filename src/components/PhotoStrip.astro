@@ -1,0 +1,36 @@
+---
+import { sanityImageUrl } from '../utils/sanityImage';
+import type { Project } from '../types';
+
+interface Props {
+  /** Up to three projects with cover photos; the first is shown widest. */
+  projects: Project[];
+}
+
+const items = Astro.props.projects
+  .filter((project) => project.coverImage)
+  .slice(0, 3)
+  .map((project, i) => ({
+    project,
+    image: sanityImageUrl(project.coverImage!, i === 0 ? 1100 : 800, 78),
+    scope: project.category?.[0],
+  }));
+---
+
+<!-- Full-width row of site photos between sections: a visual pause that
+     still carries information (project, place, scope). -->
+{items.length > 0 && (
+  <ul class="grid grid-cols-2 gap-1 bg-white md:grid-cols-[1.25fr_1fr_1fr]" aria-label="Recent sites">
+    {items.map(({ project, image, scope }, i) => (
+      <li class:list={['relative h-[clamp(15rem,30vw,27rem)] overflow-hidden bg-[#d8dcdf]', { 'col-span-2 md:col-span-1': i === 0 }]} data-animate="wipe" style={`--wipe-delay:${i * 0.12}s`}>
+        <a href={`/projects/${project.slug}`} class="group block h-full">
+          <img src={image} alt="" loading="lazy" decoding="async" class="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.04]" />
+          <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a1014]/80 to-transparent px-5 pb-4 pt-12 text-[13px] text-white/75">
+            <span class="block text-[15px] font-semibold text-white">{project.title}</span>
+            <span class:list={{ 'hidden md:inline': i > 0 }}>{[project.location, scope].filter(Boolean).join(' · ')}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+)}

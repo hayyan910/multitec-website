@@ -1,82 +1,99 @@
 ---
+import SectionHeading from './SectionHeading.astro';
+
+interface Props {
+  /** Optional section headline; without one the band is labelled for assistive tech only. */
+  title?: string;
+}
+
+const { title } = Astro.props;
+
 const stats = [
-  { number: '23+', label: 'Years of Experience' },
-  { number: '100+', label: 'Panels Supplied & Installed' },
-  { number: '200+', label: 'Projects Completed' },
-  { number: '50+', label: 'Clients Served' },
-];
+  { number: '23+', label: 'Years of experience', detail: 'In the Maldives since 2003' },
+  { number: '100+', label: 'Panels supplied & installed', detail: 'Built and tested to IEC 61439' },
+  { number: '200+', label: 'Projects completed', detail: 'From Malé towers to resorts' },
+  { number: '50+', label: 'Clients served', detail: 'Developers, resorts, government' },
+].map((stat) => {
+  const [, value, suffix] = stat.number.match(/^(\d+)(.*)$/) ?? [null, stat.number, ''];
+  return { ...stat, value, suffix };
+});
 ---
 
-<section class="bg-[#1a1a1a] py-14" aria-label="Company statistics">
-  <div class="mx-auto max-w-5xl px-6">
-    <dl class="grid grid-cols-2 gap-y-10 md:grid-cols-4" data-stats-bar>
-      {stats.map((stat, i) => {
-        const match = stat.number.match(/^(\d+)(.*)$/);
-        const [, value, suffix] = match ?? [null, stat.number, ''];
-        return (
-          <div
-            class={[
-              'flex flex-col items-center text-center',
-              i < stats.length - 1 ? 'md:border-r md:border-white/10' : '',
-            ].join(' ')}
-          >
-            <dt class="text-4xl font-bold tracking-tight text-[#E31E24] md:text-5xl">
-              <span class="stats-bar-value" data-target-value={value}>{value}</span>{suffix}
-            </dt>
-            <dd class="mt-2 text-sm font-medium text-white/60">{stat.label}</dd>
-          </div>
-        );
-      })}
+<section class="bg-stone py-16 md:py-24" aria-labelledby={title ? 'stats-heading' : undefined} aria-label={title ? undefined : 'Company statistics'}>
+  <div class="mx-auto max-w-6xl px-6">
+    {title && <SectionHeading id="stats-heading" title={title} />}
+    <dl class="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4" data-stats-bar>
+      {stats.map((stat) => (
+        <div class="stat relative flex flex-col pt-5">
+          <dt class="order-2 mt-4 font-semibold text-[#1a1a1a]">
+            {stat.label}
+            <span class="mt-0.5 block text-sm font-normal text-[#5f6469]">{stat.detail}</span>
+          </dt>
+          <dd class="order-1 font-figures text-[clamp(3.2rem,6.4vw,6rem)] font-semibold leading-[0.9] tracking-[-0.035em] text-[#1a1a1a] tabular-nums">
+            <span class="sr-only">{stat.number}</span>
+            <span aria-hidden="true"><span class="stats-bar-value" data-target-value={stat.value}>{stat.value}</span><sup class="relative top-[0.12em] ml-[0.04em] align-top text-[0.42em] text-[#E31E24]">{stat.suffix}</sup></span>
+          </dd>
+        </div>
+      ))}
     </dl>
   </div>
-
-  <script>
-    import { gsap } from 'gsap';
-    import { ScrollTrigger } from 'gsap/ScrollTrigger';
-    gsap.registerPlugin(ScrollTrigger);
-
-    function initStatsBar() {
-      const root = document.querySelector('[data-stats-bar]');
-      if (!root) return;
-
-      ScrollTrigger.getById('stats-bar')?.kill();
-
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const values = Array.from(root.querySelectorAll<HTMLElement>('.stats-bar-value'));
-
-      if (prefersReducedMotion) return; // static markup already shows final values
-
-      // Nothing is touched until onEnter fires — see the matching comment in
-      // index.astro's hero stat rings script for why this avoids gsap.timeline
-      // + scrollTrigger's immediateRender ambiguity.
-      ScrollTrigger.create({
-        id: 'stats-bar',
-        trigger: root,
-        start: 'top 85%',
-        once: true,
-        onEnter: () => {
-          const tl = gsap.timeline();
-          values.forEach((valueEl, i) => {
-            const targetValue = Number(valueEl.dataset.targetValue);
-            const counter = { val: 0 };
-            tl.to(
-              counter,
-              {
-                val: targetValue,
-                duration: 1.4,
-                ease: 'power2.out',
-                onUpdate: () => {
-                  valueEl.textContent = String(Math.round(counter.val));
-                },
-              },
-              i * 0.1
-            );
-          });
-        },
-      });
-    }
-
-    initStatsBar();
-    document.addEventListener('astro:page-load', initStatsBar);
-  </script>
 </section>
+
+<style>
+  /* Rule above each figure; draws in left to right when the row is first seen. */
+  .stat::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: #1a1a1a;
+    transform-origin: left;
+    transform: scaleX(var(--rule, 1));
+  }
+  :global([data-stats-armed]) .stat { --rule: 0; }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initStatsBar() {
+    const root = document.querySelector<HTMLElement>('[data-stats-bar]');
+    if (!root) return;
+    ScrollTrigger.getById('stats-bar')?.kill();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; // markup already shows final values
+
+    const rules = Array.from(root.querySelectorAll<HTMLElement>('.stat'));
+    const values = Array.from(root.querySelectorAll<HTMLElement>('.stats-bar-value'));
+    root.dataset.statsArmed = '';
+
+    // Built inside onEnter so nothing changes before the row is actually seen.
+    ScrollTrigger.create({
+      id: 'stats-bar',
+      trigger: root,
+      start: 'top 85%',
+      once: true,
+      onEnter: () => {
+        values.forEach((valueEl) => { valueEl.textContent = '0'; });
+        delete root.dataset.statsArmed;
+        const tl = gsap.timeline();
+        rules.forEach((rule, i) => {
+          tl.fromTo(rule, { '--rule': 0 }, { '--rule': 1, duration: 0.9, ease: 'power2.inOut' }, i * 0.12);
+        });
+        values.forEach((valueEl, i) => {
+          const counter = { val: 0 };
+          tl.to(counter, {
+            val: Number(valueEl.dataset.targetValue),
+            duration: 1.4,
+            ease: 'power2.out',
+            onUpdate: () => { valueEl.textContent = String(Math.round(counter.val)); },
+          }, i * 0.12);
+        });
+      },
+    });
+  }
+
+  initStatsBar();
+  document.addEventListener('astro:page-load', initStatsBar);
+</script>
