@@ -23,52 +23,43 @@ const prefillTitles = JSON.stringify({
     breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Contact' }]}
   />
 
-  <section class="py-16 md:py-24">
+  <section class="bg-[#f5f6f6] py-16 md:py-24">
     <div class="mx-auto max-w-6xl px-6">
       <div class="grid gap-12 lg:grid-cols-[1fr_2fr]">
 
         <!-- Contact info -->
         <div class="flex flex-col gap-8">
           <div>
-            <h2 class="font-display text-xl font-bold text-[#1a1a1a]">Contact Information</h2>
+            <h2 class="font-display text-2xl font-bold tracking-[-0.015em] text-[#1a1a1a]">Contact information</h2>
             <p class="mt-2 text-sm leading-relaxed text-[#4a4a4a]">
               Reach us directly or fill in the form and we'll get back to you within one business day.
             </p>
           </div>
 
-          <ul class="flex flex-col gap-6 list-none">
-            <li class="flex items-start gap-4">
-              <span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E31E24]/10">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#E31E24]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 11m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"/></svg>
-              </span>
+          <ul class="flex list-none flex-col gap-5">
+            <li class="border-t border-[#d3d7da] pt-4">
               <div>
-                <p class="text-sm font-semibold text-[#1a1a1a]">Address</p>
-                <p class="mt-0.5 text-sm text-[#4a4a4a]">H. Coral Hill, Kurangi Goalhi, Malé, Republic of Maldives</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#5f6469]">Address</p>
+                <p class="mt-1 text-[#1a1a1a]">H. Coral Hill, Kurangi Goalhi, Malé, Republic of Maldives</p>
               </div>
             </li>
 
-            <li class="flex items-start gap-4">
-              <span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E31E24]/10">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#E31E24]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"/></svg>
-              </span>
+            <li class="border-t border-[#d3d7da] pt-4">
               <div>
-                <p class="text-sm font-semibold text-[#1a1a1a]">Phone</p>
-                <a href="tel:+9603332636" class="mt-0.5 text-sm text-[#4a4a4a] hover:text-[#E31E24] transition-colors">+960 333 2636</a>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#5f6469]">Phone</p>
+                <a href="tel:+9603332636" class="mt-1 inline-block text-lg font-semibold text-[#1a1a1a] transition-colors hover:text-[#E31E24]">+960 333 2636</a>
               </div>
             </li>
 
-            <li class="flex items-start gap-4">
-              <span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E31E24]/10">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#E31E24]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"/><path d="M3 7l9 6l9 -6"/></svg>
-              </span>
+            <li class="border-t border-[#d3d7da] pt-4">
               <div>
-                <p class="text-sm font-semibold text-[#1a1a1a]">Email</p>
-                <a href="mailto:info@multitec.com.mv" class="mt-0.5 text-sm text-[#4a4a4a] hover:text-[#E31E24] transition-colors">info@multitec.com.mv</a>
+                <p class="text-xs font-semibold uppercase tracking-wider text-[#5f6469]">Email</p>
+                <a href="mailto:info@multitec.com.mv" class="mt-1 inline-block text-lg font-semibold text-[#1a1a1a] transition-colors hover:text-[#E31E24]">info@multitec.com.mv</a>
               </div>
             </li>
           </ul>
 
-          <div class="rounded-xl bg-[#1a1a1a] p-6 text-white">
+          <div class="surface-ink p-6 text-white">
             <p class="text-sm font-semibold">Business Hours</p>
             <ul class="mt-3 flex flex-col gap-1.5 list-none text-sm text-white/70">
               <li class="flex justify-between"><span>Sunday – Thursday</span><span>8:00 AM – 5:00 PM</span></li>
@@ -78,8 +69,8 @@ const prefillTitles = JSON.stringify({
         </div>
 
         <!-- Form -->
-        <div class="rounded-2xl border border-base-200 bg-white p-8 shadow-sm">
-          <h2 class="font-display text-xl font-bold text-[#1a1a1a]">Send a Message</h2>
+        <div class="border-t-[1.5px] border-[#1a1a1a] bg-white p-6 sm:p-8">
+          <h2 class="font-display text-2xl font-bold tracking-[-0.015em] text-[#1a1a1a]">Send a message</h2>
           <p class="mt-1 text-sm text-[#4a4a4a]">We typically respond within one business day.</p>
 
           <form id="contact-form" class="mt-8 flex flex-col gap-5" novalidate data-prefill-titles={prefillTitles}>
@@ -98,7 +89,7 @@ const prefillTitles = JSON.stringify({
                   required
                   autocomplete="name"
                   placeholder="Ahmed Mohamed"
-                  class="rounded-lg border border-base-300 bg-base-100 px-4 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#4a4a4a]/40 outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
+                  class="rounded border border-[#8a8f94] bg-white px-4 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#4a4a4a]/40 outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
                 />
               </div>
 
@@ -111,7 +102,7 @@ const prefillTitles = JSON.stringify({
                   required
                   autocomplete="email"
                   placeholder="ahmed@example.mv"
-                  class="rounded-lg border border-base-300 bg-base-100 px-4 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#4a4a4a]/40 outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
+                  class="rounded border border-[#8a8f94] bg-white px-4 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#4a4a4a]/40 outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
                 />
               </div>
             </div>
@@ -125,7 +116,7 @@ const prefillTitles = JSON.stringify({
                   type="tel"
                   autocomplete="tel"
                   placeholder="+960 300 0000"
-                  class="rounded-lg border border-base-300 bg-base-100 px-4 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#4a4a4a]/40 outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
+                  class="rounded border border-[#8a8f94] bg-white px-4 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#4a4a4a]/40 outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
                 />
               </div>
 
@@ -135,7 +126,7 @@ const prefillTitles = JSON.stringify({
                   id="enquiry"
                   name="enquiry_type"
                   required
-                  class="rounded-lg border border-base-300 bg-base-100 px-4 py-2.5 text-sm text-[#1a1a1a] outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
+                  class="rounded border border-[#8a8f94] bg-white px-4 py-2.5 text-sm text-[#1a1a1a] outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
                 >
                   <option value="" disabled selected>Select a topic</option>
                   <option value="Quotation Request">Quotation Request</option>
@@ -155,7 +146,7 @@ const prefillTitles = JSON.stringify({
                 required
                 rows="5"
                 placeholder="Briefly describe your project or enquiry…"
-                class="resize-none rounded-lg border border-base-300 bg-base-100 px-4 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#4a4a4a]/40 outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
+                class="resize-none rounded border border-[#8a8f94] bg-white px-4 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#4a4a4a]/40 outline-none transition focus:border-[#E31E24] focus:ring-2 focus:ring-[#E31E24]/20"
               ></textarea>
             </div>
 
@@ -165,7 +156,7 @@ const prefillTitles = JSON.stringify({
             <button
               type="submit"
               id="submit-btn"
-              class="btn btn-primary w-full sm:w-auto sm:self-start"
+              class="button-sweep w-full justify-center disabled:opacity-60 sm:w-auto sm:self-start"
             >
               <span id="btn-text">Send Message</span>
               <svg id="btn-spinner" xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/></svg>
@@ -185,7 +176,7 @@ const prefillTitles = JSON.stringify({
               <p class="text-lg font-semibold text-[#1a1a1a]">Message sent!</p>
               <p class="mt-1 text-sm text-[#4a4a4a]">Thank you for reaching out. We'll get back to you within one business day.</p>
             </div>
-            <button id="reset-btn" class="success-reset-btn btn btn-outline btn-sm mt-2">Send another message</button>
+            <button id="reset-btn" class="success-reset-btn link-underline mt-2 text-[#1a1a1a]">Send another message</button>
           </div>
         </div>
 
@@ -194,9 +185,9 @@ const prefillTitles = JSON.stringify({
   </section>
 
   <!-- Map -->
-  <section class="pb-16 md:pb-24 -mt-8" aria-label="Office location map">
+  <section class="bg-[#f5f6f6] pb-16 md:pb-24" aria-label="Office location map">
     <div class="mx-auto max-w-6xl px-6">
-      <div class="overflow-hidden rounded-2xl bg-base-200 shadow-sm">
+      <div class="overflow-hidden bg-base-200">
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3979.216099244575!2d73.51319841152274!3d4.177877645948516!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b3f7efe28b9623d%3A0xe1321012c2e7876d!2sMultitec%20Maldives!5e0!3m2!1sen!2smv!4v1788559926380!5m2!1sen!2smv"
           width="100%"

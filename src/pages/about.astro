@@ -4,24 +4,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import StatsBar from '../components/StatsBar.astro';
 import CtaBanner from '../components/CtaBanner.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import FeatureList from '../components/FeatureList.astro';
 import heroBg from '../assets/images/hero-bg.jpg';
 
 const values = [
   {
-    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>`,
-    title: 'Technical Excellence',
+    title: 'Technical excellence',
     description:
       'Every installation is engineered to international standards and approved by the Utility Regulatory Authority (URA) of the Maldives.',
   },
   {
-    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0 -3 -3.85"/>`,
-    title: 'Client-First Approach',
+    title: 'Client-first approach',
     description:
       'We work closely with clients from initial consultation through to commissioning and handover, ensuring every requirement is met.',
   },
   {
-    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"/><path d="M9 12l2 2l4 -4"/>`,
-    title: 'Reliability & Safety',
+    title: 'Reliability & safety',
     description:
       'Safety is non-negotiable. All electrical works are designed, installed, and tested to comply with Maldivian regulations and IEC standards.',
   },
@@ -29,14 +28,12 @@ const values = [
 
 const compliance = [
   {
-    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/><path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"/><path d="M9 14l2 2l4 -4"/>`,
-    title: 'URA Approved',
+    title: 'URA approved',
     description:
       'All electrical drawings, plans, and installations are submitted to and approved by the Utility Regulatory Authority (URA) before energisation or panel changeover.',
   },
   {
-    icon: `<path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="15" cy="15" r="3"/><path d="M13 17.5v4.5l2 -1.5l2 1.5v-4.5"/><path d="M10 19h-5a2 2 0 0 1 -2 -2v-10c0 -1.1 .9 -2 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-1"/>`,
-    title: 'IEC Standards',
+    title: 'IEC standards',
     description:
       'Works are designed and executed in accordance with IEC electrical standards, ensuring safety, reliability, and long-term performance.',
   },
@@ -56,19 +53,14 @@ const compliance = [
   />
 
   <!-- ── SECTION 2: COMPANY STORY ── -->
-  <section class="bg-white py-20 md:py-28" aria-labelledby="story-heading">
+  <section class="bg-white py-16 md:py-24" aria-labelledby="story-heading">
     <div class="mx-auto max-w-6xl px-6">
-      <div class="grid gap-12 md:grid-cols-2 md:items-center">
+      <SectionHeading id="story-heading" title="Two decades of powering the Maldives." />
+      <div class="grid gap-12 md:grid-cols-2 md:items-start">
 
         <!-- Text column -->
         <div data-animate>
-          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-[#E31E24]">
-            Our Story
-          </p>
-          <h2 id="story-heading" class="font-display text-3xl font-bold leading-snug text-[#1a1a1a] md:text-4xl">
-            Two Decades of Powering the Maldives
-          </h2>
-          <div class="mt-6 space-y-4 text-base leading-relaxed text-[#4a4a4a]">
+          <div class="space-y-4 text-base leading-relaxed text-[#4a4a4a]">
             <p>
               Multitec Maldives Pvt. Ltd. was founded in 2003 with a clear mission: to deliver
               reliable, high-quality electrical engineering solutions to the growing infrastructure
@@ -93,7 +85,7 @@ const compliance = [
         </div>
 
         <!-- Image column -->
-        <div class="overflow-hidden rounded-2xl" data-animate>
+        <div class="overflow-hidden" data-animate>
           <Image
             src={heroBg}
             alt="Multitec Maldives electrical engineering work"
@@ -164,100 +156,29 @@ const compliance = [
   <StatsBar />
 
   <!-- ── SECTION 4: VALUES ── -->
-  <section class="bg-[#FAFAFA] py-20 md:py-28" aria-labelledby="values-heading">
+  <section class="bg-[#f5f6f6] py-16 md:py-24" aria-labelledby="values-heading">
     <div class="mx-auto max-w-6xl px-6">
-      <header class="mb-14 text-center" data-animate>
-        <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-[#E31E24]">
-          Our Principles
-        </p>
-        <h2 id="values-heading" class="font-display text-3xl font-bold text-[#1a1a1a] md:text-4xl">
-          What Drives Us
-        </h2>
-      </header>
-
-      <div class="grid gap-8 sm:grid-cols-3">
-        {values.map((value) => (
-          <article
-            class="flex flex-col gap-5 rounded-b-2xl border border-t-4 border-base-200 border-t-[#E31E24] bg-white p-8"
-            data-animate
-          >
-            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-[#E31E24] text-white">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-7 w-7"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.75"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-                set:html={value.icon}
-              />
-            </div>
-            <div>
-              <h3 class="font-display text-lg font-semibold text-[#1a1a1a]">{value.title}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-[#4a4a4a]">{value.description}</p>
-            </div>
-          </article>
-        ))}
-      </div>
+      <SectionHeading id="values-heading" title="What drives us." />
+      <FeatureList items={values} />
     </div>
   </section>
 
   <!-- ── SECTION 5: REGULATORY COMPLIANCE ── -->
-  <section class="bg-[#F5F5F5] py-20 md:py-28" aria-labelledby="compliance-heading">
-    <div class="mx-auto max-w-5xl px-6">
-      <header class="mb-12 text-center" data-animate>
-        <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-[#E31E24]">
-          Regulation & Standards
-        </p>
-        <h2 id="compliance-heading" class="font-display text-3xl font-bold text-[#1a1a1a] md:text-4xl">
-          Licensed & Compliant
-        </h2>
-        <p class="mx-auto mt-4 max-w-xl text-base text-[#4a4a4a]">
-          All electrical works completed by Multitec Maldives are carried out in full compliance
-          with Maldivian regulatory requirements.
-        </p>
-      </header>
-
-      <div class="grid gap-6 sm:grid-cols-2">
-        {compliance.map((item) => (
-          <article
-            class="flex gap-6 rounded-b-2xl border border-t-4 border-base-200 border-t-[#1a1a1a] bg-white p-8"
-            data-animate
-          >
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#1a1a1a] text-white">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-7 w-7"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.75"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-                set:html={item.icon}
-              />
-            </div>
-            <div>
-              <h3 class="font-display text-lg font-semibold text-[#1a1a1a]">{item.title}</h3>
-              <p class="mt-2 text-sm leading-relaxed text-[#4a4a4a]">{item.description}</p>
-            </div>
-          </article>
-        ))}
-      </div>
-
-      <p class="mt-8 text-center text-sm text-[#4a4a4a]/85" data-animate>
-        Certificates and documentation available upon request.
-      </p>
+  <section class="bg-white py-16 md:py-24" aria-labelledby="compliance-heading">
+    <div class="mx-auto max-w-6xl px-6">
+      <SectionHeading
+        id="compliance-heading"
+        title="Licensed and compliant."
+        intro="All electrical works completed by Multitec Maldives are carried out in full compliance with Maldivian regulatory requirements."
+      />
+      <FeatureList items={compliance} columns={2} />
+      <p class="mt-10 text-sm text-[#5f6469]">Certificates and documentation available on request.</p>
     </div>
   </section>
 
   <!-- ── SECTION 6: CTA BANNER ── -->
   <CtaBanner
-    heading="Work With a Team You Can Trust"
+    heading="Work with a team you can trust."
     subtext="With 23 years of experience and full regulatory compliance, Multitec Maldives is ready to deliver your next project."
     buttonText="Get in Touch"
     buttonLink="/contact"

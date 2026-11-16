@@ -1,0 +1,80 @@
+---
+interface Props {
+  label: string;
+  /** Colour of the ground behind the label, so it can cut the line cleanly. */
+  tone?: 'light' | 'dark';
+}
+
+const { label, tone = 'light' } = Astro.props;
+---
+
+<!-- Drawing-style measurement line above a photo (tick at each end, label in
+     the middle). Hidden at rest; drawn when its `.dimension-host` ancestor is
+     hovered or focused, or on touch screens when the host is mid-screen. The
+     host needs `relative` positioning and ~26px of top padding for the line. -->
+<span class:list={['dimension', tone]} aria-hidden="true">
+  <span class="dimension-line"></span>
+  <span class="dimension-tick dimension-tick--start"></span>
+  <span class="dimension-tick dimension-tick--end"></span>
+  <span class="dimension-label">{label}</span>
+</span>
+
+<style>
+  .dimension { --dim-ink: #e31e24; --dim-ground: #ffffff; position: absolute; left: 0; right: 0; top: 6px; height: 14px; pointer-events: none; }
+  .dimension.dark { --dim-ink: #ff3a40; --dim-ground: var(--color-ink); }
+  .dimension-line { position: absolute; left: 0; right: 0; top: 7px; height: 1px; background: var(--dim-ink); transform: scaleX(0); }
+  .dimension-tick { position: absolute; top: 1px; width: 1px; height: 12px; background: var(--dim-ink); rotate: 45deg; opacity: 0; }
+  .dimension-tick--start { left: 0; }
+  .dimension-tick--end { right: 0; }
+  .dimension-label {
+    position: absolute;
+    left: 50%;
+    top: 7px;
+    max-width: calc(100% - 2rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    translate: -50% -50%;
+    padding: 0 0.5rem;
+    background: var(--dim-ground);
+    color: var(--dim-ink);
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+  }
+
+  :global(.dimension-host:hover) .dimension-line,
+  :global(.dimension-host:focus-visible) .dimension-line,
+  :global(.dimension-host.is-near) .dimension-line { transform: none; }
+  :global(.dimension-host:hover) :is(.dimension-tick, .dimension-label),
+  :global(.dimension-host:focus-visible) :is(.dimension-tick, .dimension-label),
+  :global(.dimension-host.is-near) :is(.dimension-tick, .dimension-label) { opacity: 1; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .dimension-line { transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1); }
+    .dimension-tick { transition: opacity 0.2s 0.4s; }
+    .dimension-label { transition: opacity 0.3s 0.45s; }
+  }
+</style>
+
+<script>
+  // Touch screens have no hover: show the line on hosts near the middle of
+  // the screen instead. One observer per page, watching every host once.
+  let observer: IntersectionObserver | undefined;
+
+  function initDimensions() {
+    if (matchMedia('(hover: hover)').matches || !('IntersectionObserver' in window)) return;
+    observer?.disconnect();
+    observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.target.classList.toggle('is-near', e.isIntersecting)),
+      { rootMargin: '-35% 0px -35% 0px' },
+    );
+    document.querySelectorAll('.dimension-host').forEach((host) => observer!.observe(host));
+  }
+
+  initDimensions();
+  document.addEventListener('astro:page-load', initDimensions);
+</script>

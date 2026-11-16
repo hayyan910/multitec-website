@@ -1,6 +1,4 @@
 ---
-import CircuitBoard from './CircuitBoard.astro';
-
 interface BreadcrumbItem {
   label: string;
   href?: string;
@@ -15,53 +13,29 @@ interface Props {
 const { title, subtitle, breadcrumb } = Astro.props;
 ---
 
-<section class="relative flex min-h-[28vh] items-center overflow-hidden surface-ink">
-  <CircuitBoard />
-
-  <!-- Subtle red gradient accent top-right -->
-  <div
-    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(227,30,36,0.18)_0%,transparent_65%)]"
-    aria-hidden="true"
-  ></div>
-
-  <div class="relative z-10 mx-auto w-full max-w-6xl px-6 py-10 text-center">
-    <!-- Breadcrumb -->
-    <nav aria-label="Breadcrumb" class="mb-6">
-      <ol class="flex list-none items-center justify-center gap-2 text-sm">
+<!-- Inner-page banner: deep ink, left-aligned, one large headline. -->
+<section class="surface-ink text-white">
+  <div class="mx-auto max-w-6xl px-6 pb-16 pt-12 md:pb-24 md:pt-16">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex list-none flex-wrap items-center gap-2 text-sm">
         {breadcrumb.map((item, i) => (
           <li class="flex items-center gap-2">
             {item.href ? (
-              <a href={item.href} class="text-white/50 transition-colors hover:text-white/80">
-                {item.label}
-              </a>
+              <a href={item.href} class="text-white/60 transition-colors hover:text-white">{item.label}</a>
             ) : (
-              <span class="text-white/80" aria-current="page">{item.label}</span>
+              <span class="text-white/85" aria-current="page">{item.label}</span>
             )}
-            {i < breadcrumb.length - 1 && (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-3 w-3 shrink-0 text-white/30"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            )}
+            {i < breadcrumb.length - 1 && <span class="text-white/35" aria-hidden="true">/</span>}
           </li>
         ))}
       </ol>
     </nav>
 
-    <h1 class="font-display text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl">
+    <span class="mb-6 mt-10 block h-1 w-16 bg-[#E31E24] md:mt-14" aria-hidden="true"></span>
+    <h1 class="max-w-4xl font-headline text-[clamp(2.6rem,6vw,5rem)] font-extrabold leading-[0.96] tracking-[-0.03em] [text-wrap:balance]">
       {title}
     </h1>
-    <p class="mx-auto mt-4 max-w-xl text-base text-white/65 md:text-lg">
-      {subtitle}
-    </p>
+    <p class="mt-6 max-w-xl text-lg leading-relaxed text-white/70">{subtitle}</p>
+    <slot />
   </div>
 </section>

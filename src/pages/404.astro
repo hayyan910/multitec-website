@@ -1,44 +1,29 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import CircuitBoard from '../components/CircuitBoard.astro';
 ---
 
 <BaseLayout title="Page Not Found" description="The page you're looking for doesn't exist or may have moved.">
-  <section class="relative flex min-h-[48vh] items-center overflow-hidden surface-ink sm:min-h-[60vh] md:min-h-[70vh]">
-    <CircuitBoard />
-
-    <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(227,30,36,0.18)_0%,transparent_65%)]"
-      aria-hidden="true"
-    ></div>
-
-    <div class="relative z-10 mx-auto w-full max-w-3xl px-6 py-14 text-center sm:py-20">
-      <div class="flex items-center justify-center gap-5">
+  <section class="surface-ink text-white">
+    <div class="mx-auto flex min-h-[60vh] max-w-6xl flex-col justify-center px-6 py-16 md:min-h-[70vh]">
+      <div class="flex items-center gap-5">
         <span
-          class="h-16 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-[#E31E24] to-[#8f1116]"
+          class="h-16 w-1.5 shrink-0 rounded-full bg-gradient-to-b from-[#E31E24] to-[#8f1116] md:h-20"
           data-breaker-tick
           aria-hidden="true"
         ></span>
-        <span class="font-display text-7xl font-black text-white md:text-8xl" data-fault-numeral>404</span>
+        <span class="font-figures text-7xl font-semibold tracking-[-0.04em] md:text-8xl" data-fault-numeral>404</span>
       </div>
 
-      <h1 class="font-display mt-8 text-3xl font-bold text-white md:text-4xl">
-        This page doesn't exist
+      <h1 class="mt-10 max-w-3xl font-headline text-[clamp(2.4rem,5vw,4.2rem)] font-extrabold leading-[0.98] tracking-[-0.03em]">
+        This page doesn't exist.
       </h1>
-      <p class="mx-auto mt-4 max-w-md text-base text-white/65 md:text-lg">
+      <p class="mt-5 max-w-md text-lg leading-relaxed text-white/70">
         The page you're looking for may have been moved or the link is broken. Let's get you back on track.
       </p>
 
-      <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <a href="/" class="btn btn-primary shadow-lg">
-          Back to Home
-        </a>
-        <a
-          href="/projects"
-          class="btn btn-outline border-white/25 text-white hover:border-white hover:bg-white hover:text-[#1a1a1a]"
-        >
-          View Our Projects
-        </a>
+      <div class="mt-10 flex flex-wrap items-center gap-6">
+        <a href="/" class="button-sweep on-dark">Back to home</a>
+        <a href="/projects" class="link-underline text-white">View our projects</a>
       </div>
     </div>
   </section>
