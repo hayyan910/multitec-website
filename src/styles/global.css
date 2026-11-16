@@ -39,6 +39,13 @@
   --spacing-frame: clamp(1.5rem, 5vw, 6rem);
 }
 
+/* TEMPORARY dark-colour comparison (see BaseLayout ?dark=): the brand
+   near-black in place of the blue-grey night. Remove once chosen. */
+html[data-dark='black'] {
+  --color-night: #1a1a1a;
+  --color-night-2: #242424;
+}
+
 /* Shared editorial controls. */
 @layer components {
   /* Solid red button whose fill sweeps to ink (or white on dark grounds) on hover. */

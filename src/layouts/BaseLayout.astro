@@ -69,6 +69,24 @@ const navLinks = [
 
     <meta name="generator" content={Astro.generator} />
 
+    <!-- TEMPORARY dark-colour comparison: ?dark=black (brand #1a1a1a) or
+         ?dark=night (blue-grey, default). Remembered for the tab via
+         sessionStorage. Remove once chosen. -->
+    <script is:inline>
+      (() => {
+        const options = ['night', 'black'];
+        const param = new URLSearchParams(location.search).get('dark');
+        try { if (options.includes(param)) sessionStorage.setItem('dark', param); } catch {}
+        const apply = () => {
+          let choice = options.includes(param) ? param : 'night';
+          try { choice = sessionStorage.getItem('dark') || choice; } catch {}
+          document.documentElement.dataset.dark = choice;
+        };
+        apply();
+        document.addEventListener('astro:after-swap', apply);
+      })();
+    </script>
+
     <!-- Astro View Transitions -->
     <ClientRouter />
   </head>
