@@ -6,7 +6,6 @@ import SectionHeading from '../components/SectionHeading.astro';
 import ServiceIndex from '../components/ServiceIndex.astro';
 import PhotoStrip from '../components/PhotoStrip.astro';
 import SelectedWork from '../components/SelectedWork.astro';
-import StatsBar from '../components/StatsBar.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
 import { getProjects, getServices } from '../utils/sanity';
 import heroBg from '../assets/images/hero-bg.jpg';
@@ -50,35 +49,13 @@ const stats = [
   <section
     class="home-hero relative grid min-h-[min(calc(100dvh-4rem),68rem)] overflow-hidden surface-ink lg:grid-cols-[11fr_9fr]"
   >
-    <!-- Ambient circuit-trace texture -->
-    <svg class="pointer-events-none absolute inset-0 h-full w-full opacity-[0.06]" aria-hidden="true">
-      <defs>
-        <pattern id="hero-circuit" width="130" height="130" patternUnits="userSpaceOnUse">
-          <path d="M0 65 H45 V25 H100" stroke="white" stroke-width="1" fill="none" />
-          <path d="M130 100 H85 V125" stroke="white" stroke-width="1" fill="none" />
-          <path d="M65 0 V40 H130" stroke="white" stroke-width="1" fill="none" />
-          <circle cx="45" cy="25" r="2.5" fill="white" />
-          <circle cx="100" cy="25" r="2.5" fill="white" />
-          <circle cx="85" cy="125" r="2.5" fill="white" />
-          <circle cx="65" cy="40" r="2.5" fill="white" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#hero-circuit)" />
-    </svg>
-
     <!-- Text column -->
     <!-- On desktop the left padding uses the full-width frame gutter shared
          with the header, so the hero text lines up with the logo. -->
     <div class="relative z-10 flex flex-col justify-center px-6 py-20 sm:px-10 md:py-24 lg:py-16 lg:pl-frame lg:pr-12">
-      <!-- Nameplate -->
-      <div class="relative mb-8 inline-flex w-fit items-center gap-2.5 rounded-md border border-white/15 bg-gradient-to-b from-[#333333] to-[#1c1c1c] px-4 py-2.5 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_3px_8px_rgba(0,0,0,0.4)]">
-        <span class="absolute left-1 top-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]"></span>
-        <span class="absolute right-1 top-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]"></span>
-        <span class="absolute bottom-1 left-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]"></span>
-        <span class="absolute bottom-1 right-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]"></span>
-        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-[#E31E24] shadow-[0_0_7px_rgba(227,30,36,0.9)]"></span>
-        <span class="text-[11px] font-semibold uppercase tracking-wider text-white/80">Multitec · Est. 2003 · IEC Compliant</span>
-      </div>
+      <p class="mb-8 ml-7 text-xs font-semibold uppercase tracking-[0.14em] text-white/60">
+        URA licensed electrical contractor · Since 2003
+      </p>
 
       <!-- Headline with breaker-tick -->
       <div class="flex items-start gap-5">
@@ -103,47 +80,40 @@ const stats = [
       </p>
 
       <div class="ml-7 mt-9 flex flex-col gap-3 sm:flex-row">
-        <a href="/projects" class="button-sweep on-dark">
+        <a href="/projects" class="button-sweep on-dark justify-center">
           View Our Projects
         </a>
+        <!-- Secondary action: same size as the primary, outline only. -->
         <a
           href="/contact"
-          class="btn btn-outline border-white/25 text-white hover:border-white hover:bg-white hover:text-[#1a1a1a]"
+          class="inline-flex items-center justify-center rounded px-[1.45rem] py-4 text-[0.95rem] font-semibold leading-none text-white ring-1 ring-inset ring-white/35 transition-[box-shadow,background-color] duration-300 hover:bg-white/5 hover:ring-white"
         >
           Get in Touch
         </a>
       </div>
 
-      <!-- Hero stats as panel instruments that "power on" once the circuit
-           pulse reaches the breaker-tick. -->
+      <!-- Hero stats: three figures on rules that power on once the circuit
+           pulse reaches the breaker-tick. TEMPORARY comparison (?stats=):
+           "readout" sets them as 7-segment digits, "numbers" as Tabular
+           figures; each variant hides the other's element. -->
       <div class="ml-7 mt-12" data-hero-stats>
-
-        <!-- Mounting plate: same finish and corner screws as the nameplate,
-             holding three meter modules. -->
-        <div
-          class="relative w-full max-w-md rounded-md border border-white/15 bg-gradient-to-b from-[#333333] to-[#1c1c1c] p-3 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_3px_8px_rgba(0,0,0,0.4)] 2xl:max-w-lg"
-        >
-          <span class="absolute left-1 top-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
-          <span class="absolute right-1 top-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
-          <span class="absolute bottom-1 left-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
-          <span class="absolute bottom-1 right-1 h-1 w-1 rounded-full bg-black shadow-[0_1px_0_rgba(255,255,255,0.18)]" aria-hidden="true"></span>
-          <dl class="grid grid-cols-3 gap-2.5">
-            {stats.map((stat) => (
-              <div class="meter flex flex-col gap-2">
-                <dt class="order-2 flex items-start gap-1.5 text-[10px] font-semibold uppercase leading-tight tracking-wider text-white/60">
-                  <span class="stat-led mt-[3px] h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden="true"></span>
-                  {stat.label}
-                </dt>
-                <dd class="order-1">
-                  <span class="sr-only">{stat.number}</span>
-                  <span class="meter-window relative flex justify-end overflow-hidden rounded-[3px] bg-[#0a0a0a] px-2 py-2 shadow-[inset_0_1px_4px_rgba(0,0,0,0.9),0_0_0_1px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.07)]" aria-hidden="true">
-                    <SegmentDisplay value={stat.value} suffix={stat.suffix} class="h-5 sm:h-7 2xl:h-8" />
-                  </span>
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+        <dl class="grid max-w-xl grid-cols-3 gap-x-6 sm:gap-x-10 2xl:max-w-2xl">
+          {stats.map((stat) => (
+            <div class="meter flex flex-col border-t border-white/20 pt-4">
+              <dt class="order-2 mt-3 flex items-start gap-2 text-[11px] font-semibold uppercase leading-tight tracking-[0.1em] text-white/60">
+                <span class="stat-led mt-[3px] h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden="true"></span>
+                {stat.label}
+              </dt>
+              <dd class="order-1">
+                <span class="sr-only">{stat.number}</span>
+                <span class="stat-readout block" aria-hidden="true">
+                  <SegmentDisplay value={stat.value} suffix={stat.suffix} class="h-8 sm:h-10 2xl:h-12" />
+                </span>
+                <span class="stat-figure font-figures text-[clamp(2.4rem,4vw,3.6rem)] font-semibold leading-none tracking-[-0.035em] text-white tabular-nums" aria-hidden="true"><span class="stat-figure-value">{stat.value}</span><sup class="relative top-[0.12em] ml-[0.04em] align-top text-[0.45em] text-[#ff3a40]">{stat.suffix}</sup></span>
+              </dd>
+            </div>
+          ))}
+        </dl>
 
         <!-- Runs during parsing, before first paint: unless reduced motion is
              on, puts the instruments in their "off" state so the power-on
@@ -200,6 +170,7 @@ const stats = [
           // Take over from the CSS armed state: displays dark, lamps off.
           meters.forEach((meter) => {
             setDisplay(meter.querySelector('svg')!, 'blank');
+            meter.querySelector<HTMLElement>('.stat-figure-value')!.textContent = '0';
             gsap.set(meter.querySelector('.stat-led'), LED_OFF);
           });
           delete root.dataset.armed;
@@ -212,7 +183,11 @@ const stats = [
             // Lamp test, like a real meter on power-up: every segment lit, then dark.
             tl.call(() => setDisplay(svg, 'test'), [], at + 0.1);
             tl.call(() => setDisplay(svg, 'blank'), [], at + 0.45);
-            countUp(tl, Number(svg.dataset.targetValue), at + 0.55, 1.1, (n) => setDisplay(svg, n));
+            const figure = meter.querySelector<HTMLElement>('.stat-figure-value')!;
+            countUp(tl, Number(svg.dataset.targetValue), at + 0.55, 1.1, (n) => {
+              setDisplay(svg, n);
+              figure.textContent = String(n);
+            });
           });
         }
 
@@ -340,11 +315,8 @@ const stats = [
     </div>
   </section>
 
-  <!-- ── SECTION 6: NUMBERS ── -->
-  <StatsBar title="Two decades, by the numbers." />
-
-  <!-- ── SECTION 7: PROCESS ── -->
-  <section class="bg-white py-16 md:py-24" aria-labelledby="process-heading">
+  <!-- ── SECTION 6: PROCESS ── -->
+  <section class="bg-stone py-16 md:py-24" aria-labelledby="process-heading">
     <div class="mx-auto max-w-6xl px-6">
       <SectionHeading
         id="process-heading"
@@ -355,7 +327,7 @@ const stats = [
     </div>
   </section>
 
-  <!-- ── SECTION 8: CLOSING ── -->
+  <!-- ── SECTION 7: CLOSING ── -->
   <CtaBanner
     heading="Planning a project? Bring us in early."
     subtext="Early advice on loads, approvals and equipment saves time and cost later. Tell us what you're building."
@@ -453,15 +425,13 @@ const stats = [
     }
   }
 
-  /* ── Hero stats instruments ── */
-  /* Faint glass reflection across the top of each meter window. */
-  .meter-window::after {
-    content: '';
-    position: absolute;
-    inset: 0 0 50% 0;
-    background: linear-gradient(to bottom, rgb(255 255 255 / 0.06), transparent);
-    pointer-events: none;
-  }
+  /* ── Hero stats ── */
+  /* TEMPORARY: show one variant at a time (see BaseLayout ?stats=). */
+  :global(html:not([data-stats='numbers'])) .stat-figure { display: none; }
+  :global(html[data-stats='numbers']) .stat-readout { display: none; }
+  /* Before the power-on runs, the figures stay hidden (4s failsafe). */
+  [data-armed] .stat-figure { opacity: 0; animation: stats-figure-failsafe 0s 4s forwards; }
+  @keyframes stats-figure-failsafe { to { opacity: 1; } }
 
   /* Status lamps are lit at rest; the armed (pre-animation) state turns them
      off until GSAP powers them on, with a 4s failsafe if it never runs. */
