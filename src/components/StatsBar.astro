@@ -20,7 +20,7 @@ const stats = [
 ---
 
 <section class="bg-stone section-y" aria-labelledby={title ? 'stats-heading' : undefined} aria-label={title ? undefined : 'Company statistics'}>
-  <div class="frame">
+  <div class="column">
     {title && <SectionHeading id="stats-heading" title={title} />}
     <dl class="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4" data-stats-bar>
       {stats.map((stat) => (

@@ -42,7 +42,7 @@ const categories = Array.isArray(project?.category)
     <article>
       <!-- Project header — two column on large screens -->
       <header class="relative overflow-hidden surface-ink text-white">
-        <div class="frame relative pb-16 pt-12 md:pb-20 lg:grid lg:grid-cols-2 lg:items-end lg:gap-14">
+        <div class="column relative pb-16 pt-12 md:pb-20 lg:grid lg:grid-cols-2 lg:items-end lg:gap-14">
           <!-- Left: details -->
           <div class="py-4">
             <a href="/projects" class="text-sm text-white/60 transition-colors hover:text-white">&larr; All projects</a>
@@ -95,7 +95,7 @@ const categories = Array.isArray(project?.category)
       <!-- Gallery -->
       {galleryThumbUrls.length > 0 && (
         <section class="bg-[#f5f6f6] section-y-tight" aria-label="Project gallery">
-          <div class="frame">
+          <div class="column">
             <div class={`grid gap-4 ${galleryThumbUrls.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : galleryThumbUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-3'}`}>
               {galleryThumbUrls.map((img, i) => (
                 <button
@@ -342,7 +342,7 @@ const categories = Array.isArray(project?.category)
 
       <!-- Project body -->
       <section class="section-y" aria-labelledby="project-detail-heading">
-        <div class="frame">
+        <div class="column">
           <div class="max-w-3xl">
           <h2 id="project-detail-heading" class="sr-only">Project details</h2>
           {project.body ? (
@@ -356,7 +356,7 @@ const categories = Array.isArray(project?.category)
 
       <!-- Navigation -->
       <nav class="border-t border-[#d3d7da] section-y-tight" aria-label="Project navigation">
-        <div class="frame flex flex-wrap items-center justify-between gap-6">
+        <div class="column flex flex-wrap items-center justify-between gap-6">
           <a href="/projects" class="link-underline text-[#1a1a1a]">&larr; All projects</a>
           <a href={`/contact?type=consultation&project=${project.slug}`} class="button-sweep">Discuss a similar project</a>
         </div>

@@ -47,10 +47,9 @@ const stats = [
 
   <!-- ── SECTION 1: HERO (grounded in the trade) ── -->
   <section class="home-hero relative overflow-hidden surface-ink">
-    <!-- Text sits in the shared frame, so it lines up with the logo and every
-         section below. On desktop the text column is --hero-text wide and
-         the photo starts where it ends. -->
-    <div class="frame relative z-10 flex min-h-[min(calc(100dvh-4rem),68rem)] flex-col justify-center py-20 md:py-24 lg:py-16" data-frame="bleed">
+    <!-- Text uses the band gutter, so it lines up with the logo. On desktop
+         it stays within the left 55%; the photo fills the right 45%. -->
+    <div class="band relative z-10 flex min-h-[min(calc(100dvh-4rem),68rem)] flex-col justify-center py-20 md:py-24 lg:py-16">
     <div class="lg:max-w-[calc(var(--hero-text)-3rem)]">
       <p class="mb-8 ml-7 text-xs font-semibold uppercase tracking-[0.14em] text-white/60">
         URA licensed electrical contractor · Since 2003
@@ -217,7 +216,7 @@ const stats = [
     </div>
     </div>
 
-    <!-- Photo: from the end of the text column to the screen edge. -->
+    <!-- Photo: the right 45% of the hero, bleeding to the screen edge. -->
     <div class="hero-media absolute inset-y-0 right-0 hidden lg:block">
       <div class="hero-photo absolute inset-0 bg-[#111]">
         <Image
@@ -262,7 +261,7 @@ const stats = [
 
   <!-- ── SECTION 2: STATEMENT ── -->
   <section id="statement" class="bg-[#f5f6f6] section-y" aria-label="About Multitec">
-    <div class="frame">
+    <div class="column">
       <p class="max-w-5xl font-display text-[clamp(1.6rem,3vw,2.6rem)] font-bold leading-[1.18] tracking-[-0.02em] text-[#1a1a1a] [text-wrap:pretty]">
         Since 2003 we've wired towers, resorts and public buildings across the Maldives.{' '}
         <span class="text-[#5f6469]">One team takes every job from first drawing to final handover, so nothing falls between contractors.</span>
@@ -279,7 +278,7 @@ const stats = [
 
   <!-- ── SECTION 3: SERVICES ── -->
   <section class="bg-white section-y" aria-labelledby="services-heading">
-    <div class="frame">
+    <div class="column">
       <SectionHeading
         id="services-heading"
         title="Six disciplines. One accountable team."
@@ -298,7 +297,7 @@ const stats = [
 
   <!-- ── SECTION 5: SELECTED WORK ── -->
   <section class="surface-ink section-y" aria-labelledby="projects-heading">
-    <div class="frame">
+    <div class="column">
       <SectionHeading id="projects-heading" title="Selected work." tone="dark">
         <a slot="aside" href="/projects" class="link-underline text-white">
           All 200+ projects
@@ -311,7 +310,7 @@ const stats = [
 
   <!-- ── SECTION 6: PROCESS ── -->
   <section class="bg-stone section-y" aria-labelledby="process-heading">
-    <div class="frame">
+    <div class="column">
       <SectionHeading
         id="process-heading"
         title="How a project runs."
@@ -342,13 +341,13 @@ const stats = [
   }
 
   @media (min-width: 1024px) {
-    /* Text column: 55% of the screen on laptops, capped at 45rem so on wide
-       screens the photo keeps its size instead of sliding under the text. */
+    /* Text column: the left 55% minus the gutter, capped at 45rem so long
+       lines never reach the photo on wide screens. */
     .home-hero {
-      --hero-text: min(45rem, 55vw - var(--frame-inset));
+      --hero-text: min(45rem, 55vw - var(--spacing-frame));
     }
     .hero-media {
-      left: calc(var(--frame-inset) + var(--hero-text));
+      left: 55%;
     }
     .hero-photo {
       left: -14vw;
@@ -360,8 +359,8 @@ const stats = [
     }
   }
 
-  /* Trace spans from the screen edge to the breaker-tick: its width is the
-     frame inset (gutter plus any centring space on wide screens). Below 1280px that gutter is too
+  /* Trace spans exactly from the screen edge to the breaker-tick: its width
+     is the band gutter, the text column's left padding. Below 1280px that gutter is too
      narrow to read as a line, so it's only shown from there up. */
   @media (min-width: 1280px) {
     .hero-trace {
@@ -369,7 +368,7 @@ const stats = [
       position: absolute;
       right: 100%;
       top: -2px;
-      width: var(--frame-inset);
+      width: var(--spacing-frame);
       height: 2px;
       background: linear-gradient(to right, rgb(227 30 36 / 0.3), rgb(227 30 36 / 0.9));
     }

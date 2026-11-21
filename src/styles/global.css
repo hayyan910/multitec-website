@@ -41,25 +41,22 @@
      stays the colour of actions. */
   --color-signal:      #ff3a40;
 
-  /* The frame: one shared left and right edge for every band on the site
-     (header, heroes, sections, footer). The gutter grows with the screen;
-     the content between the gutters stops growing at --container-frame. */
+  /* Side gutter of full-width bands (header, home hero, footer): grows with
+     the screen. */
   --spacing-frame: clamp(1.5rem, 5vw, 6rem);
-  --container-frame: 82rem;
 }
 
-/* Distance from the screen edge to the frame's content edge, for elements
-   that must reach the screen edge from inside the frame (the hero trace). */
-:root {
-  --frame-inset: max(var(--spacing-frame), calc((100vw - var(--container-frame)) / 2));
-}
-
-/* Content container: centred, gutter on both sides, capped width. */
-@utility frame {
+/* Two containers. Full-width bands (header, home hero, footer) run edge to
+   edge with the frame gutter; page content sits in a centred 72rem column. */
+@utility band {
   width: 100%;
-  max-width: calc(var(--container-frame) + 2 * var(--spacing-frame));
-  margin-inline: auto;
   padding-inline: var(--spacing-frame);
+}
+@utility column {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
 }
 
 /* Vertical rhythm: standard section padding, and a tighter step for
@@ -70,13 +67,6 @@
 @utility section-y-tight {
   padding-block: clamp(3rem, 2rem + 3vw, 5rem);
 }
-
-/* TEMPORARY comparison (?grid=old, see BaseLayout): the previous layout,
-   with full-width header, footer and home hero and a 72rem column for
-   everything inside <main>. Remove once the frame is approved. */
-html[data-grid='old'] { --frame-inset: var(--spacing-frame); }
-html[data-grid='old'] .frame { max-width: none; }
-html[data-grid='old'] main .frame:not([data-frame='bleed']) { max-width: 72rem; padding-inline: 1.5rem; }
 
 /* Deep ink with an almost invisible fine grain, like powder-coated steel.
    The grain is an inline SVG noise tile (no extra request) at ~4% white. */

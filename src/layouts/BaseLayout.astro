@@ -69,26 +69,6 @@ const navLinks = [
 
     <meta name="generator" content={Astro.generator} />
 
-    <!-- TEMPORARY layout comparison: ?grid=frame (shared frame, default) or
-         ?grid=old (previous widths). Read on every navigation, remembered
-         for the tab. Remove once chosen. -->
-    <script is:inline>
-      (() => {
-        const options = ['frame', 'old'];
-        const apply = () => {
-          let value = options[0];
-          try {
-            const fromUrl = new URLSearchParams(location.search).get('grid');
-            if (options.includes(fromUrl)) sessionStorage.setItem('grid', fromUrl);
-            value = sessionStorage.getItem('grid') || value;
-          } catch {}
-          document.documentElement.dataset.grid = options.includes(value) ? value : options[0];
-        };
-        apply();
-        document.addEventListener('astro:after-swap', apply);
-      })();
-    </script>
-
     <!-- Astro View Transitions -->
     <ClientRouter />
   </head>
