@@ -42,7 +42,7 @@ const categories = Array.isArray(project?.category)
     <article>
       <!-- Project header — two column on large screens -->
       <header class="relative overflow-hidden surface-ink text-white">
-        <div class="relative mx-auto max-w-6xl px-6 pb-16 pt-12 md:pb-20 lg:grid lg:grid-cols-2 lg:items-end lg:gap-14">
+        <div class="frame relative pb-16 pt-12 md:pb-20 lg:grid lg:grid-cols-2 lg:items-end lg:gap-14">
           <!-- Left: details -->
           <div class="py-4">
             <a href="/projects" class="text-sm text-white/60 transition-colors hover:text-white">&larr; All projects</a>
@@ -94,8 +94,8 @@ const categories = Array.isArray(project?.category)
 
       <!-- Gallery -->
       {galleryThumbUrls.length > 0 && (
-        <section class="bg-[#f5f6f6] py-14 md:py-20" aria-label="Project gallery">
-          <div class="mx-auto max-w-6xl px-6">
+        <section class="bg-[#f5f6f6] section-y-tight" aria-label="Project gallery">
+          <div class="frame">
             <div class={`grid gap-4 ${galleryThumbUrls.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : galleryThumbUrls.length === 2 ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-3'}`}>
               {galleryThumbUrls.map((img, i) => (
                 <button
@@ -341,20 +341,22 @@ const categories = Array.isArray(project?.category)
       )}
 
       <!-- Project body -->
-      <section class="py-16" aria-labelledby="project-detail-heading">
-        <div class="mx-auto max-w-3xl px-6">
+      <section class="section-y" aria-labelledby="project-detail-heading">
+        <div class="frame">
+          <div class="max-w-3xl">
           <h2 id="project-detail-heading" class="sr-only">Project details</h2>
           {project.body ? (
             <div class="prose prose-base" set:html={project.body} />
           ) : (
-            <p class="py-10 text-center text-[#4a4a4a]/80">Full project details coming soon.</p>
+            <p class="py-10 text-[#4a4a4a]/80">Full project details coming soon.</p>
           )}
+          </div>
         </div>
       </section>
 
       <!-- Navigation -->
-      <nav class="border-t border-[#d3d7da] py-12" aria-label="Project navigation">
-        <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-6">
+      <nav class="border-t border-[#d3d7da] section-y-tight" aria-label="Project navigation">
+        <div class="frame flex flex-wrap items-center justify-between gap-6">
           <a href="/projects" class="link-underline text-[#1a1a1a]">&larr; All projects</a>
           <a href={`/contact?type=consultation&project=${project.slug}`} class="button-sweep">Discuss a similar project</a>
         </div>

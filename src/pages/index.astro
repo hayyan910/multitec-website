@@ -46,13 +46,12 @@ const stats = [
 >
 
   <!-- ── SECTION 1: HERO (grounded in the trade) ── -->
-  <section
-    class="home-hero relative grid min-h-[min(calc(100dvh-4rem),68rem)] overflow-hidden surface-ink lg:grid-cols-[11fr_9fr]"
-  >
-    <!-- Text column -->
-    <!-- On desktop the left padding uses the full-width frame gutter shared
-         with the header, so the hero text lines up with the logo. -->
-    <div class="relative z-10 flex flex-col justify-center px-6 py-20 sm:px-10 md:py-24 lg:py-16 lg:pl-frame lg:pr-12">
+  <section class="home-hero relative overflow-hidden surface-ink">
+    <!-- Text sits in the shared frame, so it lines up with the logo and every
+         section below. On desktop the text column is --hero-text wide and
+         the photo starts where it ends. -->
+    <div class="frame relative z-10 flex min-h-[min(calc(100dvh-4rem),68rem)] flex-col justify-center py-20 md:py-24 lg:py-16" data-frame="bleed">
+    <div class="lg:max-w-[calc(var(--hero-text)-3rem)]">
       <p class="mb-8 ml-7 text-xs font-semibold uppercase tracking-[0.14em] text-white/60">
         URA licensed electrical contractor · Since 2003
       </p>
@@ -92,10 +91,8 @@ const stats = [
         </a>
       </div>
 
-      <!-- Hero stats: three figures on rules that power on once the circuit
-           pulse reaches the breaker-tick. TEMPORARY comparison (?stats=):
-           "readout" sets them as 7-segment digits, "numbers" as Tabular
-           figures; each variant hides the other's element. -->
+      <!-- Hero stats: three 7-segment readouts on rules that power on once
+           the circuit pulse reaches the breaker-tick. -->
       <div class="ml-7 mt-12" data-hero-stats>
         <dl class="grid max-w-xl grid-cols-3 gap-x-6 sm:gap-x-10 2xl:max-w-2xl">
           {stats.map((stat) => (
@@ -106,10 +103,9 @@ const stats = [
               </dt>
               <dd class="order-1">
                 <span class="sr-only">{stat.number}</span>
-                <span class="stat-readout block" aria-hidden="true">
+                <span class="block" aria-hidden="true">
                   <SegmentDisplay value={stat.value} suffix={stat.suffix} class="h-8 sm:h-10 2xl:h-12" />
                 </span>
-                <span class="stat-figure font-figures text-[clamp(2.4rem,4vw,3.6rem)] font-semibold leading-none tracking-[-0.035em] text-white tabular-nums" aria-hidden="true"><span class="stat-figure-value">{stat.value}</span><sup class="relative top-[0.12em] ml-[0.04em] align-top text-[0.45em] text-[#ff3a40]">{stat.suffix}</sup></span>
               </dd>
             </div>
           ))}
@@ -132,7 +128,9 @@ const stats = [
         import { DIGIT_SEGMENTS, toDisplayChars } from '../utils/sevenSegment';
         gsap.registerPlugin(ScrollTrigger);
 
-        const LED_ON = { backgroundColor: '#ff3a40', boxShadow: '0 0 8px 2px rgba(255, 58, 64, 0.75)' };
+        // Lamp colour comes from the --color-signal token (lit red).
+        const signal = getComputedStyle(document.documentElement).getPropertyValue('--color-signal').trim() || '#ff3a40';
+        const LED_ON = { backgroundColor: signal, boxShadow: `0 0 8px 2px color-mix(in srgb, ${signal} 75%, transparent)` };
         const LED_OFF = { backgroundColor: '#3b1416', boxShadow: 'none' };
 
         type DisplayState = number | 'test' | 'blank';
@@ -170,7 +168,6 @@ const stats = [
           // Take over from the CSS armed state: displays dark, lamps off.
           meters.forEach((meter) => {
             setDisplay(meter.querySelector('svg')!, 'blank');
-            meter.querySelector<HTMLElement>('.stat-figure-value')!.textContent = '0';
             gsap.set(meter.querySelector('.stat-led'), LED_OFF);
           });
           delete root.dataset.armed;
@@ -183,11 +180,7 @@ const stats = [
             // Lamp test, like a real meter on power-up: every segment lit, then dark.
             tl.call(() => setDisplay(svg, 'test'), [], at + 0.1);
             tl.call(() => setDisplay(svg, 'blank'), [], at + 0.45);
-            const figure = meter.querySelector<HTMLElement>('.stat-figure-value')!;
-            countUp(tl, Number(svg.dataset.targetValue), at + 0.55, 1.1, (n) => {
-              setDisplay(svg, n);
-              figure.textContent = String(n);
-            });
+            countUp(tl, Number(svg.dataset.targetValue), at + 0.55, 1.1, (n) => setDisplay(svg, n));
           });
         }
 
@@ -222,9 +215,10 @@ const stats = [
         document.addEventListener('astro:page-load', initHeroStats);
       </script>
     </div>
+    </div>
 
-    <!-- Image column -->
-    <div class="relative hidden min-h-[420px] lg:block">
+    <!-- Photo: from the end of the text column to the screen edge. -->
+    <div class="hero-media absolute inset-y-0 right-0 hidden lg:block">
       <div class="hero-photo absolute inset-0 bg-[#111]">
         <Image
           src={heroBg}
@@ -267,8 +261,8 @@ const stats = [
   </section>
 
   <!-- ── SECTION 2: STATEMENT ── -->
-  <section id="statement" class="bg-[#f5f6f6] py-16 md:py-24" aria-label="About Multitec">
-    <div class="mx-auto max-w-6xl px-6">
+  <section id="statement" class="bg-[#f5f6f6] section-y" aria-label="About Multitec">
+    <div class="frame">
       <p class="max-w-5xl font-display text-[clamp(1.6rem,3vw,2.6rem)] font-bold leading-[1.18] tracking-[-0.02em] text-[#1a1a1a] [text-wrap:pretty]">
         Since 2003 we've wired towers, resorts and public buildings across the Maldives.{' '}
         <span class="text-[#5f6469]">One team takes every job from first drawing to final handover, so nothing falls between contractors.</span>
@@ -284,8 +278,8 @@ const stats = [
   </section>
 
   <!-- ── SECTION 3: SERVICES ── -->
-  <section class="bg-white py-16 md:py-24" aria-labelledby="services-heading">
-    <div class="mx-auto max-w-6xl px-6">
+  <section class="bg-white section-y" aria-labelledby="services-heading">
+    <div class="frame">
       <SectionHeading
         id="services-heading"
         title="Six disciplines. One accountable team."
@@ -303,8 +297,8 @@ const stats = [
   <PhotoStrip projects={stripProjects} />
 
   <!-- ── SECTION 5: SELECTED WORK ── -->
-  <section class="surface-ink py-16 md:py-24" aria-labelledby="projects-heading">
-    <div class="mx-auto max-w-6xl px-6">
+  <section class="surface-ink section-y" aria-labelledby="projects-heading">
+    <div class="frame">
       <SectionHeading id="projects-heading" title="Selected work." tone="dark">
         <a slot="aside" href="/projects" class="link-underline text-white">
           All 200+ projects
@@ -316,8 +310,8 @@ const stats = [
   </section>
 
   <!-- ── SECTION 6: PROCESS ── -->
-  <section class="bg-stone py-16 md:py-24" aria-labelledby="process-heading">
-    <div class="mx-auto max-w-6xl px-6">
+  <section class="bg-stone section-y" aria-labelledby="process-heading">
+    <div class="frame">
       <SectionHeading
         id="process-heading"
         title="How a project runs."
@@ -348,6 +342,14 @@ const stats = [
   }
 
   @media (min-width: 1024px) {
+    /* Text column: 55% of the screen on laptops, capped at 45rem so on wide
+       screens the photo keeps its size instead of sliding under the text. */
+    .home-hero {
+      --hero-text: min(45rem, 55vw - var(--frame-inset));
+    }
+    .hero-media {
+      left: calc(var(--frame-inset) + var(--hero-text));
+    }
     .hero-photo {
       left: -14vw;
       -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 45%);
@@ -358,8 +360,8 @@ const stats = [
     }
   }
 
-  /* Trace spans exactly from the screen edge to the breaker-tick: its width
-     is the same frame gutter as the text column's left padding. Below 1280px that gutter is too
+  /* Trace spans from the screen edge to the breaker-tick: its width is the
+     frame inset (gutter plus any centring space on wide screens). Below 1280px that gutter is too
      narrow to read as a line, so it's only shown from there up. */
   @media (min-width: 1280px) {
     .hero-trace {
@@ -367,7 +369,7 @@ const stats = [
       position: absolute;
       right: 100%;
       top: -2px;
-      width: var(--spacing-frame);
+      width: var(--frame-inset);
       height: 2px;
       background: linear-gradient(to right, rgb(227 30 36 / 0.3), rgb(227 30 36 / 0.9));
     }
@@ -426,18 +428,11 @@ const stats = [
   }
 
   /* ── Hero stats ── */
-  /* TEMPORARY: show one variant at a time (see BaseLayout ?stats=). */
-  :global(html:not([data-stats='numbers'])) .stat-figure { display: none; }
-  :global(html[data-stats='numbers']) .stat-readout { display: none; }
-  /* Before the power-on runs, the figures stay hidden (4s failsafe). */
-  [data-armed] .stat-figure { opacity: 0; animation: stats-figure-failsafe 0s 4s forwards; }
-  @keyframes stats-figure-failsafe { to { opacity: 1; } }
-
   /* Status lamps are lit at rest; the armed (pre-animation) state turns them
      off until GSAP powers them on, with a 4s failsafe if it never runs. */
   .stat-led {
-    background: #ff3a40;
-    box-shadow: 0 0 8px 2px rgb(255 58 64 / 0.75);
+    background: var(--color-signal);
+    box-shadow: 0 0 8px 2px color-mix(in srgb, var(--color-signal) 75%, transparent);
   }
   [data-armed] .stat-led {
     background: #3b1416;
@@ -446,8 +441,8 @@ const stats = [
   }
   @keyframes stats-lamp-failsafe {
     to {
-      background: #ff3a40;
-      box-shadow: 0 0 8px 2px rgb(255 58 64 / 0.75);
+      background: var(--color-signal);
+      box-shadow: 0 0 8px 2px color-mix(in srgb, var(--color-signal) 75%, transparent);
     }
   }
 </style>

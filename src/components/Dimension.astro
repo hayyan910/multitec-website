@@ -21,7 +21,7 @@ const { label, tone = 'light' } = Astro.props;
 
 <style>
   .dimension { --dim-ink: #e31e24; --dim-ground: #ffffff; position: absolute; left: 0; right: 0; top: 6px; height: 14px; pointer-events: none; }
-  .dimension.dark { --dim-ink: #ff3a40; --dim-ground: var(--color-ink); }
+  .dimension.dark { --dim-ink: var(--color-signal); --dim-ground: var(--color-ink); }
   .dimension-line { position: absolute; left: 0; right: 0; top: 7px; height: 1px; background: var(--dim-ink); transform: scaleX(0); }
   .dimension-tick { position: absolute; top: 1px; width: 1px; height: 12px; background: var(--dim-ink); rotate: 45deg; opacity: 0; }
   .dimension-tick--start { left: 0; }
